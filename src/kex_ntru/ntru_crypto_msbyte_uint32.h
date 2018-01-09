@@ -14,7 +14,7 @@
  * You can copy, modify, distribute and perform the work, even for commercial
  * purposes, all without asking permission. You should have received a copy of
  * the creative commons license (CC0 1.0 universal) along with this program.
- * See the license file for more information. 
+ * See the license file for more information.
  *
  *
  *********************************************************************************/
@@ -43,8 +43,7 @@
  * number of words expected in the output array.
  */
 
-extern void
-ntru_crypto_msbyte_2_uint32(
+extern void ntru_crypto_msbyte_2_uint32(
     uint32_t *words,      /* out - pointer to the output uint32_t array */
     uint8_t const *bytes, /*  in - pointer to the input byte array */
     uint32_t n);          /*  in - number of words in the output array */
@@ -59,8 +58,7 @@ ntru_crypto_msbyte_2_uint32(
  * specified in the input array.
  */
 
-extern void
-ntru_crypto_uint32_2_msbyte(
+extern void ntru_crypto_uint32_2_msbyte(
     uint8_t *bytes,        /* out - pointer to the output byte array */
     uint32_t const *words, /*  in - pointer to the input uint32_t array */
     uint32_t n);           /*  in - number of words in the input array */

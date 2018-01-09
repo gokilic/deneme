@@ -33,7 +33,8 @@ void OQS_KEX_lwe_frodo_free(OQS_KEX *k) {
 		return;
 	}
 	if (k->params) {
-		struct oqs_kex_lwe_frodo_params *params = (struct oqs_kex_lwe_frodo_params *) k->params;
+		struct oqs_kex_lwe_frodo_params *params =
+		    (struct oqs_kex_lwe_frodo_params *) k->params;
 		free(params->cdf_table);
 		params->cdf_table = NULL;
 		free(params->seed);

@@ -26,7 +26,9 @@
 
 #define setbit(a, x) ((a)[(x) / 64] |= (((uint64_t) 1) << (uint64_t)((x) % 64)))
 #define getbit(a, x) (((a)[(x) / 64] >> (uint64_t)((x) % 64)) & 1)
-#define clearbit(a, x) ((a)[(x) / 64] &= ((~((uint64_t) 0)) - (((uint64_t) 1) << (uint64_t)((x) % 64))))
+#define clearbit(a, x) \
+	((a)[(x) / 64] &=  \
+	 ((~((uint64_t) 0)) - (((uint64_t) 1) << (uint64_t)((x) % 64))))
 
 /* Auxiliary functions for constant-time comparison */
 
@@ -35,9 +37,7 @@
  * Returns 0 if x == 0
  * x and y are arbitrary unsigned 64-bit integers
  */
-static uint64_t ct_isnonzero_u64(uint64_t x) {
-	return (x | -x) >> 63;
-}
+static uint64_t ct_isnonzero_u64(uint64_t x) { return (x | -x) >> 63; }
 
 /*
  * Returns 1 if x != y
@@ -70,9 +70,7 @@ static uint64_t ct_lt_u64(uint64_t x, uint64_t y) {
  * Returns 0 if x <= y
  * x and y are arbitrary unsigned 64-bit integers
  */
-static uint64_t ct_gt_u64(uint64_t x, uint64_t y) {
-	return ct_lt_u64(y, x);
-}
+static uint64_t ct_gt_u64(uint64_t x, uint64_t y) { return ct_lt_u64(y, x); }
 
 /*
  * Returns 1 if x <= y
@@ -178,13 +176,15 @@ void oqs_kex_rlwe_bcns15_round2_ct(uint64_t out[16], const uint32_t in[1024]) {
 	int i;
 	memset(out, 0, 128);
 	for (i = 0; i < 1024; i++) {
-		uint64_t b = ct_ge_u64(in[i], 1073741824ULL) &
-		             ct_le_u64(in[i], 3221225471ULL);
+		uint64_t b =
+		    ct_ge_u64(in[i], 1073741824ULL) & ct_le_u64(in[i], 3221225471ULL);
 		out[i / 64] |= b << (uint64_t)(i % 64);
 	}
 }
 
-void oqs_kex_rlwe_bcns15_crossround2_ct(uint64_t out[16], const uint32_t in[1024], OQS_RAND *rand) {
+void oqs_kex_rlwe_bcns15_crossround2_ct(uint64_t out[16],
+                                        const uint32_t in[1024],
+                                        OQS_RAND *rand) {
 	int i, j;
 	memset(out, 0, 128);
 	for (i = 0; i < 64; i++) {
@@ -201,7 +201,8 @@ void oqs_kex_rlwe_bcns15_crossround2_ct(uint64_t out[16], const uint32_t in[1024
 	}
 }
 
-void oqs_kex_rlwe_bcns15_rec_ct(uint64_t out[16], const uint32_t w[1024], const uint64_t b[16]) {
+void oqs_kex_rlwe_bcns15_rec_ct(uint64_t out[16], const uint32_t w[1024],
+                                const uint64_t b[16]) {
 	int i;
 	memset(out, 0, 128);
 	for (i = 0; i < 1024; i++) {
@@ -242,7 +243,7 @@ void oqs_kex_rlwe_bcns15_round2(uint64_t out[16], const uint32_t in[1024]) {
 	// out should have enough space for 1024-bits
 	memset(out, 0, 128);
 
-	//q/4 and 3*q/4
+	// q/4 and 3*q/4
 	for (i = 0; i < 1024; i++) {
 		if (in[i] >= 1073741824 && in[i] <= 3221225471) {
 			setbit(out, i);
@@ -250,7 +251,8 @@ void oqs_kex_rlwe_bcns15_round2(uint64_t out[16], const uint32_t in[1024]) {
 	}
 }
 
-void oqs_kex_rlwe_bcns15_crossround2(uint64_t out[16], const uint32_t in[1024], OQS_RAND *rand) {
+void oqs_kex_rlwe_bcns15_crossround2(uint64_t out[16], const uint32_t in[1024],
+                                     OQS_RAND *rand) {
 	int i, j;
 	// out should have enough space for 1024-bits
 	memset(out, 0, 128);
@@ -260,15 +262,17 @@ void oqs_kex_rlwe_bcns15_crossround2(uint64_t out[16], const uint32_t in[1024], 
 		for (j = 0; j < 16; j++) {
 			uint64_t dd = dbl(in[i * 16 + j], (int32_t) e);
 			e >>= 2;
-			//q/2 to q and 3*q/2 to 2*q
-			if ((dd >= (uint64_t) 2147483648 && dd <= (uint64_t) 4294967295) || (dd >= (uint64_t) 6442450942 && dd <= (uint64_t) 8589934590)) {
+			// q/2 to q and 3*q/2 to 2*q
+			if ((dd >= (uint64_t) 2147483648 && dd <= (uint64_t) 4294967295) ||
+			    (dd >= (uint64_t) 6442450942 && dd <= (uint64_t) 8589934590)) {
 				setbit(out, (i * 16 + j));
 			}
 		}
 	}
 }
 
-void oqs_kex_rlwe_bcns15_rec(uint64_t out[16], const uint32_t w[1024], const uint64_t b[16]) {
+void oqs_kex_rlwe_bcns15_rec(uint64_t out[16], const uint32_t w[1024],
+                             const uint64_t b[16]) {
 	int i;
 
 	// out should have enough space for 1024 bits
@@ -277,7 +281,7 @@ void oqs_kex_rlwe_bcns15_rec(uint64_t out[16], const uint32_t w[1024], const uin
 	for (i = 0; i < 1024; i++) {
 		uint64_t coswi = (((uint64_t) w[i]) << (uint64_t) 1);
 		if (getbit(b, i) == 0) {
-			//Ceiling(2*3*q/8)..Floor(2*7*q/8)
+			// Ceiling(2*3*q/8)..Floor(2*7*q/8)
 			if (coswi >= (uint64_t) 3221225472 && coswi <= (uint64_t) 7516192766) {
 				setbit(out, i);
 			}
@@ -290,7 +294,9 @@ void oqs_kex_rlwe_bcns15_rec(uint64_t out[16], const uint32_t w[1024], const uin
 	}
 }
 
-void oqs_kex_rlwe_bcns15_a_times_s_plus_e(uint32_t out[1024], const uint32_t a[1024], const uint32_t s[1024], const uint32_t e[1024], struct oqs_kex_rlwe_bcns15_fft_ctx *ctx) {
+void oqs_kex_rlwe_bcns15_a_times_s_plus_e(
+    uint32_t out[1024], const uint32_t a[1024], const uint32_t s[1024],
+    const uint32_t e[1024], struct oqs_kex_rlwe_bcns15_fft_ctx *ctx) {
 	oqs_kex_rlwe_bcns15_fft_mul(out, a, s, ctx);
 	oqs_kex_rlwe_bcns15_fft_add(out, out, e);
 }

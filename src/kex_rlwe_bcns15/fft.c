@@ -26,8 +26,10 @@ static void *(*volatile rlwe_memset_volatile)(void *, int, size_t) = memset;
  * We use a redundant representation where the integer 0 is represented both
  * by 0 and 2^32-1.
  * This approach follows the description from the paper:
- * Joppe W. Bos, Craig Costello, Huseyin Hisil, and Kristin Lauter: Fast Cryptography in Genus 2
- * EUROCRYPT 2013, Lecture Notes in Computer Science 7881, pp. 194-210, Springer, 2013.
+ * Joppe W. Bos, Craig Costello, Huseyin Hisil, and Kristin Lauter: Fast
+ * Cryptography in Genus 2
+ * EUROCRYPT 2013, Lecture Notes in Computer Science 7881, pp. 194-210,
+ * Springer, 2013.
  * More specifically see: Section 3 related to Modular Addition/Subtraction.
  */
 
@@ -60,7 +62,9 @@ static void *(*volatile rlwe_memset_volatile)(void *, int, size_t) = memset;
 		modadd(c, ((uint32_t) _T), ((uint32_t)((uint64_t) _T >> (uint64_t) 32))); \
 	} while (0)
 
-#define div2(c, a) c = (uint32_t)(((uint64_t)(a) + (uint64_t)((uint32_t)(0 - ((a) &1)) & 0xFFFFFFFF)) >> 1)
+#define div2(c, a)  \
+	c = (uint32_t)( \
+	    ((uint64_t)(a) + (uint64_t)((uint32_t)(0 - ((a) &1)) & 0xFFFFFFFF)) >> 1)
 #define normalize(c, a) c = (a) + ((a) == 0xFFFFFFFF)
 
 /* Define the basic building blocks for the FFT. */
@@ -89,15 +93,18 @@ static uint32_t reverse(uint32_t x) {
 }
 
 /* Nussbaumer approach, see:
- * H. J. Nussbaumer. Fast polynomial transform algorithms for digital convolution. Acoustics, Speech and
+ * H. J. Nussbaumer. Fast polynomial transform algorithms for digital
+ * convolution. Acoustics, Speech and
  * Signal Processing, IEEE Transactions on, 28(2):205{215, 1980
  * We followed the description from Knuth:
- * D. E. Knuth. Seminumerical Algorithms. The Art of Computer Programming. Addison-Wesley, Reading,
+ * D. E. Knuth. Seminumerical Algorithms. The Art of Computer Programming.
+ * Addison-Wesley, Reading,
  * Massachusetts, USA, 3rd edition, 1997
  * Exercise Exercise 4.6.4.59.
  */
 
-static void naive(uint32_t *z, const uint32_t *x, const uint32_t *y, unsigned int n) {
+static void naive(uint32_t *z, const uint32_t *x, const uint32_t *y,
+                  unsigned int n) {
 	unsigned int i, j, k;
 	uint32_t A, B;
 
@@ -117,7 +124,9 @@ static void naive(uint32_t *z, const uint32_t *x, const uint32_t *y, unsigned in
 	}
 }
 
-static void nussbaumer_fft(uint32_t z[1024], const uint32_t x[1024], const uint32_t y[1024], struct oqs_kex_rlwe_bcns15_fft_ctx *ctx) {
+static void nussbaumer_fft(uint32_t z[1024], const uint32_t x[1024],
+                           const uint32_t y[1024],
+                           struct oqs_kex_rlwe_bcns15_fft_ctx *ctx) {
 	uint32_t(*X1)[64] = ctx->x1;
 	uint32_t(*Y1)[64] = ctx->y1;
 	uint32_t(*Z1)[64] = ctx->z1;
@@ -219,18 +228,22 @@ static void nussbaumer_fft(uint32_t z[1024], const uint32_t x[1024], const uint3
 	}
 }
 
-void oqs_kex_rlwe_bcns15_fft_mul(uint32_t z[1024], const uint32_t x[1024], const uint32_t y[1024], struct oqs_kex_rlwe_bcns15_fft_ctx *ctx) {
+void oqs_kex_rlwe_bcns15_fft_mul(uint32_t z[1024], const uint32_t x[1024],
+                                 const uint32_t y[1024],
+                                 struct oqs_kex_rlwe_bcns15_fft_ctx *ctx) {
 	nussbaumer_fft(z, x, y, ctx);
 }
 
-void oqs_kex_rlwe_bcns15_fft_add(uint32_t z[1024], const uint32_t x[1024], const uint32_t y[1024]) {
+void oqs_kex_rlwe_bcns15_fft_add(uint32_t z[1024], const uint32_t x[1024],
+                                 const uint32_t y[1024]) {
 	int i;
 	for (i = 0; i < 1024; i++) {
 		add(z[i], x[i], y[i]);
 	}
 }
 
-void oqs_kex_rlwe_bcns15_fft_ctx_clear(struct oqs_kex_rlwe_bcns15_fft_ctx *ctx) {
+void oqs_kex_rlwe_bcns15_fft_ctx_clear(
+    struct oqs_kex_rlwe_bcns15_fft_ctx *ctx) {
 	if (ctx == NULL) {
 		return;
 	}

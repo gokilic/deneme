@@ -1,4 +1,5 @@
-static void scaling(uint64_t out[][GFBITS], uint64_t inv[][GFBITS], const unsigned char *sk, uint64_t *recv) {
+static void scaling(uint64_t out[][GFBITS], uint64_t inv[][GFBITS],
+                    const unsigned char *sk, uint64_t *recv) {
 	int i, j;
 	uint64_t sk_int[GFBITS];
 
@@ -36,7 +37,8 @@ static void scaling(uint64_t out[][GFBITS], uint64_t inv[][GFBITS], const unsign
 			out[i][j] = inv[i][j] & recv[i];
 }
 
-static void scaling_inv(uint64_t out[][GFBITS], uint64_t inv[][GFBITS], uint64_t *recv) {
+static void scaling_inv(uint64_t out[][GFBITS], uint64_t inv[][GFBITS],
+                        uint64_t *recv) {
 	int i, j;
 
 	for (i = 0; i < 64; i++)
@@ -114,7 +116,8 @@ static void syndrome_adjust(uint64_t in[][GFBITS]) {
 	}
 }
 
-static int decrypt(unsigned char *e, const unsigned char *sk, const unsigned char *s) {
+static int decrypt(unsigned char *e, const unsigned char *sk,
+                   const unsigned char *s) {
 	int i, j;
 
 	uint64_t t;

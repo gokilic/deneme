@@ -1,5 +1,6 @@
 /********************************************************************************************
-* SIDH: an efficient supersingular isogeny-based cryptography library for Diffie-Hellman key 
+* SIDH: an efficient supersingular isogeny-based cryptography library for
+*Diffie-Hellman key
 *       key exchange.
 *
 *    Copyright (c) Microsoft Corporation. All rights reserved.
@@ -14,9 +15,14 @@
 
 extern const uint64_t LIST[22][SIDH_NWORDS64_FIELD];
 
-void oqs_sidh_cln16_j_inv(const oqs_sidh_cln16_f2elm_t A, const oqs_sidh_cln16_f2elm_t C, oqs_sidh_cln16_f2elm_t jinv) { // Computes the j-invariant of a Montgomery curve with projective constant.
-	                                                                                                                     // Input: A,C in GF(p^2).
-	                                                                                                                     // Output: j=256*(A^2-3*C^2)^3/(C^4*(A^2-4*C^2)), which is the j-invariant of the Montgomery curve B*y^2=x^3+(A/C)*x^2+x or (equivalently) j-invariant of B'*y^2=C*x^3+A*x^2+C*x.
+void oqs_sidh_cln16_j_inv(
+    const oqs_sidh_cln16_f2elm_t A, const oqs_sidh_cln16_f2elm_t C,
+    oqs_sidh_cln16_f2elm_t jinv) { // Computes the j-invariant of a Montgomery
+	                               // curve with projective constant.
+	                               // Input: A,C in GF(p^2).
+	// Output: j=256*(A^2-3*C^2)^3/(C^4*(A^2-4*C^2)), which is the j-invariant of
+	// the Montgomery curve B*y^2=x^3+(A/C)*x^2+x or (equivalently) j-invariant of
+	// B'*y^2=C*x^3+A*x^2+C*x.
 	oqs_sidh_cln16_f2elm_t t0, t1;
 
 	oqs_sidh_cln16_fp2sqr751_mont(A, jinv);        // jinv = A^2
@@ -37,9 +43,16 @@ void oqs_sidh_cln16_j_inv(const oqs_sidh_cln16_f2elm_t A, const oqs_sidh_cln16_f
 	oqs_sidh_cln16_fp2mul751_mont(jinv, t0, jinv); // jinv = t0*jinv
 }
 
-void oqs_sidh_cln16_xDBLADD(oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_point_proj_t Q, const oqs_sidh_cln16_f2elm_t xPQ, const oqs_sidh_cln16_f2elm_t A24) { // Simultaneous doubling and differential addition.
-	                                                                                                                                                            // Input: projective Montgomery points P=(XP:ZP) and Q=(XQ:ZQ) such that xP=XP/ZP and xQ=XQ/ZQ, affine difference xPQ=x(P-Q) and Montgomery curve constant A24=(A+2)/4.
-	                                                                                                                                                            // Output: projective Montgomery points P <- 2*P = (X2P:Z2P) such that x(2P)=X2P/Z2P, and Q <- P+Q = (XQP:ZQP) such that = x(Q+P)=XQP/ZQP.
+void oqs_sidh_cln16_xDBLADD(
+    oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_point_proj_t Q,
+    const oqs_sidh_cln16_f2elm_t xPQ,
+    const oqs_sidh_cln16_f2elm_t
+        A24) { // Simultaneous doubling and differential addition.
+	// Input: projective Montgomery points P=(XP:ZP) and Q=(XQ:ZQ) such that
+	// xP=XP/ZP and xQ=XQ/ZQ, affine difference xPQ=x(P-Q) and Montgomery curve
+	// constant A24=(A+2)/4.
+	// Output: projective Montgomery points P <- 2*P = (X2P:Z2P) such that
+	// x(2P)=X2P/Z2P, and Q <- P+Q = (XQP:ZQP) such that = x(Q+P)=XQP/ZQP.
 	oqs_sidh_cln16_f2elm_t t0, t1, t2;
 
 	oqs_sidh_cln16_fp2add751(P->X, P->Z, t0);        // t0 = XP+ZP
@@ -52,19 +65,33 @@ void oqs_sidh_cln16_xDBLADD(oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_point_
 	oqs_sidh_cln16_fp2mul751_mont(t1, Q->X, t1);     // t1 = (XP-ZP)*(XQ+ZQ)
 	oqs_sidh_cln16_fp2sub751(P->X, P->Z, t2);        // t2 = (XP+ZP)^2-(XP-ZP)^2
 	oqs_sidh_cln16_fp2mul751_mont(P->X, P->Z, P->X); // XP = (XP+ZP)^2*(XP-ZP)^2
-	oqs_sidh_cln16_fp2mul751_mont(t2, A24, Q->X);    // XQ = A24*[(XP+ZP)^2-(XP-ZP)^2]
-	oqs_sidh_cln16_fp2sub751(t0, t1, Q->Z);          // ZQ = (XP+ZP)*(XQ-ZQ)-(XP-ZP)*(XQ+ZQ)
-	oqs_sidh_cln16_fp2add751(Q->X, P->Z, P->Z);      // ZP = A24*[(XP+ZP)^2-(XP-ZP)^2]+(XP-ZP)^2
-	oqs_sidh_cln16_fp2add751(t0, t1, Q->X);          // XQ = (XP+ZP)*(XQ-ZQ)+(XP-ZP)*(XQ+ZQ)
-	oqs_sidh_cln16_fp2mul751_mont(P->Z, t2, P->Z);   // ZP = [A24*[(XP+ZP)^2-(XP-ZP)^2]+(XP-ZP)^2]*[(XP+ZP)^2-(XP-ZP)^2]
-	oqs_sidh_cln16_fp2sqr751_mont(Q->Z, Q->Z);       // ZQ = [(XP+ZP)*(XQ-ZQ)-(XP-ZP)*(XQ+ZQ)]^2
-	oqs_sidh_cln16_fp2sqr751_mont(Q->X, Q->X);       // XQ = [(XP+ZP)*(XQ-ZQ)+(XP-ZP)*(XQ+ZQ)]^2
-	oqs_sidh_cln16_fp2mul751_mont(Q->Z, xPQ, Q->Z);  // ZQ = xPQ*[(XP+ZP)*(XQ-ZQ)-(XP-ZP)*(XQ+ZQ)]^2
+	oqs_sidh_cln16_fp2mul751_mont(t2, A24,
+	                              Q->X); // XQ = A24*[(XP+ZP)^2-(XP-ZP)^2]
+	oqs_sidh_cln16_fp2sub751(t0, t1,
+	                         Q->Z); // ZQ = (XP+ZP)*(XQ-ZQ)-(XP-ZP)*(XQ+ZQ)
+	oqs_sidh_cln16_fp2add751(Q->X, P->Z,
+	                         P->Z); // ZP = A24*[(XP+ZP)^2-(XP-ZP)^2]+(XP-ZP)^2
+	oqs_sidh_cln16_fp2add751(t0, t1,
+	                         Q->X); // XQ = (XP+ZP)*(XQ-ZQ)+(XP-ZP)*(XQ+ZQ)
+	oqs_sidh_cln16_fp2mul751_mont(
+	    P->Z, t2,
+	    P->Z); // ZP = [A24*[(XP+ZP)^2-(XP-ZP)^2]+(XP-ZP)^2]*[(XP+ZP)^2-(XP-ZP)^2]
+	oqs_sidh_cln16_fp2sqr751_mont(
+	    Q->Z, Q->Z); // ZQ = [(XP+ZP)*(XQ-ZQ)-(XP-ZP)*(XQ+ZQ)]^2
+	oqs_sidh_cln16_fp2sqr751_mont(
+	    Q->X, Q->X); // XQ = [(XP+ZP)*(XQ-ZQ)+(XP-ZP)*(XQ+ZQ)]^2
+	oqs_sidh_cln16_fp2mul751_mont(
+	    Q->Z, xPQ, Q->Z); // ZQ = xPQ*[(XP+ZP)*(XQ-ZQ)-(XP-ZP)*(XQ+ZQ)]^2
 }
 
-void oqs_sidh_cln16_xDBL(const oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_point_proj_t Q, const oqs_sidh_cln16_f2elm_t A24, const oqs_sidh_cln16_f2elm_t C24) { // Doubling of a Montgomery point in projective coordinates (X:Z).
-	                                                                                                                                                               // Input: projective Montgomery x-coordinates P = (X1:Z1), where x1=X1/Z1 and Montgomery curve constant A24/C24=(A/C+2)/4.
-	                                                                                                                                                               // Output: projective Montgomery x-coordinates Q = 2*P = (X2:Z2).
+void oqs_sidh_cln16_xDBL(
+    const oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_point_proj_t Q,
+    const oqs_sidh_cln16_f2elm_t A24,
+    const oqs_sidh_cln16_f2elm_t C24) { // Doubling of a Montgomery point in
+	                                    // projective coordinates (X:Z).
+	// Input: projective Montgomery x-coordinates P = (X1:Z1), where x1=X1/Z1 and
+	// Montgomery curve constant A24/C24=(A/C+2)/4.
+	// Output: projective Montgomery x-coordinates Q = 2*P = (X2:Z2).
 	oqs_sidh_cln16_f2elm_t t0, t1;
 
 	oqs_sidh_cln16_fp2sub751(P->X, P->Z, t0);      // t0 = X1-Z1
@@ -75,13 +102,23 @@ void oqs_sidh_cln16_xDBL(const oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_poi
 	oqs_sidh_cln16_fp2mul751_mont(t1, Q->Z, Q->X); // X2 = C24*(X1-Z1)^2*(X1+Z1)^2
 	oqs_sidh_cln16_fp2sub751(t1, t0, t1);          // t1 = (X1+Z1)^2-(X1-Z1)^2
 	oqs_sidh_cln16_fp2mul751_mont(A24, t1, t0);    // t0 = A24*[(X1+Z1)^2-(X1-Z1)^2]
-	oqs_sidh_cln16_fp2add751(Q->Z, t0, Q->Z);      // Z2 = A24*[(X1+Z1)^2-(X1-Z1)^2] + C24*(X1-Z1)^2
-	oqs_sidh_cln16_fp2mul751_mont(Q->Z, t1, Q->Z); // Z2 = [A24*[(X1+Z1)^2-(X1-Z1)^2] + C24*(X1-Z1)^2]*[(X1+Z1)^2-(X1-Z1)^2]
+	oqs_sidh_cln16_fp2add751(
+	    Q->Z, t0, Q->Z); // Z2 = A24*[(X1+Z1)^2-(X1-Z1)^2] + C24*(X1-Z1)^2
+	oqs_sidh_cln16_fp2mul751_mont(Q->Z, t1,
+	                              Q->Z); // Z2 = [A24*[(X1+Z1)^2-(X1-Z1)^2] +
+	                                     // C24*(X1-Z1)^2]*[(X1+Z1)^2-(X1-Z1)^2]
 }
 
-void oqs_sidh_cln16_xDBLe(const oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_point_proj_t Q, const oqs_sidh_cln16_f2elm_t A, const oqs_sidh_cln16_f2elm_t C, const int e) { // Computes [2^e](X:Z) on Montgomery curve with projective constant via e repeated doublings.
-	                                                                                                                                                                         // Input: projective Montgomery x-coordinates P = (XP:ZP), such that xP=XP/ZP and Montgomery curve constant A/C.
-	                                                                                                                                                                         // Output: projective Montgomery x-coordinates Q <- (2^e)*P.
+void oqs_sidh_cln16_xDBLe(const oqs_sidh_cln16_point_proj_t P,
+                          oqs_sidh_cln16_point_proj_t Q,
+                          const oqs_sidh_cln16_f2elm_t A,
+                          const oqs_sidh_cln16_f2elm_t C,
+                          const int e) { // Computes [2^e](X:Z) on Montgomery
+	                                     // curve with projective constant via e
+	                                     // repeated doublings.
+	// Input: projective Montgomery x-coordinates P = (XP:ZP), such that xP=XP/ZP
+	// and Montgomery curve constant A/C.
+	// Output: projective Montgomery x-coordinates Q <- (2^e)*P.
 	oqs_sidh_cln16_f2elm_t A24num, A24den;
 	int i;
 
@@ -95,27 +132,41 @@ void oqs_sidh_cln16_xDBLe(const oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_po
 	}
 }
 
-void oqs_sidh_cln16_xADD(oqs_sidh_cln16_point_proj_t P, const oqs_sidh_cln16_point_proj_t Q, const oqs_sidh_cln16_f2elm_t xPQ) { // Differential addition.
-	                                                                                                                             // Input: projective Montgomery points P=(XP:ZP) and Q=(XQ:ZQ) such that xP=XP/ZP and xQ=XQ/ZQ, and affine difference xPQ=x(P-Q).
-	                                                                                                                             // Output: projective Montgomery point P <- P+Q = (XQP:ZQP) such that = x(Q+P)=XQP/ZQP.
+void oqs_sidh_cln16_xADD(
+    oqs_sidh_cln16_point_proj_t P, const oqs_sidh_cln16_point_proj_t Q,
+    const oqs_sidh_cln16_f2elm_t xPQ) { // Differential addition.
+	// Input: projective Montgomery points P=(XP:ZP) and Q=(XQ:ZQ) such that
+	// xP=XP/ZP and xQ=XQ/ZQ, and affine difference xPQ=x(P-Q).
+	// Output: projective Montgomery point P <- P+Q = (XQP:ZQP) such that =
+	// x(Q+P)=XQP/ZQP.
 	oqs_sidh_cln16_f2elm_t t0, t1;
 
-	oqs_sidh_cln16_fp2add751(P->X, P->Z, t0);       // t0 = XP+ZP
-	oqs_sidh_cln16_fp2sub751(P->X, P->Z, t1);       // t1 = XP-ZP
-	oqs_sidh_cln16_fp2sub751(Q->X, Q->Z, P->X);     // XP = XQ-ZQ
-	oqs_sidh_cln16_fp2add751(Q->X, Q->Z, P->Z);     // ZP = XQ+ZQ
-	oqs_sidh_cln16_fp2mul751_mont(t0, P->X, t0);    // t0 = (XP+ZP)*(XQ-ZQ)
-	oqs_sidh_cln16_fp2mul751_mont(t1, P->Z, t1);    // t1 = (XP-ZP)*(XQ+ZQ)
-	oqs_sidh_cln16_fp2sub751(t0, t1, P->Z);         // ZP = (XP+ZP)*(XQ-ZQ)-(XP-ZP)*(XQ+ZQ)
-	oqs_sidh_cln16_fp2add751(t0, t1, P->X);         // XP = (XP+ZP)*(XQ-ZQ)+(XP-ZP)*(XQ+ZQ)
-	oqs_sidh_cln16_fp2sqr751_mont(P->Z, P->Z);      // ZP = [(XP+ZP)*(XQ-ZQ)-(XP-ZP)*(XQ+ZQ)]^2
-	oqs_sidh_cln16_fp2sqr751_mont(P->X, P->X);      // XP = [(XP+ZP)*(XQ-ZQ)+(XP-ZP)*(XQ+ZQ)]^2
-	oqs_sidh_cln16_fp2mul751_mont(P->Z, xPQ, P->Z); // ZP = xPQ*[(XP+ZP)*(XQ-ZQ)-(XP-ZP)*(XQ+ZQ)]^2
+	oqs_sidh_cln16_fp2add751(P->X, P->Z, t0);    // t0 = XP+ZP
+	oqs_sidh_cln16_fp2sub751(P->X, P->Z, t1);    // t1 = XP-ZP
+	oqs_sidh_cln16_fp2sub751(Q->X, Q->Z, P->X);  // XP = XQ-ZQ
+	oqs_sidh_cln16_fp2add751(Q->X, Q->Z, P->Z);  // ZP = XQ+ZQ
+	oqs_sidh_cln16_fp2mul751_mont(t0, P->X, t0); // t0 = (XP+ZP)*(XQ-ZQ)
+	oqs_sidh_cln16_fp2mul751_mont(t1, P->Z, t1); // t1 = (XP-ZP)*(XQ+ZQ)
+	oqs_sidh_cln16_fp2sub751(t0, t1,
+	                         P->Z); // ZP = (XP+ZP)*(XQ-ZQ)-(XP-ZP)*(XQ+ZQ)
+	oqs_sidh_cln16_fp2add751(t0, t1,
+	                         P->X); // XP = (XP+ZP)*(XQ-ZQ)+(XP-ZP)*(XQ+ZQ)
+	oqs_sidh_cln16_fp2sqr751_mont(
+	    P->Z, P->Z); // ZP = [(XP+ZP)*(XQ-ZQ)-(XP-ZP)*(XQ+ZQ)]^2
+	oqs_sidh_cln16_fp2sqr751_mont(
+	    P->X, P->X); // XP = [(XP+ZP)*(XQ-ZQ)+(XP-ZP)*(XQ+ZQ)]^2
+	oqs_sidh_cln16_fp2mul751_mont(
+	    P->Z, xPQ, P->Z); // ZP = xPQ*[(XP+ZP)*(XQ-ZQ)-(XP-ZP)*(XQ+ZQ)]^2
 }
 
-void oqs_sidh_cln16_xDBL_basefield(const oqs_sidh_cln16_point_basefield_proj_t P, oqs_sidh_cln16_point_basefield_proj_t Q) { // Doubling of a Montgomery point in projective coordinates (X:Z) over the base field.
-	                                                                                                                         // Input: projective Montgomery x-coordinates P = (X1:Z1), where x1=X1/Z1 and Montgomery curve constant A24/C24=(A/C+2)/4.
-	                                                                                                                         // Output: projective Montgomery x-coordinates Q = 2*P = (X2:Z2).
+void oqs_sidh_cln16_xDBL_basefield(
+    const oqs_sidh_cln16_point_basefield_proj_t P,
+    oqs_sidh_cln16_point_basefield_proj_t Q) { // Doubling of a Montgomery point
+	                                           // in projective coordinates
+	                                           // (X:Z) over the base field.
+	// Input: projective Montgomery x-coordinates P = (X1:Z1), where x1=X1/Z1 and
+	// Montgomery curve constant A24/C24=(A/C+2)/4.
+	// Output: projective Montgomery x-coordinates Q = 2*P = (X2:Z2).
 	oqs_sidh_cln16_felm_t t0, t1;
 
 	// NOTE: this function is fixed for A24=1, C24=2
@@ -127,13 +178,23 @@ void oqs_sidh_cln16_xDBL_basefield(const oqs_sidh_cln16_point_basefield_proj_t P
 	oqs_sidh_cln16_fpadd751(t0, t0, Q->Z);        // Z2 = C24*(X1-Z1)^2
 	oqs_sidh_cln16_fpmul751_mont(t1, Q->Z, Q->X); // X2 = C24*(X1-Z1)^2*(X1+Z1)^2
 	oqs_sidh_cln16_fpsub751(t1, t0, t1);          // t1 = (X1+Z1)^2-(X1-Z1)^2
-	oqs_sidh_cln16_fpadd751(Q->Z, t1, Q->Z);      // Z2 = A24*[(X1+Z1)^2-(X1-Z1)^2] + C24*(X1-Z1)^2
-	oqs_sidh_cln16_fpmul751_mont(Q->Z, t1, Q->Z); // Z2 = [A24*[(X1+Z1)^2-(X1-Z1)^2] + C24*(X1-Z1)^2]*[(X1+Z1)^2-(X1-Z1)^2]
+	oqs_sidh_cln16_fpadd751(
+	    Q->Z, t1, Q->Z); // Z2 = A24*[(X1+Z1)^2-(X1-Z1)^2] + C24*(X1-Z1)^2
+	oqs_sidh_cln16_fpmul751_mont(Q->Z, t1,
+	                             Q->Z); // Z2 = [A24*[(X1+Z1)^2-(X1-Z1)^2] +
+	                                    // C24*(X1-Z1)^2]*[(X1+Z1)^2-(X1-Z1)^2]
 }
 
-void oqs_sidh_cln16_xDBLADD_basefield(oqs_sidh_cln16_point_basefield_proj_t P, oqs_sidh_cln16_point_basefield_proj_t Q, const oqs_sidh_cln16_felm_t xPQ, const oqs_sidh_cln16_felm_t A24) { // Simultaneous doubling and differential addition over the base field.
-	                                                                                                                                                                                        // Input: projective Montgomery points P=(XP:ZP) and Q=(XQ:ZQ) such that xP=XP/ZP and xQ=XQ/ZQ, affine difference xPQ=x(P-Q) and Montgomery curve constant A24=(A+2)/4.
-	                                                                                                                                                                                        // Output: projective Montgomery points P <- 2*P = (X2P:Z2P) such that x(2P)=X2P/Z2P, and Q <- P+Q = (XQP:ZQP) such that = x(Q+P)=XQP/ZQP.
+void oqs_sidh_cln16_xDBLADD_basefield(
+    oqs_sidh_cln16_point_basefield_proj_t P,
+    oqs_sidh_cln16_point_basefield_proj_t Q, const oqs_sidh_cln16_felm_t xPQ,
+    const oqs_sidh_cln16_felm_t A24) { // Simultaneous doubling and differential
+	                                   // addition over the base field.
+	// Input: projective Montgomery points P=(XP:ZP) and Q=(XQ:ZQ) such that
+	// xP=XP/ZP and xQ=XQ/ZQ, affine difference xPQ=x(P-Q) and Montgomery curve
+	// constant A24=(A+2)/4.
+	// Output: projective Montgomery points P <- 2*P = (X2P:Z2P) such that
+	// x(2P)=X2P/Z2P, and Q <- P+Q = (XQP:ZQP) such that = x(Q+P)=XQP/ZQP.
 	oqs_sidh_cln16_felm_t t0, t1, t2;
 
 	// NOTE: this function is fixed for C24=2
@@ -149,31 +210,47 @@ void oqs_sidh_cln16_xDBLADD_basefield(oqs_sidh_cln16_point_basefield_proj_t P, o
 	oqs_sidh_cln16_fpsub751(P->X, P->Z, t2);    // t2 = (XP+ZP)^2-(XP-ZP)^2
 
 	if (A24[0] == 1) {
-		oqs_sidh_cln16_fpadd751(P->Z, P->Z, P->Z);      // ZP = C24*(XP-ZP)^2
-		oqs_sidh_cln16_fpmul751_mont(P->X, P->Z, P->X); // XP = C24*(XP+ZP)^2*(XP-ZP)^2
-		oqs_sidh_cln16_fpadd751(t2, P->Z, P->Z);        // ZP = A24*[(XP+ZP)^2-(XP-ZP)^2]+C24*(XP-ZP)^2
+		oqs_sidh_cln16_fpadd751(P->Z, P->Z, P->Z); // ZP = C24*(XP-ZP)^2
+		oqs_sidh_cln16_fpmul751_mont(P->X, P->Z,
+		                             P->X); // XP = C24*(XP+ZP)^2*(XP-ZP)^2
+		oqs_sidh_cln16_fpadd751(
+		    t2, P->Z, P->Z); // ZP = A24*[(XP+ZP)^2-(XP-ZP)^2]+C24*(XP-ZP)^2
 	} else {
 		oqs_sidh_cln16_fpmul751_mont(P->X, P->Z, P->X); // XP = (XP+ZP)^2*(XP-ZP)^2
-		oqs_sidh_cln16_fpmul751_mont(A24, t2, Q->X);    // XQ = A24*[(XP+ZP)^2-(XP-ZP)^2]
-		oqs_sidh_cln16_fpadd751(P->Z, Q->X, P->Z);      // ZP = A24*[(XP+ZP)^2-(XP-ZP)^2]+C24*(XP-ZP)^2
+		oqs_sidh_cln16_fpmul751_mont(A24, t2,
+		                             Q->X); // XQ = A24*[(XP+ZP)^2-(XP-ZP)^2]
+		oqs_sidh_cln16_fpadd751(
+		    P->Z, Q->X, P->Z); // ZP = A24*[(XP+ZP)^2-(XP-ZP)^2]+C24*(XP-ZP)^2
 	}
 
-	oqs_sidh_cln16_fpsub751(t0, t1, Q->Z);         // ZQ = (XP+ZP)*(XQ-ZQ)-(XP-ZP)*(XQ+ZQ)
-	oqs_sidh_cln16_fpadd751(t0, t1, Q->X);         // XQ = (XP+ZP)*(XQ-ZQ)+(XP-ZP)*(XQ+ZQ)
-	oqs_sidh_cln16_fpmul751_mont(P->Z, t2, P->Z);  // ZP = [A24*[(XP+ZP)^2-(XP-ZP)^2]+C24*(XP-ZP)^2]*[(XP+ZP)^2-(XP-ZP)^2]
-	oqs_sidh_cln16_fpsqr751_mont(Q->Z, Q->Z);      // ZQ = [(XP+ZP)*(XQ-ZQ)-(XP-ZP)*(XQ+ZQ)]^2
-	oqs_sidh_cln16_fpsqr751_mont(Q->X, Q->X);      // XQ = [(XP+ZP)*(XQ-ZQ)+(XP-ZP)*(XQ+ZQ)]^2
-	oqs_sidh_cln16_fpmul751_mont(Q->Z, xPQ, Q->Z); // ZQ = xPQ*[(XP+ZP)*(XQ-ZQ)-(XP-ZP)*(XQ+ZQ)]^2
+	oqs_sidh_cln16_fpsub751(t0, t1, Q->Z); // ZQ = (XP+ZP)*(XQ-ZQ)-(XP-ZP)*(XQ+ZQ)
+	oqs_sidh_cln16_fpadd751(t0, t1, Q->X); // XQ = (XP+ZP)*(XQ-ZQ)+(XP-ZP)*(XQ+ZQ)
+	oqs_sidh_cln16_fpmul751_mont(
+	    P->Z, t2,
+	    P->Z); // ZP =
+	           // [A24*[(XP+ZP)^2-(XP-ZP)^2]+C24*(XP-ZP)^2]*[(XP+ZP)^2-(XP-ZP)^2]
+	oqs_sidh_cln16_fpsqr751_mont(
+	    Q->Z, Q->Z); // ZQ = [(XP+ZP)*(XQ-ZQ)-(XP-ZP)*(XQ+ZQ)]^2
+	oqs_sidh_cln16_fpsqr751_mont(
+	    Q->X, Q->X); // XQ = [(XP+ZP)*(XQ-ZQ)+(XP-ZP)*(XQ+ZQ)]^2
+	oqs_sidh_cln16_fpmul751_mont(
+	    Q->Z, xPQ, Q->Z); // ZQ = xPQ*[(XP+ZP)*(XQ-ZQ)-(XP-ZP)*(XQ+ZQ)]^2
 }
 
-void oqs_sidh_cln16_ladder(const oqs_sidh_cln16_felm_t x, digit_t *m, oqs_sidh_cln16_point_basefield_proj_t P, oqs_sidh_cln16_point_basefield_proj_t Q, const oqs_sidh_cln16_felm_t A24, const unsigned int order_bits, const unsigned int order_fullbits, PCurveIsogenyStruct CurveIsogeny) { // The Montgomery ladder
-	                                                                                                                                                                                                                                                                                           // Inputs: the affine x-coordinate of a point P on E: B*y^2=x^3+A*x^2+x,
-	                                                                                                                                                                                                                                                                                           //         scalar m
-	                                                                                                                                                                                                                                                                                           //         curve constant A24 = (A+2)/4
-	                                                                                                                                                                                                                                                                                           //         order_bits = subgroup order bitlength
-	                                                                                                                                                                                                                                                                                           //         order_fullbits = smallest multiple of 32 larger than the order bitlength
-	                                                                                                                                                                                                                                                                                           // Output: Q = m*(x:1)
-	                                                                                                                                                                                                                                                                                           // CurveIsogeny must be set up in advance using SIDH_curve_initialize().
+void oqs_sidh_cln16_ladder(
+    const oqs_sidh_cln16_felm_t x, digit_t *m,
+    oqs_sidh_cln16_point_basefield_proj_t P,
+    oqs_sidh_cln16_point_basefield_proj_t Q, const oqs_sidh_cln16_felm_t A24,
+    const unsigned int order_bits, const unsigned int order_fullbits,
+    PCurveIsogenyStruct CurveIsogeny) { // The Montgomery ladder
+	// Inputs: the affine x-coordinate of a point P on E: B*y^2=x^3+A*x^2+x,
+	//         scalar m
+	//         curve constant A24 = (A+2)/4
+	//         order_bits = subgroup order bitlength
+	//         order_fullbits = smallest multiple of 32 larger than the order
+	//         bitlength
+	// Output: Q = m*(x:1)
+	// CurveIsogeny must be set up in advance using SIDH_curve_initialize().
 	unsigned int bit = 0, owords = NBITS_TO_NWORDS(order_fullbits);
 	digit_t mask;
 	int i;
@@ -194,16 +271,22 @@ void oqs_sidh_cln16_ladder(const oqs_sidh_cln16_felm_t x, digit_t *m, oqs_sidh_c
 		mask = 0 - (digit_t) bit;
 
 		oqs_sidh_cln16_swap_points_basefield(P, Q, mask);
-		oqs_sidh_cln16_xDBLADD_basefield(P, Q, x, A24);   // If bit=0 then P <- 2*P and Q <- P+Q,
-		oqs_sidh_cln16_swap_points_basefield(P, Q, mask); // else if bit=1 then Q <- 2*Q and P <- P+Q
+		oqs_sidh_cln16_xDBLADD_basefield(
+		    P, Q, x, A24); // If bit=0 then P <- 2*P and Q <- P+Q,
+		oqs_sidh_cln16_swap_points_basefield(
+		    P, Q, mask); // else if bit=1 then Q <- 2*Q and P <- P+Q
 	}
 }
 
-SIDH_CRYPTO_STATUS oqs_sidh_cln16_BigMont_ladder(unsigned char *x, digit_t *m, unsigned char *xout, PCurveIsogenyStruct CurveIsogeny) { // BigMont's scalar multiplication using the Montgomery ladder
-	                                                                                                                                    // Inputs: x, the affine x-coordinate of a point P on BigMont: y^2=x^3+A*x^2+x,
-	                                                                                                                                    //         scalar m.
-	                                                                                                                                    // Output: xout, the affine x-coordinate of m*(x:1)
-	                                                                                                                                    // CurveIsogeny must be set up in advance using SIDH_curve_initialize().
+SIDH_CRYPTO_STATUS oqs_sidh_cln16_BigMont_ladder(
+    unsigned char *x, digit_t *m, unsigned char *xout,
+    PCurveIsogenyStruct CurveIsogeny) { // BigMont's scalar multiplication using
+	                                    // the Montgomery ladder
+	// Inputs: x, the affine x-coordinate of a point P on BigMont:
+	// y^2=x^3+A*x^2+x,
+	//         scalar m.
+	// Output: xout, the affine x-coordinate of m*(x:1)
+	// CurveIsogeny must be set up in advance using SIDH_curve_initialize().
 	oqs_sidh_cln16_point_basefield_proj_t P1, P2;
 	digit_t scalar[BIGMONT_NWORDS_ORDER];
 	oqs_sidh_cln16_felm_t X, A24 = {0};
@@ -213,28 +296,42 @@ SIDH_CRYPTO_STATUS oqs_sidh_cln16_BigMont_ladder(unsigned char *x, digit_t *m, u
 	oqs_sidh_cln16_to_mont((digit_t *) x, X);
 
 	oqs_sidh_cln16_copy_words(m, scalar, BIGMONT_NWORDS_ORDER);
-	oqs_sidh_cln16_ladder(X, scalar, P1, P2, A24, BIGMONT_SIDH_SIDH_NBITS_ORDER, BIGMONT_MAXBITS_ORDER, CurveIsogeny);
+	oqs_sidh_cln16_ladder(X, scalar, P1, P2, A24, BIGMONT_SIDH_SIDH_NBITS_ORDER,
+	                      BIGMONT_MAXBITS_ORDER, CurveIsogeny);
 
 	oqs_sidh_cln16_fpinv751_mont(P1->Z);
 	oqs_sidh_cln16_fpmul751_mont(P1->X, P1->Z, (digit_t *) xout);
-	oqs_sidh_cln16_from_mont((digit_t *) xout, (digit_t *) xout); // Conversion to standard representation
+	oqs_sidh_cln16_from_mont(
+	    (digit_t *) xout,
+	    (digit_t *) xout); // Conversion to standard representation
 
 	return SIDH_CRYPTO_SUCCESS;
 }
 
-SIDH_CRYPTO_STATUS oqs_sidh_cln16_secret_pt(const oqs_sidh_cln16_point_basefield_t P, const digit_t *m, const unsigned int AliceOrBob, oqs_sidh_cln16_point_proj_t R, PCurveIsogenyStruct CurveIsogeny) { // Computes key generation entirely in the base field by exploiting a 1-dimensional Montgomery ladder in the trace zero subgroup and
-	                                                                                                                                                                                                      // recovering the y-coordinate for the addition. All operations in the base field GF(p).
-	                                                                                                                                                                                                      // Input:  The scalar m, point P = (x,y) on E in the base field subgroup and Q = (x1,y1*i) on E in the trace-zero subgroup.
-	                                                                                                                                                                                                      //         x,y,x1,y1 are all in the base field.
-	                                                                                                                                                                                                      // Output: R = (RX0+RX1*i)/RZ0 (the x-coordinate of P+[m]Q).
+SIDH_CRYPTO_STATUS oqs_sidh_cln16_secret_pt(
+    const oqs_sidh_cln16_point_basefield_t P, const digit_t *m,
+    const unsigned int AliceOrBob, oqs_sidh_cln16_point_proj_t R,
+    PCurveIsogenyStruct CurveIsogeny) { // Computes key generation entirely in
+	                                    // the base field by exploiting a
+	                                    // 1-dimensional Montgomery ladder in
+	                                    // the trace zero subgroup and
+	// recovering the y-coordinate for the addition. All operations in the base
+	// field GF(p).
+	// Input:  The scalar m, point P = (x,y) on E in the base field subgroup and Q
+	// = (x1,y1*i) on E in the trace-zero subgroup.
+	//         x,y,x1,y1 are all in the base field.
+	// Output: R = (RX0+RX1*i)/RZ0 (the x-coordinate of P+[m]Q).
 	unsigned int nbits;
 	oqs_sidh_cln16_point_basefield_t Q;
 	oqs_sidh_cln16_point_basefield_proj_t S, T;
-	digit_t *X0 = (digit_t *) S->X, *Z0 = (digit_t *) S->Z, *X1 = (digit_t *) T->X, *Z1 = (digit_t *) T->Z;
-	digit_t *x = (digit_t *) P->x, *y = (digit_t *) P->y, *x1 = (digit_t *) Q->x, *y1 = (digit_t *) Q->y;
+	digit_t *X0 = (digit_t *) S->X, *Z0 = (digit_t *) S->Z, *X1 = (digit_t *) T->X,
+	        *Z1 = (digit_t *) T->Z;
+	digit_t *x = (digit_t *) P->x, *y = (digit_t *) P->y, *x1 = (digit_t *) Q->x,
+	        *y1 = (digit_t *) Q->y;
 	digit_t scalar[SIDH_NWORDS_ORDER];
 	oqs_sidh_cln16_felm_t t0, t1, t2, A24 = {0};
-	digit_t *RX0 = (digit_t *) R->X[0], *RX1 = (digit_t *) R->X[1], *RZ0 = (digit_t *) R->Z[0], *RZ1 = (digit_t *) R->Z[1];
+	digit_t *RX0 = (digit_t *) R->X[0], *RX1 = (digit_t *) R->X[1],
+	        *RZ0 = (digit_t *) R->Z[0], *RZ1 = (digit_t *) R->Z[1];
 
 	oqs_sidh_cln16_fpcopy751(P->x, Q->x); // Q = (-XP,YP)
 	oqs_sidh_cln16_fpcopy751(P->y, Q->y);
@@ -248,14 +345,18 @@ SIDH_CRYPTO_STATUS oqs_sidh_cln16_secret_pt(const oqs_sidh_cln16_point_basefield
 		return SIDH_CRYPTO_ERROR_INVALID_PARAMETER;
 	}
 
-	// Setting curve constant to one (in standard representation), used in xDBLADD_basefield() in the ladder computation
+	// Setting curve constant to one (in standard representation), used in
+	// xDBLADD_basefield() in the ladder computation
 	A24[0] = 1;
 	oqs_sidh_cln16_copy_words(m, scalar, SIDH_NWORDS_ORDER);
-	oqs_sidh_cln16_ladder(Q->x, scalar, S, T, A24, nbits, CurveIsogeny->owordbits, CurveIsogeny);
+	oqs_sidh_cln16_ladder(Q->x, scalar, S, T, A24, nbits, CurveIsogeny->owordbits,
+	                      CurveIsogeny);
 
-	//RX0 = (2*y*y1*Z0^2*Z1 + Z1*(X0*x1+Z0)*(X0+x1*Z0) - X1*(X0-x1*Z0)^2)*(2*y*y1*Z0^2*Z1 - Z1*(X0*x1+Z0)*(X0+x1*Z0) + X1*(X0-x1*Z0)^2) - 4*y1^2*Z0*Z1^2*(X0+x*Z0)*(X0-x*Z0)^2;
-	//RX1 = 4*y*y1*Z0^2*Z1*(Z1*(X0*x1+Z0)*(X0+x1*Z0) - X1*(X0-x1*Z0)^2);
-	//RZ0 = 4*y1^2*Z0^2*Z1^2*(X0-x*Z0)^2;
+	// RX0 = (2*y*y1*Z0^2*Z1 + Z1*(X0*x1+Z0)*(X0+x1*Z0) -
+	// X1*(X0-x1*Z0)^2)*(2*y*y1*Z0^2*Z1 - Z1*(X0*x1+Z0)*(X0+x1*Z0) +
+	// X1*(X0-x1*Z0)^2) - 4*y1^2*Z0*Z1^2*(X0+x*Z0)*(X0-x*Z0)^2;
+	// RX1 = 4*y*y1*Z0^2*Z1*(Z1*(X0*x1+Z0)*(X0+x1*Z0) - X1*(X0-x1*Z0)^2);
+	// RZ0 = 4*y1^2*Z0^2*Z1^2*(X0-x*Z0)^2;
 
 	oqs_sidh_cln16_fpmul751_mont(x1, Z0, RX1);
 	oqs_sidh_cln16_fpmul751_mont(X0, x1, RX0);
@@ -292,9 +393,16 @@ SIDH_CRYPTO_STATUS oqs_sidh_cln16_secret_pt(const oqs_sidh_cln16_point_basefield
 	return SIDH_CRYPTO_SUCCESS;
 }
 
-SIDH_CRYPTO_STATUS oqs_sidh_cln16_ladder_3_pt(const oqs_sidh_cln16_f2elm_t xP, const oqs_sidh_cln16_f2elm_t xQ, const oqs_sidh_cln16_f2elm_t xPQ, const digit_t *m, const unsigned int AliceOrBob, oqs_sidh_cln16_point_proj_t W, const oqs_sidh_cln16_f2elm_t A, PCurveIsogenyStruct CurveIsogeny) { // Computes P+[m]Q via x-only arithmetic. Algorithm by De Feo, Jao and Plut.
-	                                                                                                                                                                                                                                                                                                  // Input:  three affine points xP,xQ,xPQ and Montgomery constant A.
-	                                                                                                                                                                                                                                                                                                  // Output: projective Montgomery x-coordinates of x(P+[m]Q)=WX/WZ
+SIDH_CRYPTO_STATUS oqs_sidh_cln16_ladder_3_pt(
+    const oqs_sidh_cln16_f2elm_t xP, const oqs_sidh_cln16_f2elm_t xQ,
+    const oqs_sidh_cln16_f2elm_t xPQ, const digit_t *m,
+    const unsigned int AliceOrBob, oqs_sidh_cln16_point_proj_t W,
+    const oqs_sidh_cln16_f2elm_t A,
+    PCurveIsogenyStruct CurveIsogeny) { // Computes P+[m]Q via x-only
+	                                    // arithmetic. Algorithm by De Feo, Jao
+	                                    // and Plut.
+	// Input:  three affine points xP,xQ,xPQ and Montgomery constant A.
+	// Output: projective Montgomery x-coordinates of x(P+[m]Q)=WX/WZ
 	oqs_sidh_cln16_point_proj_t U = {0}, V = {0};
 	oqs_sidh_cln16_f2elm_t A24, A24num, constant1 = {0}, constant2;
 	oqs_sidh_cln16_felm_t temp_scalar;
@@ -338,8 +446,11 @@ SIDH_CRYPTO_STATUS oqs_sidh_cln16_ladder_3_pt(const oqs_sidh_cln16_f2elm_t xP, c
 		oqs_sidh_cln16_swap_points(U, V, mask);
 		oqs_sidh_cln16_select_f2elm(xP, xQ, constant1, mask);
 		oqs_sidh_cln16_select_f2elm(xQ, xPQ, constant2, mask);
-		oqs_sidh_cln16_xADD(W, U, constant1);         // If bit=0 then W <- W+U, U <- 2*U and V <- U+V,
-		oqs_sidh_cln16_xDBLADD(U, V, constant2, A24); // else if bit=1 then U <- U+V, V <- 2*V and W <- V+W
+		oqs_sidh_cln16_xADD(
+		    W, U, constant1); // If bit=0 then W <- W+U, U <- 2*U and V <- U+V,
+		oqs_sidh_cln16_xDBLADD(
+		    U, V, constant2,
+		    A24); // else if bit=1 then U <- U+V, V <- 2*V and W <- V+W
 		oqs_sidh_cln16_swap_points(U, V, mask);
 		oqs_sidh_cln16_swap_points(W, U, mask);
 	}
@@ -347,30 +458,46 @@ SIDH_CRYPTO_STATUS oqs_sidh_cln16_ladder_3_pt(const oqs_sidh_cln16_f2elm_t xP, c
 	return SIDH_CRYPTO_SUCCESS;
 }
 
-void oqs_sidh_cln16_get_4_isog(const oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_f2elm_t A, oqs_sidh_cln16_f2elm_t C, oqs_sidh_cln16_f2elm_t *coeff) { // Computes the corresponding 4-isogeny of a projective Montgomery point (X4:Z4) of order 4.
-	                                                                                                                                                     // Input:  projective point of order four P = (X4:Z4).
-	                                                                                                                                                     // Output: the 4-isogenous Montgomery curve with projective coefficient A/C and the 5 coefficients
-	                                                                                                                                                     //         that are used to evaluate the isogeny at a point in eval_4_isog().
+void oqs_sidh_cln16_get_4_isog(
+    const oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_f2elm_t A,
+    oqs_sidh_cln16_f2elm_t C,
+    oqs_sidh_cln16_f2elm_t *coeff) { // Computes the corresponding 4-isogeny of
+	                                 // a projective Montgomery point (X4:Z4) of
+	                                 // order 4.
+	// Input:  projective point of order four P = (X4:Z4).
+	// Output: the 4-isogenous Montgomery curve with projective coefficient A/C
+	// and the 5 coefficients
+	//         that are used to evaluate the isogeny at a point in eval_4_isog().
 
-	oqs_sidh_cln16_fp2add751(P->X, P->Z, coeff[0]);         // coeff[0] = X4+Z4
-	oqs_sidh_cln16_fp2sqr751_mont(P->X, coeff[3]);          // coeff[3] = X4^2
-	oqs_sidh_cln16_fp2sqr751_mont(P->Z, coeff[4]);          // coeff[4] = Z4^2
-	oqs_sidh_cln16_fp2sqr751_mont(coeff[0], coeff[0]);      // coeff[0] = (X4+Z4)^2
-	oqs_sidh_cln16_fp2add751(coeff[3], coeff[4], coeff[1]); // coeff[1] = X4^2+Z4^2
-	oqs_sidh_cln16_fp2sub751(coeff[3], coeff[4], coeff[2]); // coeff[2] = X4^2-Z4^2
-	oqs_sidh_cln16_fp2sqr751_mont(coeff[3], coeff[3]);      // coeff[3] = X4^4
-	oqs_sidh_cln16_fp2sqr751_mont(coeff[4], coeff[4]);      // coeff[4] = Z4^4
-	oqs_sidh_cln16_fp2add751(coeff[3], coeff[3], A);        // A = 2*X4^4
-	oqs_sidh_cln16_fp2sub751(coeff[0], coeff[1], coeff[0]); // coeff[0] = 2*X4*Z4 = (X4+Z4)^2 - (X4^2+Z4^2)
-	oqs_sidh_cln16_fp2sub751(A, coeff[4], A);               // A = 2*X4^4-Z4^4
-	oqs_sidh_cln16_fp2copy751(coeff[4], C);                 // C = Z4^4
-	oqs_sidh_cln16_fp2add751(A, A, A);                      // A = 2(2*X4^4-Z4^4)
+	oqs_sidh_cln16_fp2add751(P->X, P->Z, coeff[0]);    // coeff[0] = X4+Z4
+	oqs_sidh_cln16_fp2sqr751_mont(P->X, coeff[3]);     // coeff[3] = X4^2
+	oqs_sidh_cln16_fp2sqr751_mont(P->Z, coeff[4]);     // coeff[4] = Z4^2
+	oqs_sidh_cln16_fp2sqr751_mont(coeff[0], coeff[0]); // coeff[0] = (X4+Z4)^2
+	oqs_sidh_cln16_fp2add751(coeff[3], coeff[4],
+	                         coeff[1]); // coeff[1] = X4^2+Z4^2
+	oqs_sidh_cln16_fp2sub751(coeff[3], coeff[4],
+	                         coeff[2]);                // coeff[2] = X4^2-Z4^2
+	oqs_sidh_cln16_fp2sqr751_mont(coeff[3], coeff[3]); // coeff[3] = X4^4
+	oqs_sidh_cln16_fp2sqr751_mont(coeff[4], coeff[4]); // coeff[4] = Z4^4
+	oqs_sidh_cln16_fp2add751(coeff[3], coeff[3], A);   // A = 2*X4^4
+	oqs_sidh_cln16_fp2sub751(
+	    coeff[0], coeff[1],
+	    coeff[0]);                            // coeff[0] = 2*X4*Z4 = (X4+Z4)^2 - (X4^2+Z4^2)
+	oqs_sidh_cln16_fp2sub751(A, coeff[4], A); // A = 2*X4^4-Z4^4
+	oqs_sidh_cln16_fp2copy751(coeff[4], C);   // C = Z4^4
+	oqs_sidh_cln16_fp2add751(A, A, A);        // A = 2(2*X4^4-Z4^4)
 }
 
-void oqs_sidh_cln16_eval_4_isog(oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_f2elm_t *coeff) { // Evaluates the isogeny at the point (X:Z) in the domain of the isogeny, given a 4-isogeny phi defined
-	                                                                                            // by the 5 coefficients in coeff (computed in the function four_isogeny_from_projective_kernel()).
-	                                                                                            // Inputs: the coefficients defining the isogeny, and the projective point P = (X:Z).
-	                                                                                            // Output: the projective point P = phi(P) = (X:Z) in the codomain.
+void oqs_sidh_cln16_eval_4_isog(
+    oqs_sidh_cln16_point_proj_t P,
+    oqs_sidh_cln16_f2elm_t *coeff) { // Evaluates the isogeny at the point (X:Z)
+	                                 // in the domain of the isogeny, given a
+	                                 // 4-isogeny phi defined
+	// by the 5 coefficients in coeff (computed in the function
+	// four_isogeny_from_projective_kernel()).
+	// Inputs: the coefficients defining the isogeny, and the projective point P =
+	// (X:Z).
+	// Output: the projective point P = phi(P) = (X:Z) in the codomain.
 	oqs_sidh_cln16_f2elm_t t0, t1;
 
 	oqs_sidh_cln16_fp2mul751_mont(P->X, coeff[0], P->X); // X = coeff[0]*X
@@ -391,9 +518,14 @@ void oqs_sidh_cln16_eval_4_isog(oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_f2
 	oqs_sidh_cln16_fp2mul751_mont(P->X, t0, P->X);       // X = X*t0
 }
 
-void oqs_sidh_cln16_first_4_isog(oqs_sidh_cln16_point_proj_t P, const oqs_sidh_cln16_f2elm_t A, oqs_sidh_cln16_f2elm_t Aout, oqs_sidh_cln16_f2elm_t Cout, PCurveIsogenyStruct CurveIsogeny) { // Computes first 4-isogeny computed by Alice.
-	                                                                                                                                                                                          // Inputs: projective point P = (X4:Z4) and curve constant A.
-	                                                                                                                                                                                          // Output: the projective point P = (X4:Z4) in the codomain and isogenous curve constant Aout/Cout.
+void oqs_sidh_cln16_first_4_isog(
+    oqs_sidh_cln16_point_proj_t P, const oqs_sidh_cln16_f2elm_t A,
+    oqs_sidh_cln16_f2elm_t Aout, oqs_sidh_cln16_f2elm_t Cout,
+    PCurveIsogenyStruct
+        CurveIsogeny) { // Computes first 4-isogeny computed by Alice.
+	// Inputs: projective point P = (X4:Z4) and curve constant A.
+	// Output: the projective point P = (X4:Z4) in the codomain and isogenous
+	// curve constant Aout/Cout.
 	oqs_sidh_cln16_f2elm_t t0 = {0}, t1, t2;
 
 	oqs_sidh_cln16_fpcopy751(CurveIsogeny->Montgomery_one, t0[0]);
@@ -415,9 +547,14 @@ void oqs_sidh_cln16_first_4_isog(oqs_sidh_cln16_point_proj_t P, const oqs_sidh_c
 	oqs_sidh_cln16_fp2mul751_mont(P->X, t1, P->X);   // X = (X+Z)^2*[(X+Z)^2+C*X*Z]
 }
 
-void oqs_sidh_cln16_xTPL(const oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_point_proj_t Q, const oqs_sidh_cln16_f2elm_t A24, const oqs_sidh_cln16_f2elm_t C24) { // Tripling of a Montgomery point in projective coordinates (X:Z).
-	                                                                                                                                                               // Input: projective Montgomery x-coordinates P = (X:Z), where x=X/Z and Montgomery curve constant A/C.
-	                                                                                                                                                               // Output: projective Montgomery x-coordinates Q = 3*P = (X3:Z3).
+void oqs_sidh_cln16_xTPL(
+    const oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_point_proj_t Q,
+    const oqs_sidh_cln16_f2elm_t A24,
+    const oqs_sidh_cln16_f2elm_t C24) { // Tripling of a Montgomery point in
+	                                    // projective coordinates (X:Z).
+	// Input: projective Montgomery x-coordinates P = (X:Z), where x=X/Z and
+	// Montgomery curve constant A/C.
+	// Output: projective Montgomery x-coordinates Q = 3*P = (X3:Z3).
 	oqs_sidh_cln16_f2elm_t t0, t1, t2, t3, t4, t5;
 
 	oqs_sidh_cln16_fp2sub751(P->X, P->Z, t2);      // t2 = X-Z
@@ -443,9 +580,16 @@ void oqs_sidh_cln16_xTPL(const oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_poi
 	oqs_sidh_cln16_fp2copy751(t4, Q->Z);           // Z3 = t4
 }
 
-void oqs_sidh_cln16_xTPLe(const oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_point_proj_t Q, const oqs_sidh_cln16_f2elm_t A, const oqs_sidh_cln16_f2elm_t C, const int e) { // Computes [3^e](X:Z) on Montgomery curve with projective constant via e repeated triplings.
-	                                                                                                                                                                         // Input: projective Montgomery x-coordinates P = (XP:ZP), such that xP=XP/ZP and Montgomery curve constant A/C.
-	                                                                                                                                                                         // Output: projective Montgomery x-coordinates Q <- (3^e)*P.
+void oqs_sidh_cln16_xTPLe(const oqs_sidh_cln16_point_proj_t P,
+                          oqs_sidh_cln16_point_proj_t Q,
+                          const oqs_sidh_cln16_f2elm_t A,
+                          const oqs_sidh_cln16_f2elm_t C,
+                          const int e) { // Computes [3^e](X:Z) on Montgomery
+	                                     // curve with projective constant via e
+	                                     // repeated triplings.
+	// Input: projective Montgomery x-coordinates P = (XP:ZP), such that xP=XP/ZP
+	// and Montgomery curve constant A/C.
+	// Output: projective Montgomery x-coordinates Q <- (3^e)*P.
 	oqs_sidh_cln16_f2elm_t A24, C24;
 	int i;
 
@@ -459,9 +603,13 @@ void oqs_sidh_cln16_xTPLe(const oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_po
 	}
 }
 
-void oqs_sidh_cln16_get_3_isog(const oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_f2elm_t A, oqs_sidh_cln16_f2elm_t C) { // Computes the corresponding 3-isogeny of a projective Montgomery point (X3:Z3) of order 3.
-	                                                                                                                      // Input:  projective point of order three P = (X3:Z3).
-	                                                                                                                      // Output: the 3-isogenous Montgomery curve with projective coefficient A/C.
+void oqs_sidh_cln16_get_3_isog(
+    const oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_f2elm_t A,
+    oqs_sidh_cln16_f2elm_t C) { // Computes the corresponding 3-isogeny of a
+	                            // projective Montgomery point (X3:Z3) of order
+	                            // 3.
+	// Input:  projective point of order three P = (X3:Z3).
+	// Output: the 3-isogenous Montgomery curve with projective coefficient A/C.
 	oqs_sidh_cln16_f2elm_t t0, t1;
 
 	oqs_sidh_cln16_fp2sqr751_mont(P->X, t0);       // t0 = X^2
@@ -476,13 +624,19 @@ void oqs_sidh_cln16_get_3_isog(const oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln
 	oqs_sidh_cln16_fp2sub751(A, t1, A);            // A = A-t1
 	oqs_sidh_cln16_fp2sub751(A, t1, A);            // A = A-t1
 	oqs_sidh_cln16_fp2sub751(A, t1, A);            // A = A-t1
-	oqs_sidh_cln16_fp2mul751_mont(P->X, P->Z, t1); // t1 = X*Z    // ms trade-off possible (1 mul for 1sqr + 1add + 2sub)
+	oqs_sidh_cln16_fp2mul751_mont(P->X, P->Z, t1); // t1 = X*Z    // ms trade-off
+	                                               // possible (1 mul for 1sqr +
+	                                               // 1add + 2sub)
 	oqs_sidh_cln16_fp2mul751_mont(C, t1, C);       // C = C*t1
 }
 
-void oqs_sidh_cln16_eval_3_isog(const oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_point_proj_t Q) { // Computes the 3-isogeny R=phi(X:Z), given projective point (X3:Z3) of order 3 on a Montgomery curve and a point P = (X:Z).
-	                                                                                                  // Inputs: projective points P = (X3:Z3) and Q = (X:Z).
-	                                                                                                  // Output: the projective point Q <- phi(Q) = (XX:ZZ).
+void oqs_sidh_cln16_eval_3_isog(
+    const oqs_sidh_cln16_point_proj_t P,
+    oqs_sidh_cln16_point_proj_t Q) { // Computes the 3-isogeny R=phi(X:Z), given
+	                                 // projective point (X3:Z3) of order 3 on a
+	                                 // Montgomery curve and a point P = (X:Z).
+	// Inputs: projective points P = (X3:Z3) and Q = (X:Z).
+	// Output: the projective point Q <- phi(Q) = (XX:ZZ).
 	oqs_sidh_cln16_f2elm_t t0, t1, t2;
 
 	oqs_sidh_cln16_fp2mul751_mont(P->X, Q->X, t0); // t0 = X3*X
@@ -497,9 +651,11 @@ void oqs_sidh_cln16_eval_3_isog(const oqs_sidh_cln16_point_proj_t P, oqs_sidh_cl
 	oqs_sidh_cln16_fp2mul751_mont(Q->Z, t1, Q->Z); // Z = Z*(Z3*X-X3*Z)^2
 }
 
-void oqs_sidh_cln16_inv_3_way(oqs_sidh_cln16_f2elm_t z1, oqs_sidh_cln16_f2elm_t z2, oqs_sidh_cln16_f2elm_t z3) { // 3-way simultaneous inversion
-	                                                                                                             // Input:  z1,z2,z3
-	                                                                                                             // Output: 1/z1,1/z2,1/z3 (override inputs).
+void oqs_sidh_cln16_inv_3_way(
+    oqs_sidh_cln16_f2elm_t z1, oqs_sidh_cln16_f2elm_t z2,
+    oqs_sidh_cln16_f2elm_t z3) { // 3-way simultaneous inversion
+	                             // Input:  z1,z2,z3
+	                             // Output: 1/z1,1/z2,1/z3 (override inputs).
 	oqs_sidh_cln16_f2elm_t t0, t1, t2, t3;
 
 	oqs_sidh_cln16_fp2mul751_mont(z1, z2, t0); // t0 = z1*z2
@@ -512,9 +668,11 @@ void oqs_sidh_cln16_inv_3_way(oqs_sidh_cln16_f2elm_t z1, oqs_sidh_cln16_f2elm_t 
 	oqs_sidh_cln16_fp2copy751(t3, z1);         // z1 = 1/z1
 }
 
-void oqs_sidh_cln16_distort_and_diff(const oqs_sidh_cln16_felm_t xP, oqs_sidh_cln16_point_proj_t D, PCurveIsogenyStruct CurveIsogeny) { // Computing the point (x(Q-P),z(Q-P))
-	                                                                                                                                    // Input:  coordinate xP of point P=(xP,yP)
-	                                                                                                                                    // Output: the point D = (x(Q-P),z(Q-P)), where Q=tau(P).
+void oqs_sidh_cln16_distort_and_diff(
+    const oqs_sidh_cln16_felm_t xP, oqs_sidh_cln16_point_proj_t D,
+    PCurveIsogenyStruct CurveIsogeny) { // Computing the point (x(Q-P),z(Q-P))
+	// Input:  coordinate xP of point P=(xP,yP)
+	// Output: the point D = (x(Q-P),z(Q-P)), where Q=tau(P).
 	oqs_sidh_cln16_felm_t one;
 
 	oqs_sidh_cln16_fpcopy751(CurveIsogeny->Montgomery_one, one);
@@ -525,9 +683,16 @@ void oqs_sidh_cln16_distort_and_diff(const oqs_sidh_cln16_felm_t xP, oqs_sidh_cl
 	oqs_sidh_cln16_fpadd751(xP, xP, D->Z[0]); // ZD = xP+xP
 }
 
-void oqs_sidh_cln16_get_A(const oqs_sidh_cln16_f2elm_t xP, const oqs_sidh_cln16_f2elm_t xQ, const oqs_sidh_cln16_f2elm_t xR, oqs_sidh_cln16_f2elm_t A, PCurveIsogenyStruct CurveIsogeny) { // Given the x-coordinates of P, Q, and R, returns the value A corresponding to the Montgomery curve E_A: y^2=x^3+A*x^2+x such that R=Q-P on E_A.
-	                                                                                                                                                                                       // Input:  the x-coordinates xP, xQ, and xR of the points P, Q and R.
-	                                                                                                                                                                                       // Output: the coefficient A corresponding to the curve E_A: y^2=x^3+A*x^2+x.
+void oqs_sidh_cln16_get_A(
+    const oqs_sidh_cln16_f2elm_t xP, const oqs_sidh_cln16_f2elm_t xQ,
+    const oqs_sidh_cln16_f2elm_t xR, oqs_sidh_cln16_f2elm_t A,
+    PCurveIsogenyStruct CurveIsogeny) { // Given the x-coordinates of P, Q, and
+	                                    // R, returns the value A corresponding
+	                                    // to the Montgomery curve E_A:
+	                                    // y^2=x^3+A*x^2+x such that R=Q-P on
+	                                    // E_A.
+	// Input:  the x-coordinates xP, xQ, and xR of the points P, Q and R.
+	// Output: the coefficient A corresponding to the curve E_A: y^2=x^3+A*x^2+x.
 	oqs_sidh_cln16_f2elm_t t0, t1, one = {0};
 
 	oqs_sidh_cln16_fpcopy751(CurveIsogeny->Montgomery_one, one[0]);
@@ -547,14 +712,22 @@ void oqs_sidh_cln16_get_A(const oqs_sidh_cln16_f2elm_t xP, const oqs_sidh_cln16_
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-///////////////              FUNCTIONS FOR COMPRESSION              ///////////////
+///////////////              FUNCTIONS FOR COMPRESSION ///////////////
 
-static void get_point_notin_2E(oqs_sidh_cln16_felm_t alpha, const oqs_sidh_cln16_f2elm_t A, const oqs_sidh_cln16_felm_t one, const oqs_sidh_cln16_felm_t four, const oqs_sidh_cln16_felm_t value47, const oqs_sidh_cln16_felm_t value52) { // Inputs: alpha, a small integer (parsed in Fp),
-	                                                                                                                                                                                                                                       //         Montgomery coefficient A = A0+A1*i.
-	                                                                                                                                                                                                                                       // Output: alpha such that alpha*u = alpha*(i+4) is a good x-coordinate, which means it corresponds to a point P not in [2]E.
-	                                                                                                                                                                                                                                       //         Then, [3^eB]P has full order 2^eA.
+static void get_point_notin_2E(
+    oqs_sidh_cln16_felm_t alpha, const oqs_sidh_cln16_f2elm_t A,
+    const oqs_sidh_cln16_felm_t one, const oqs_sidh_cln16_felm_t four,
+    const oqs_sidh_cln16_felm_t value47,
+    const oqs_sidh_cln16_felm_t
+        value52) { // Inputs: alpha, a small integer (parsed in Fp),
+	               //         Montgomery coefficient A = A0+A1*i.
+	// Output: alpha such that alpha*u = alpha*(i+4) is a good x-coordinate, which
+	// means it corresponds to a point P not in [2]E.
+	//         Then, [3^eB]P has full order 2^eA.
 	digit_t *A0 = (digit_t *) A[0], *A1 = (digit_t *) A[1];
-	oqs_sidh_cln16_felm_t X0, X1, x0, x1, t0, sqrt, X0_temp = {0}, X1_temp = {0}, alpha52 = {0}, alpha52_2 = {0}, alpha47 = {0}, alpha47_2 = {0};
+	oqs_sidh_cln16_felm_t X0, X1, x0, x1, t0, sqrt,
+	    X0_temp = {0}, X1_temp = {0}, alpha52 = {0}, alpha52_2 = {0},
+	    alpha47 = {0}, alpha47_2 = {0};
 	unsigned int i;
 
 	oqs_sidh_cln16_fpsub751(A0, A1, x0); // x0 = A0-A1
@@ -567,36 +740,42 @@ static void get_point_notin_2E(oqs_sidh_cln16_felm_t alpha, const oqs_sidh_cln16
 	oqs_sidh_cln16_fpadd751(x1, A1, x1); // x1 = x1+A1
 	oqs_sidh_cln16_fpadd751(x1, x1, x1);
 	oqs_sidh_cln16_fpadd751(x1, x1, x1);
-	oqs_sidh_cln16_fpadd751(x1, x1, x1);                     // x1 = 8*x1
-	oqs_sidh_cln16_fpsub751(x1, A1, X1);                     // X1 = x1-A1
-	oqs_sidh_cln16_fpmul751_mont(alpha, value52, alpha52);   // alpha52 = 52*alpha
-	oqs_sidh_cln16_fpmul751_mont(X0, alpha, X0_temp);        // X0*alpha
-	oqs_sidh_cln16_fpmul751_mont(alpha52, alpha, alpha52_2); // alpha52^2 = 52*alpha^2
-	oqs_sidh_cln16_fpmul751_mont(alpha, value47, alpha47);   // alpha47 = 47*alpha
-	oqs_sidh_cln16_fpmul751_mont(X1, alpha, X1_temp);        // X0*alpha
-	oqs_sidh_cln16_fpmul751_mont(alpha47, alpha, alpha47_2); // alpha47^2 = 47*alpha^2
+	oqs_sidh_cln16_fpadd751(x1, x1, x1);                   // x1 = 8*x1
+	oqs_sidh_cln16_fpsub751(x1, A1, X1);                   // X1 = x1-A1
+	oqs_sidh_cln16_fpmul751_mont(alpha, value52, alpha52); // alpha52 = 52*alpha
+	oqs_sidh_cln16_fpmul751_mont(X0, alpha, X0_temp);      // X0*alpha
+	oqs_sidh_cln16_fpmul751_mont(alpha52, alpha,
+	                             alpha52_2);               // alpha52^2 = 52*alpha^2
+	oqs_sidh_cln16_fpmul751_mont(alpha, value47, alpha47); // alpha47 = 47*alpha
+	oqs_sidh_cln16_fpmul751_mont(X1, alpha, X1_temp);      // X0*alpha
+	oqs_sidh_cln16_fpmul751_mont(alpha47, alpha,
+	                             alpha47_2); // alpha47^2 = 47*alpha^2
 
 	do {
-		oqs_sidh_cln16_fpadd751(alpha, one, alpha);             // alpha += 1
-		oqs_sidh_cln16_fpadd751(X0_temp, X0, X0_temp);          // X0*alpha
-		oqs_sidh_cln16_fpadd751(alpha52, value52, t0);          // t0 = 52*alpha52 + 52
-		oqs_sidh_cln16_fpadd751(alpha52, t0, alpha52);          // 2*52*alpha52 + 52
-		oqs_sidh_cln16_fpadd751(alpha52_2, alpha52, alpha52_2); // 52*alpha^2 = 52*alpha52^2 + 2*52*alpha52 + 52
-		oqs_sidh_cln16_fpcopy751(t0, alpha52);                  // 52*alpha = 52*alpha52 + 52
-		oqs_sidh_cln16_fpadd751(alpha52_2, four, x0);           // 52*alpha^2 + 4
-		oqs_sidh_cln16_fpadd751(X0_temp, x0, x0);               // x0 = X0*alpha + 52*alpha^2 + 4
-		oqs_sidh_cln16_fpadd751(X1_temp, X1, X1_temp);          // X1*alpha
-		oqs_sidh_cln16_fpadd751(alpha47, value47, t0);          // t0 = 47*alpha47 + 47
-		oqs_sidh_cln16_fpadd751(alpha47, t0, alpha47);          // 2*47*alpha52 + 47
-		oqs_sidh_cln16_fpadd751(alpha47_2, alpha47, alpha47_2); // 47*alpha^2 = 47*alpha52^2 + 2*47*alpha52 + 47
-		oqs_sidh_cln16_fpcopy751(t0, alpha47);                  // 47*alpha = 47*alpha52 + 47
-		oqs_sidh_cln16_fpadd751(alpha47_2, one, x1);            // 47*alpha^2 + 1
-		oqs_sidh_cln16_fpadd751(X1_temp, x1, x1);               // x0 = X0*alpha + 47*alpha^2 + 1
-		oqs_sidh_cln16_fpsqr751_mont(x0, x0);                   // x0 = x0^2
-		oqs_sidh_cln16_fpsqr751_mont(x1, x1);                   // x1 = x1^2
-		oqs_sidh_cln16_fpsqr751_mont(alpha, t0);                // t0 = alpha^2
-		oqs_sidh_cln16_fpadd751(x0, x1, x0);                    // x0 = x0+x1
-		oqs_sidh_cln16_fpmul751_mont(t0, x0, t0);               // t0 = t0*x0
+		oqs_sidh_cln16_fpadd751(alpha, one, alpha);    // alpha += 1
+		oqs_sidh_cln16_fpadd751(X0_temp, X0, X0_temp); // X0*alpha
+		oqs_sidh_cln16_fpadd751(alpha52, value52, t0); // t0 = 52*alpha52 + 52
+		oqs_sidh_cln16_fpadd751(alpha52, t0, alpha52); // 2*52*alpha52 + 52
+		oqs_sidh_cln16_fpadd751(
+		    alpha52_2, alpha52,
+		    alpha52_2);                                // 52*alpha^2 = 52*alpha52^2 + 2*52*alpha52 + 52
+		oqs_sidh_cln16_fpcopy751(t0, alpha52);         // 52*alpha = 52*alpha52 + 52
+		oqs_sidh_cln16_fpadd751(alpha52_2, four, x0);  // 52*alpha^2 + 4
+		oqs_sidh_cln16_fpadd751(X0_temp, x0, x0);      // x0 = X0*alpha + 52*alpha^2 + 4
+		oqs_sidh_cln16_fpadd751(X1_temp, X1, X1_temp); // X1*alpha
+		oqs_sidh_cln16_fpadd751(alpha47, value47, t0); // t0 = 47*alpha47 + 47
+		oqs_sidh_cln16_fpadd751(alpha47, t0, alpha47); // 2*47*alpha52 + 47
+		oqs_sidh_cln16_fpadd751(
+		    alpha47_2, alpha47,
+		    alpha47_2);                              // 47*alpha^2 = 47*alpha52^2 + 2*47*alpha52 + 47
+		oqs_sidh_cln16_fpcopy751(t0, alpha47);       // 47*alpha = 47*alpha52 + 47
+		oqs_sidh_cln16_fpadd751(alpha47_2, one, x1); // 47*alpha^2 + 1
+		oqs_sidh_cln16_fpadd751(X1_temp, x1, x1);    // x0 = X0*alpha + 47*alpha^2 + 1
+		oqs_sidh_cln16_fpsqr751_mont(x0, x0);        // x0 = x0^2
+		oqs_sidh_cln16_fpsqr751_mont(x1, x1);        // x1 = x1^2
+		oqs_sidh_cln16_fpsqr751_mont(alpha, t0);     // t0 = alpha^2
+		oqs_sidh_cln16_fpadd751(x0, x1, x0);         // x0 = x0+x1
+		oqs_sidh_cln16_fpmul751_mont(t0, x0, t0);    // t0 = t0*x0
 		oqs_sidh_cln16_fpcopy751(t0, sqrt);
 		for (i = 0; i < 371; i++) { // sqrt = t0^((p+1) div 2)
 			oqs_sidh_cln16_fpsqr751_mont(sqrt, sqrt);
@@ -610,15 +789,24 @@ static void get_point_notin_2E(oqs_sidh_cln16_felm_t alpha, const oqs_sidh_cln16
 	} while (oqs_sidh_cln16_fpequal751_non_constant_time(sqrt, t0) == false);
 }
 
-void oqs_sidh_cln16_generate_2_torsion_basis(const oqs_sidh_cln16_f2elm_t A, oqs_sidh_cln16_point_full_proj_t R1, oqs_sidh_cln16_point_full_proj_t R2, PCurveIsogenyStruct CurveIsogeny) { // Produces points R1 and R2 such that {R1, R2} is a basis for E[2^372].
-	                                                                                                                                                                                       // Input:   curve constant A.
-	                                                                                                                                                                                       // Outputs: R1 = (X1:Y1:Z1) and R2 = (X2:Y2:Z2).
+void oqs_sidh_cln16_generate_2_torsion_basis(
+    const oqs_sidh_cln16_f2elm_t A, oqs_sidh_cln16_point_full_proj_t R1,
+    oqs_sidh_cln16_point_full_proj_t R2,
+    PCurveIsogenyStruct CurveIsogeny) { // Produces points R1 and R2 such that
+	                                    // {R1, R2} is a basis for E[2^372].
+	                                    // Input:   curve constant A.
+	// Outputs: R1 = (X1:Y1:Z1) and R2 = (X2:Y2:Z2).
 	oqs_sidh_cln16_point_proj_t P, Q, P1 = {0}, P2 = {0};
-	oqs_sidh_cln16_felm_t *X1 = (oqs_sidh_cln16_felm_t *) P1->X, *Z1 = (oqs_sidh_cln16_felm_t *) P1->Z;
-	oqs_sidh_cln16_felm_t *X2 = (oqs_sidh_cln16_felm_t *) P2->X, *Z2 = (oqs_sidh_cln16_felm_t *) P2->Z;
-	oqs_sidh_cln16_felm_t *XP = (oqs_sidh_cln16_felm_t *) P->X, *ZP = (oqs_sidh_cln16_felm_t *) P->Z;
-	oqs_sidh_cln16_felm_t *XQ = (oqs_sidh_cln16_felm_t *) Q->X, *ZQ = (oqs_sidh_cln16_felm_t *) Q->Z;
-	oqs_sidh_cln16_felm_t *Y1 = (oqs_sidh_cln16_felm_t *) R1->Y, *Y2 = (oqs_sidh_cln16_felm_t *) R2->Y;
+	oqs_sidh_cln16_felm_t *X1 = (oqs_sidh_cln16_felm_t *) P1->X,
+	                      *Z1 = (oqs_sidh_cln16_felm_t *) P1->Z;
+	oqs_sidh_cln16_felm_t *X2 = (oqs_sidh_cln16_felm_t *) P2->X,
+	                      *Z2 = (oqs_sidh_cln16_felm_t *) P2->Z;
+	oqs_sidh_cln16_felm_t *XP = (oqs_sidh_cln16_felm_t *) P->X,
+	                      *ZP = (oqs_sidh_cln16_felm_t *) P->Z;
+	oqs_sidh_cln16_felm_t *XQ = (oqs_sidh_cln16_felm_t *) Q->X,
+	                      *ZQ = (oqs_sidh_cln16_felm_t *) Q->Z;
+	oqs_sidh_cln16_felm_t *Y1 = (oqs_sidh_cln16_felm_t *) R1->Y,
+	                      *Y2 = (oqs_sidh_cln16_felm_t *) R2->Y;
 	oqs_sidh_cln16_felm_t zero, alpha = {0};
 	oqs_sidh_cln16_f2elm_t t0, t1, one = {0};
 	oqs_sidh_cln16_felm_t four, value47 = {0}, value52 = {0};
@@ -639,10 +827,13 @@ void oqs_sidh_cln16_generate_2_torsion_basis(const oqs_sidh_cln16_f2elm_t A, oqs
 	oqs_sidh_cln16_fpadd751(X1[0], X1[0], X1[0]); // X1 = alpha*i + alpha*4
 	oqs_sidh_cln16_fpcopy751(one[0], Z1[0]);      // Z1 = 1
 
-	oqs_sidh_cln16_xTPLe(P1, P1, A, one, 239); // xTPL assumes projective constant, but this is minor
+	oqs_sidh_cln16_xTPLe(
+	    P1, P1, A, one,
+	    239); // xTPL assumes projective constant, but this is minor
 	oqs_sidh_cln16_xDBLe(P1, P, A, one, 371);
 
-	// This loop is necessary to ensure that the order of the WeilPairing is oA and not smaller.
+	// This loop is necessary to ensure that the order of the WeilPairing is oA
+	// and not smaller.
 	// This ensures that we have a basis.
 	do {
 		get_point_notin_2E(alpha, A, one[0], four, value47, value52);
@@ -650,14 +841,17 @@ void oqs_sidh_cln16_generate_2_torsion_basis(const oqs_sidh_cln16_f2elm_t A, oqs
 		oqs_sidh_cln16_fpadd751(alpha, alpha, X2[0]);
 		oqs_sidh_cln16_fpadd751(X2[0], X2[0], X2[0]); // X2 = alpha*i + alpha*4
 		oqs_sidh_cln16_fpzero751(Z2[1]);
-		oqs_sidh_cln16_fpcopy751(one[0], Z2[0]);   // Z2 = 1
-		oqs_sidh_cln16_xTPLe(P2, P2, A, one, 239); // xTPL assumes projective constant, but this is minor
+		oqs_sidh_cln16_fpcopy751(one[0], Z2[0]); // Z2 = 1
+		oqs_sidh_cln16_xTPLe(
+		    P2, P2, A, one,
+		    239); // xTPL assumes projective constant, but this is minor
 		oqs_sidh_cln16_xDBLe(P2, Q, A, one, 371);
 		oqs_sidh_cln16_fp2mul751_mont(XP, ZQ, t0); // t0 = XP*ZQ
 		oqs_sidh_cln16_fp2mul751_mont(XQ, ZP, t1); // t1 = XQ*ZP
 		oqs_sidh_cln16_fp2sub751(t0, t1, t0);      // t0 = XP*ZQ-XQ*ZP
 		oqs_sidh_cln16_fp2correction751(t0);
-	} while (oqs_sidh_cln16_fpequal751_non_constant_time(t0[0], zero) == true && oqs_sidh_cln16_fpequal751_non_constant_time(t0[1], zero) == true);
+	} while (oqs_sidh_cln16_fpequal751_non_constant_time(t0[0], zero) == true &&
+	         oqs_sidh_cln16_fpequal751_non_constant_time(t0[1], zero) == true);
 
 	oqs_sidh_cln16_fp2copy751(X1, R1->X);
 	oqs_sidh_cln16_fp2copy751(Z1, R1->Z);
@@ -686,48 +880,56 @@ void oqs_sidh_cln16_generate_2_torsion_basis(const oqs_sidh_cln16_f2elm_t A, oqs
 	oqs_sidh_cln16_fp2mul751_mont(Z2, t1, Y2); // Y2 = t1*Z2
 }
 
-static uint64_t sqrt17[SIDH_NWORDS64_FIELD] = {0x89127CDB8966913D, 0xF788014C8C8401A0, 0x1A16F73884F3E3E8, 0x2E67382B560FA195, 0xDD5EE869B7F4FD81, 0x16A0849EF695EFEB,
-                                               0x3675244609DE1963, 0x36F02976EF2EB241, 0x92D09F939A20637F, 0x41496905F2B0112C, 0xA94C09B1F7242495, 0x0000297652D36A97};
+static uint64_t sqrt17[SIDH_NWORDS64_FIELD] = {
+    0x89127CDB8966913D, 0xF788014C8C8401A0, 0x1A16F73884F3E3E8,
+    0x2E67382B560FA195, 0xDD5EE869B7F4FD81, 0x16A0849EF695EFEB,
+    0x3675244609DE1963, 0x36F02976EF2EB241, 0x92D09F939A20637F,
+    0x41496905F2B0112C, 0xA94C09B1F7242495, 0x0000297652D36A97};
 
-static void get_X_on_curve(oqs_sidh_cln16_f2elm_t A, unsigned int *r, oqs_sidh_cln16_f2elm_t x, oqs_sidh_cln16_felm_t t1, oqs_sidh_cln16_felm_t a, oqs_sidh_cln16_felm_t b) { // Elligator2 for X
+static void get_X_on_curve(oqs_sidh_cln16_f2elm_t A, unsigned int *r,
+                           oqs_sidh_cln16_f2elm_t x, oqs_sidh_cln16_felm_t t1,
+                           oqs_sidh_cln16_felm_t a,
+                           oqs_sidh_cln16_felm_t b) { // Elligator2 for X
 	oqs_sidh_cln16_felm_t v0, v1, r0, r1, t0, t2, t3, rsq = {0};
 	unsigned int i;
 
-	oqs_sidh_cln16_fpcopy751(((oqs_sidh_cln16_felm_t *) &LIST)[(*r << 1) - 2], r1); // r1 = list[2*r-1]
-	oqs_sidh_cln16_fpcopy751(((oqs_sidh_cln16_felm_t *) &LIST)[(*r << 1) - 1], r0); // r0 = list[2*r]
-	rsq[0] = (digit_t)(*r) * (*r);                                                  // rsp = r^2
-	oqs_sidh_cln16_to_mont(rsq, rsq);                                               // Converting to Montgomery representation
-	oqs_sidh_cln16_fpmul751_mont(A[1], r1, t0);                                     // t0 = A1*r1
-	oqs_sidh_cln16_fpmul751_mont(A[0], r0, v0);                                     // v0 = A0*r0
-	oqs_sidh_cln16_fpsub751(v0, t0, v0);                                            // v0 = v0-t0
-	oqs_sidh_cln16_fpmul751_mont(A[1], r0, t0);                                     // t0 = A1*r0
-	oqs_sidh_cln16_fpmul751_mont(A[0], r1, v1);                                     // v1 = A0*r1
-	oqs_sidh_cln16_fpadd751(v1, t0, v1);                                            // v1 = v1+t0
-	oqs_sidh_cln16_fpadd751(v0, A[0], t0);                                          // t0 = v0+A0
-	oqs_sidh_cln16_fpadd751(v1, A[1], t1);                                          // t1 = v1+A1
-	oqs_sidh_cln16_fpmul751_mont(v0, v1, t2);                                       // t2 = v0*v1
-	oqs_sidh_cln16_fpadd751(t2, t2, t2);                                            // t2 = t2+t2
-	oqs_sidh_cln16_fpmul751_mont(t2, A[1], a);                                      // a = t2*A1
-	oqs_sidh_cln16_fpsub751(v0, a, a);                                              // a = v0-a
-	oqs_sidh_cln16_fpmul751_mont(t2, A[0], b);                                      // b = t2*A0
-	oqs_sidh_cln16_fpadd751(b, v1, b);                                              // b = b+v1
-	oqs_sidh_cln16_fpadd751(v0, v0, t2);                                            // t2 = v0+v0
-	oqs_sidh_cln16_fpadd751(t0, t2, t2);                                            // t2 = t2+t0
-	oqs_sidh_cln16_fpsqr751_mont(v0, t3);                                           // t3 = v0^2
-	oqs_sidh_cln16_fpmul751_mont(t0, t3, t0);                                       // t0 = t0*t3
-	oqs_sidh_cln16_fpadd751(a, t0, a);                                              // a = a+t0
-	oqs_sidh_cln16_fpsqr751_mont(v1, t0);                                           // t0 = v1^2
-	oqs_sidh_cln16_fpmul751_mont(t0, t2, t2);                                       // t2 = t0*t2
-	oqs_sidh_cln16_fpsub751(a, t2, a);                                              // a = a-t2
-	oqs_sidh_cln16_fpmul751_mont(t0, t1, t0);                                       // t0 = t0*t1
-	oqs_sidh_cln16_fpsub751(b, t0, b);                                              // b = b-t0
-	oqs_sidh_cln16_fpadd751(t1, v1, t1);                                            // t1 = t1+v1
-	oqs_sidh_cln16_fpadd751(v1, t1, t1);                                            // t1 = t1+v1
-	oqs_sidh_cln16_fpmul751_mont(t3, t1, t1);                                       // t1 = t1*t3
-	oqs_sidh_cln16_fpadd751(b, t1, b);                                              // b = t1+b
-	oqs_sidh_cln16_fpsqr751_mont(a, t0);                                            // t0 = a^2
-	oqs_sidh_cln16_fpsqr751_mont(b, t1);                                            // t1 = b^2
-	oqs_sidh_cln16_fpadd751(t0, t1, t0);                                            // t0 = t0+t1
+	oqs_sidh_cln16_fpcopy751(((oqs_sidh_cln16_felm_t *) &LIST)[(*r << 1) - 2],
+	                         r1); // r1 = list[2*r-1]
+	oqs_sidh_cln16_fpcopy751(((oqs_sidh_cln16_felm_t *) &LIST)[(*r << 1) - 1],
+	                         r0);               // r0 = list[2*r]
+	rsq[0] = (digit_t)(*r) * (*r);              // rsp = r^2
+	oqs_sidh_cln16_to_mont(rsq, rsq);           // Converting to Montgomery representation
+	oqs_sidh_cln16_fpmul751_mont(A[1], r1, t0); // t0 = A1*r1
+	oqs_sidh_cln16_fpmul751_mont(A[0], r0, v0); // v0 = A0*r0
+	oqs_sidh_cln16_fpsub751(v0, t0, v0);        // v0 = v0-t0
+	oqs_sidh_cln16_fpmul751_mont(A[1], r0, t0); // t0 = A1*r0
+	oqs_sidh_cln16_fpmul751_mont(A[0], r1, v1); // v1 = A0*r1
+	oqs_sidh_cln16_fpadd751(v1, t0, v1);        // v1 = v1+t0
+	oqs_sidh_cln16_fpadd751(v0, A[0], t0);      // t0 = v0+A0
+	oqs_sidh_cln16_fpadd751(v1, A[1], t1);      // t1 = v1+A1
+	oqs_sidh_cln16_fpmul751_mont(v0, v1, t2);   // t2 = v0*v1
+	oqs_sidh_cln16_fpadd751(t2, t2, t2);        // t2 = t2+t2
+	oqs_sidh_cln16_fpmul751_mont(t2, A[1], a);  // a = t2*A1
+	oqs_sidh_cln16_fpsub751(v0, a, a);          // a = v0-a
+	oqs_sidh_cln16_fpmul751_mont(t2, A[0], b);  // b = t2*A0
+	oqs_sidh_cln16_fpadd751(b, v1, b);          // b = b+v1
+	oqs_sidh_cln16_fpadd751(v0, v0, t2);        // t2 = v0+v0
+	oqs_sidh_cln16_fpadd751(t0, t2, t2);        // t2 = t2+t0
+	oqs_sidh_cln16_fpsqr751_mont(v0, t3);       // t3 = v0^2
+	oqs_sidh_cln16_fpmul751_mont(t0, t3, t0);   // t0 = t0*t3
+	oqs_sidh_cln16_fpadd751(a, t0, a);          // a = a+t0
+	oqs_sidh_cln16_fpsqr751_mont(v1, t0);       // t0 = v1^2
+	oqs_sidh_cln16_fpmul751_mont(t0, t2, t2);   // t2 = t0*t2
+	oqs_sidh_cln16_fpsub751(a, t2, a);          // a = a-t2
+	oqs_sidh_cln16_fpmul751_mont(t0, t1, t0);   // t0 = t0*t1
+	oqs_sidh_cln16_fpsub751(b, t0, b);          // b = b-t0
+	oqs_sidh_cln16_fpadd751(t1, v1, t1);        // t1 = t1+v1
+	oqs_sidh_cln16_fpadd751(v1, t1, t1);        // t1 = t1+v1
+	oqs_sidh_cln16_fpmul751_mont(t3, t1, t1);   // t1 = t1*t3
+	oqs_sidh_cln16_fpadd751(b, t1, b);          // b = t1+b
+	oqs_sidh_cln16_fpsqr751_mont(a, t0);        // t0 = a^2
+	oqs_sidh_cln16_fpsqr751_mont(b, t1);        // t1 = b^2
+	oqs_sidh_cln16_fpadd751(t0, t1, t0);        // t0 = t0+t1
 	oqs_sidh_cln16_fpcopy751(t0, t1);
 	for (i = 0; i < 370; i++) { // t1 = t0^((p+1) div 4)
 		oqs_sidh_cln16_fpsqr751_mont(t1, t1);
@@ -765,7 +967,9 @@ static void get_X_on_curve(oqs_sidh_cln16_f2elm_t A, unsigned int *r, oqs_sidh_c
 	}
 }
 
-static void get_pt_on_curve(oqs_sidh_cln16_f2elm_t A, unsigned int *r, oqs_sidh_cln16_f2elm_t x, oqs_sidh_cln16_f2elm_t y) { // Elligator2
+static void get_pt_on_curve(oqs_sidh_cln16_f2elm_t A, unsigned int *r,
+                            oqs_sidh_cln16_f2elm_t x,
+                            oqs_sidh_cln16_f2elm_t y) { // Elligator2
 	oqs_sidh_cln16_felm_t t0, t1, t2, t3, a, b;
 
 	get_X_on_curve(A, r, x, t1, a, b);
@@ -790,7 +994,11 @@ static void get_pt_on_curve(oqs_sidh_cln16_f2elm_t A, unsigned int *r, oqs_sidh_
 	}
 }
 
-static void get_3_torsion_elt(oqs_sidh_cln16_f2elm_t A, unsigned int *r, oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_point_proj_t P3, unsigned int *triples, PCurveIsogenyStruct CurveIsogeny) {
+static void get_3_torsion_elt(oqs_sidh_cln16_f2elm_t A, unsigned int *r,
+                              oqs_sidh_cln16_point_proj_t P,
+                              oqs_sidh_cln16_point_proj_t P3,
+                              unsigned int *triples,
+                              PCurveIsogenyStruct CurveIsogeny) {
 	oqs_sidh_cln16_point_proj_t PP;
 	oqs_sidh_cln16_f2elm_t A24, C24, one = {0};
 	oqs_sidh_cln16_felm_t t0, t1, t2, zero = {0};
@@ -811,7 +1019,8 @@ static void get_3_torsion_elt(oqs_sidh_cln16_f2elm_t A, unsigned int *r, oqs_sid
 	oqs_sidh_cln16_fpadd751(C24[0], C24[0], C24[0]); // C24 = 4
 
 	oqs_sidh_cln16_fp2correction751(PP->Z);
-	while (oqs_sidh_cln16_fpequal751_non_constant_time(PP->Z[0], zero) == false || oqs_sidh_cln16_fpequal751_non_constant_time(PP->Z[1], zero) == false) {
+	while (oqs_sidh_cln16_fpequal751_non_constant_time(PP->Z[0], zero) == false ||
+	       oqs_sidh_cln16_fpequal751_non_constant_time(PP->Z[1], zero) == false) {
 		oqs_sidh_cln16_fp2copy751(PP->X, P3->X); // X3 = XX
 		oqs_sidh_cln16_fp2copy751(PP->Z, P3->Z); // Z3 = ZZ
 		oqs_sidh_cln16_xTPL(PP, PP, A24, C24);
@@ -820,15 +1029,26 @@ static void get_3_torsion_elt(oqs_sidh_cln16_f2elm_t A, unsigned int *r, oqs_sid
 	}
 }
 
-void oqs_sidh_cln16_generate_3_torsion_basis(oqs_sidh_cln16_f2elm_t A, oqs_sidh_cln16_point_full_proj_t R1, oqs_sidh_cln16_point_full_proj_t R2, PCurveIsogenyStruct CurveIsogeny) { // Produces points R1 and R2 such that {R1, R2} is a basis for E[3^239].
-	                                                                                                                                                                                 // Input:   curve constant A.
-	                                                                                                                                                                                 // Outputs: R1 = (X1:Y1:Z1) and R2 = (X2:Y2:Z2).
+void oqs_sidh_cln16_generate_3_torsion_basis(
+    oqs_sidh_cln16_f2elm_t A, oqs_sidh_cln16_point_full_proj_t R1,
+    oqs_sidh_cln16_point_full_proj_t R2,
+    PCurveIsogenyStruct CurveIsogeny) { // Produces points R1 and R2 such that
+	                                    // {R1, R2} is a basis for E[3^239].
+	                                    // Input:   curve constant A.
+	// Outputs: R1 = (X1:Y1:Z1) and R2 = (X2:Y2:Z2).
 	oqs_sidh_cln16_point_proj_t R, R3, R4;
-	oqs_sidh_cln16_felm_t *X = (oqs_sidh_cln16_felm_t *) R->X, *Z = (oqs_sidh_cln16_felm_t *) R->Z;
-	oqs_sidh_cln16_felm_t *X3 = (oqs_sidh_cln16_felm_t *) R3->X, *Z3 = (oqs_sidh_cln16_felm_t *) R3->Z;
-	oqs_sidh_cln16_felm_t *X4 = (oqs_sidh_cln16_felm_t *) R4->X, *Z4 = (oqs_sidh_cln16_felm_t *) R4->Z;
-	oqs_sidh_cln16_felm_t *X1 = (oqs_sidh_cln16_felm_t *) R1->X, *Y1 = (oqs_sidh_cln16_felm_t *) R1->Y, *Z1 = (oqs_sidh_cln16_felm_t *) R1->Z;
-	oqs_sidh_cln16_felm_t *X2 = (oqs_sidh_cln16_felm_t *) R2->X, *Y2 = (oqs_sidh_cln16_felm_t *) R2->Y, *Z2 = (oqs_sidh_cln16_felm_t *) R2->Z;
+	oqs_sidh_cln16_felm_t *X = (oqs_sidh_cln16_felm_t *) R->X,
+	                      *Z = (oqs_sidh_cln16_felm_t *) R->Z;
+	oqs_sidh_cln16_felm_t *X3 = (oqs_sidh_cln16_felm_t *) R3->X,
+	                      *Z3 = (oqs_sidh_cln16_felm_t *) R3->Z;
+	oqs_sidh_cln16_felm_t *X4 = (oqs_sidh_cln16_felm_t *) R4->X,
+	                      *Z4 = (oqs_sidh_cln16_felm_t *) R4->Z;
+	oqs_sidh_cln16_felm_t *X1 = (oqs_sidh_cln16_felm_t *) R1->X,
+	                      *Y1 = (oqs_sidh_cln16_felm_t *) R1->Y,
+	                      *Z1 = (oqs_sidh_cln16_felm_t *) R1->Z;
+	oqs_sidh_cln16_felm_t *X2 = (oqs_sidh_cln16_felm_t *) R2->X,
+	                      *Y2 = (oqs_sidh_cln16_felm_t *) R2->Y,
+	                      *Z2 = (oqs_sidh_cln16_felm_t *) R2->Z;
 	oqs_sidh_cln16_f2elm_t u, v, c, f, t0, f0, fX, fY, Y, Y3, one = {0};
 	oqs_sidh_cln16_felm_t zero = {0};
 	unsigned int r = 1;
@@ -925,47 +1145,65 @@ void oqs_sidh_cln16_generate_3_torsion_basis(oqs_sidh_cln16_f2elm_t A, oqs_sidh_
 		oqs_sidh_cln16_fp2sub751(t0, v, t0);
 		oqs_sidh_cln16_fp2correction751(t0);
 		pts_found--;
-	} while (oqs_sidh_cln16_fpequal751_non_constant_time(t0[0], zero) == true && oqs_sidh_cln16_fpequal751_non_constant_time(t0[1], zero) == true);
+	} while (oqs_sidh_cln16_fpequal751_non_constant_time(t0[0], zero) == true &&
+	         oqs_sidh_cln16_fpequal751_non_constant_time(t0[1], zero) == true);
 }
 
-static void dbl_and_line(const oqs_sidh_cln16_point_ext_proj_t P, const oqs_sidh_cln16_f2elm_t A, oqs_sidh_cln16_f2elm_t lx, oqs_sidh_cln16_f2elm_t ly, oqs_sidh_cln16_f2elm_t l0, oqs_sidh_cln16_f2elm_t v0) { // Doubling step for computing the Tate pairing using Miller's algorithm.
-	                                                                                                                                                                                                            // This function computes a point doubling of P and returns the corresponding line coefficients for the pairing doubling step.
-	oqs_sidh_cln16_felm_t *X2 = (oqs_sidh_cln16_felm_t *) P->X2, *XZ = (oqs_sidh_cln16_felm_t *) P->XZ, *YZ = (oqs_sidh_cln16_felm_t *) P->YZ, *Z2 = (oqs_sidh_cln16_felm_t *) P->Z2;
+static void
+dbl_and_line(const oqs_sidh_cln16_point_ext_proj_t P,
+             const oqs_sidh_cln16_f2elm_t A, oqs_sidh_cln16_f2elm_t lx,
+             oqs_sidh_cln16_f2elm_t ly, oqs_sidh_cln16_f2elm_t l0,
+             oqs_sidh_cln16_f2elm_t v0) { // Doubling step for computing the
+	                                      // Tate pairing using Miller's
+	                                      // algorithm.
+	// This function computes a point doubling of P and returns the corresponding
+	// line coefficients for the pairing doubling step.
+	oqs_sidh_cln16_felm_t *X2 = (oqs_sidh_cln16_felm_t *) P->X2,
+	                      *XZ = (oqs_sidh_cln16_felm_t *) P->XZ,
+	                      *YZ = (oqs_sidh_cln16_felm_t *) P->YZ,
+	                      *Z2 = (oqs_sidh_cln16_felm_t *) P->Z2;
 	oqs_sidh_cln16_f2elm_t XX2, t0;
 
-	oqs_sidh_cln16_fp2add751(YZ, YZ, XX2);      //X2_: = YZ + YZ;
-	oqs_sidh_cln16_fp2sqr751_mont(XX2, ly);     //ly: = X2_ ^ 2;
-	oqs_sidh_cln16_fp2sub751(X2, Z2, l0);       //l0: = X2 - Z2;
-	oqs_sidh_cln16_fp2sqr751_mont(l0, v0);      //v0: = l0 ^ 2;
-	oqs_sidh_cln16_fp2mul751_mont(XX2, l0, l0); //l0: = X2_*l0;
-	oqs_sidh_cln16_fp2mul751_mont(XZ, l0, lx);  //lx: = XZ*l0;
-	oqs_sidh_cln16_fp2mul751_mont(YZ, ly, XX2); //X2_: = YZ*ly;
-	oqs_sidh_cln16_fp2add751(XX2, lx, lx);      //lx: = X2_ + lx;
-	oqs_sidh_cln16_fp2add751(X2, Z2, YZ);       //YZ: = X2 + Z2;
-	oqs_sidh_cln16_fp2mul751_mont(A, YZ, YZ);   //YZ: = A*YZ;
-	oqs_sidh_cln16_fp2add751(XZ, XZ, XX2);      //X2_: = XZ + XZ;
-	oqs_sidh_cln16_fp2add751(XX2, YZ, YZ);      //YZ: = X2_ + YZ;
-	oqs_sidh_cln16_fp2add751(XX2, YZ, YZ);      //YZ_: = X2_ + YZ_;
-	oqs_sidh_cln16_fp2mul751_mont(XX2, YZ, YZ); //YZ_: = X2_*YZ_;
+	oqs_sidh_cln16_fp2add751(YZ, YZ, XX2);      // X2_: = YZ + YZ;
+	oqs_sidh_cln16_fp2sqr751_mont(XX2, ly);     // ly: = X2_ ^ 2;
+	oqs_sidh_cln16_fp2sub751(X2, Z2, l0);       // l0: = X2 - Z2;
+	oqs_sidh_cln16_fp2sqr751_mont(l0, v0);      // v0: = l0 ^ 2;
+	oqs_sidh_cln16_fp2mul751_mont(XX2, l0, l0); // l0: = X2_*l0;
+	oqs_sidh_cln16_fp2mul751_mont(XZ, l0, lx);  // lx: = XZ*l0;
+	oqs_sidh_cln16_fp2mul751_mont(YZ, ly, XX2); // X2_: = YZ*ly;
+	oqs_sidh_cln16_fp2add751(XX2, lx, lx);      // lx: = X2_ + lx;
+	oqs_sidh_cln16_fp2add751(X2, Z2, YZ);       // YZ: = X2 + Z2;
+	oqs_sidh_cln16_fp2mul751_mont(A, YZ, YZ);   // YZ: = A*YZ;
+	oqs_sidh_cln16_fp2add751(XZ, XZ, XX2);      // X2_: = XZ + XZ;
+	oqs_sidh_cln16_fp2add751(XX2, YZ, YZ);      // YZ: = X2_ + YZ;
+	oqs_sidh_cln16_fp2add751(XX2, YZ, YZ);      // YZ_: = X2_ + YZ_;
+	oqs_sidh_cln16_fp2mul751_mont(XX2, YZ, YZ); // YZ_: = X2_*YZ_;
 
-	oqs_sidh_cln16_fp2sqr751_mont(v0, XX2);    //X2_: = v0 ^ 2;
-	oqs_sidh_cln16_fp2sqr751_mont(l0, t0);     //XZ_: = l0 ^ 2;
-	oqs_sidh_cln16_fp2sqr751_mont(ly, Z2);     //Z2: = ly ^ 2;
-	oqs_sidh_cln16_fp2add751(v0, YZ, YZ);      //YZ: = v0 + YZ;
-	oqs_sidh_cln16_fp2mul751_mont(l0, YZ, YZ); //YZ: = l0*Y_;
+	oqs_sidh_cln16_fp2sqr751_mont(v0, XX2);    // X2_: = v0 ^ 2;
+	oqs_sidh_cln16_fp2sqr751_mont(l0, t0);     // XZ_: = l0 ^ 2;
+	oqs_sidh_cln16_fp2sqr751_mont(ly, Z2);     // Z2: = ly ^ 2;
+	oqs_sidh_cln16_fp2add751(v0, YZ, YZ);      // YZ: = v0 + YZ;
+	oqs_sidh_cln16_fp2mul751_mont(l0, YZ, YZ); // YZ: = l0*Y_;
 
-	oqs_sidh_cln16_fp2mul751_mont(XZ, ly, ly); //ly: = XZ*ly;
-	oqs_sidh_cln16_fp2mul751_mont(X2, l0, l0); //l0: = X2*l0;
-	oqs_sidh_cln16_fp2mul751_mont(XZ, v0, v0); //v0: = XZ*v0;
+	oqs_sidh_cln16_fp2mul751_mont(XZ, ly, ly); // ly: = XZ*ly;
+	oqs_sidh_cln16_fp2mul751_mont(X2, l0, l0); // l0: = X2*l0;
+	oqs_sidh_cln16_fp2mul751_mont(XZ, v0, v0); // v0: = XZ*v0;
 
 	oqs_sidh_cln16_fp2copy751(XX2, X2);
 	oqs_sidh_cln16_fp2copy751(t0, XZ);
 }
 
-static void absorb_line(const oqs_sidh_cln16_f2elm_t lx, const oqs_sidh_cln16_f2elm_t ly, const oqs_sidh_cln16_f2elm_t l0, const oqs_sidh_cln16_f2elm_t v0, const oqs_sidh_cln16_point_t P, oqs_sidh_cln16_f2elm_t n, oqs_sidh_cln16_f2elm_t d) { // Absorbing line function values during Miller's algorithm.
-	                                                                                                                                                                                                                                              // Evaluate the line functions at the point P and multiply values into the running value n/d of the pairing value, keeping numerator n
-	                                                                                                                                                                                                                                              // and denominator d separate.
-	oqs_sidh_cln16_felm_t *x = (oqs_sidh_cln16_felm_t *) P->x, *y = (oqs_sidh_cln16_felm_t *) P->y;
+static void absorb_line(
+    const oqs_sidh_cln16_f2elm_t lx, const oqs_sidh_cln16_f2elm_t ly,
+    const oqs_sidh_cln16_f2elm_t l0, const oqs_sidh_cln16_f2elm_t v0,
+    const oqs_sidh_cln16_point_t P, oqs_sidh_cln16_f2elm_t n,
+    oqs_sidh_cln16_f2elm_t
+        d) { // Absorbing line function values during Miller's algorithm.
+	// Evaluate the line functions at the point P and multiply values into the
+	// running value n/d of the pairing value, keeping numerator n
+	// and denominator d separate.
+	oqs_sidh_cln16_felm_t *x = (oqs_sidh_cln16_felm_t *) P->x,
+	                      *y = (oqs_sidh_cln16_felm_t *) P->y;
 	oqs_sidh_cln16_f2elm_t l, v;
 
 	oqs_sidh_cln16_fp2mul751_mont(lx, x, l); // l = lx*x
@@ -978,15 +1216,29 @@ static void absorb_line(const oqs_sidh_cln16_f2elm_t lx, const oqs_sidh_cln16_f2
 	oqs_sidh_cln16_fp2mul751_mont(d, v, d);  // d = d*v
 }
 
-static void square_and_absorb_line(const oqs_sidh_cln16_f2elm_t lx, const oqs_sidh_cln16_f2elm_t ly, const oqs_sidh_cln16_f2elm_t l0, const oqs_sidh_cln16_f2elm_t v0, const oqs_sidh_cln16_point_t P, oqs_sidh_cln16_f2elm_t n, oqs_sidh_cln16_f2elm_t d) { // Square the running pairing value in Miller's algorithm and absorb line function values of the current Miller step.
-	oqs_sidh_cln16_fp2sqr751_mont(n, n);                                                                                                                                                                                                                     // n = n^2
-	oqs_sidh_cln16_fp2sqr751_mont(d, d);                                                                                                                                                                                                                     // d = d^2
+static void square_and_absorb_line(
+    const oqs_sidh_cln16_f2elm_t lx, const oqs_sidh_cln16_f2elm_t ly,
+    const oqs_sidh_cln16_f2elm_t l0, const oqs_sidh_cln16_f2elm_t v0,
+    const oqs_sidh_cln16_point_t P, oqs_sidh_cln16_f2elm_t n,
+    oqs_sidh_cln16_f2elm_t d) {          // Square the running pairing value in Miller's
+	                                     // algorithm and absorb line function values of
+	                                     // the current Miller step.
+	oqs_sidh_cln16_fp2sqr751_mont(n, n); // n = n^2
+	oqs_sidh_cln16_fp2sqr751_mont(d, d); // d = d^2
 	absorb_line(lx, ly, l0, v0, P, n, d);
 }
 
-static void final_dbl_iteration(const oqs_sidh_cln16_point_ext_proj_t P, const oqs_sidh_cln16_f2elm_t x, oqs_sidh_cln16_f2elm_t n, oqs_sidh_cln16_f2elm_t d) { // Special iteration for the final doubling step in Miller's algorithm. This is necessary since the doubling
-	                                                                                                                                                           // at the end of the Miller loop is an exceptional case (doubling a point of order 2).
-	oqs_sidh_cln16_felm_t *X = (oqs_sidh_cln16_felm_t *) P->XZ, *Z = (oqs_sidh_cln16_felm_t *) P->Z2;
+static void
+final_dbl_iteration(const oqs_sidh_cln16_point_ext_proj_t P,
+                    const oqs_sidh_cln16_f2elm_t x, oqs_sidh_cln16_f2elm_t n,
+                    oqs_sidh_cln16_f2elm_t d) { // Special iteration for the
+	                                            // final doubling step in
+	                                            // Miller's algorithm. This is
+	                                            // necessary since the doubling
+	// at the end of the Miller loop is an exceptional case (doubling a point of
+	// order 2).
+	oqs_sidh_cln16_felm_t *X = (oqs_sidh_cln16_felm_t *) P->XZ,
+	                      *Z = (oqs_sidh_cln16_felm_t *) P->Z2;
 	oqs_sidh_cln16_f2elm_t l;
 
 	oqs_sidh_cln16_fp2sqr751_mont(n, n);    // n = n^2
@@ -997,13 +1249,19 @@ static void final_dbl_iteration(const oqs_sidh_cln16_point_ext_proj_t P, const o
 	oqs_sidh_cln16_fp2mul751_mont(n, l, n); // n = n*l
 }
 
-static void final_exponentiation_2_torsion(oqs_sidh_cln16_f2elm_t n, oqs_sidh_cln16_f2elm_t d, const oqs_sidh_cln16_f2elm_t n_inv, const oqs_sidh_cln16_f2elm_t d_inv, oqs_sidh_cln16_f2elm_t nout, PCurveIsogenyStruct CurveIsogeny) { // The final exponentiation for pairings in the 2-torsion group. Raising the value n/d to the power (p^2-1)/2^eA.
+static void final_exponentiation_2_torsion(
+    oqs_sidh_cln16_f2elm_t n, oqs_sidh_cln16_f2elm_t d,
+    const oqs_sidh_cln16_f2elm_t n_inv, const oqs_sidh_cln16_f2elm_t d_inv,
+    oqs_sidh_cln16_f2elm_t nout,
+    PCurveIsogenyStruct CurveIsogeny) { // The final exponentiation for pairings
+	                                    // in the 2-torsion group. Raising the
+	                                    // value n/d to the power (p^2-1)/2^eA.
 	oqs_sidh_cln16_felm_t one = {0};
 	unsigned int i;
 
 	oqs_sidh_cln16_fpcopy751(CurveIsogeny->Montgomery_one, one);
 	oqs_sidh_cln16_fp2mul751_mont(n, d_inv, n); // n = n*d_inv
-	//n = n^p, just call conjugation function
+	// n = n^p, just call conjugation function
 	oqs_sidh_cln16_inv_Fp2_cycl(n);
 	oqs_sidh_cln16_fp2mul751_mont(d, n_inv, d); // d = d*n_inv
 	oqs_sidh_cln16_fp2mul751_mont(n, d, n);     // n = n*d
@@ -1014,8 +1272,16 @@ static void final_exponentiation_2_torsion(oqs_sidh_cln16_f2elm_t n, oqs_sidh_cl
 	oqs_sidh_cln16_fp2copy751(n, nout);
 }
 
-void oqs_sidh_cln16_Tate_pairings_2_torsion(const oqs_sidh_cln16_point_t R1, const oqs_sidh_cln16_point_t R2, const oqs_sidh_cln16_point_t P, const oqs_sidh_cln16_point_t Q, const oqs_sidh_cln16_f2elm_t A, oqs_sidh_cln16_f2elm_t *n, PCurveIsogenyStruct CurveIsogeny) { // The doubling only 2-torsion Tate pairing of order 2^eA, consisting of the doubling only Miller loop and the final exponentiation.]
-	                                                                                                                                                                                                                                                                         // Computes 5 pairings at once: e(R1, R2), e(R1, P), e(R1, Q), e(R2, P), e(R2,Q).
+void oqs_sidh_cln16_Tate_pairings_2_torsion(
+    const oqs_sidh_cln16_point_t R1, const oqs_sidh_cln16_point_t R2,
+    const oqs_sidh_cln16_point_t P, const oqs_sidh_cln16_point_t Q,
+    const oqs_sidh_cln16_f2elm_t A, oqs_sidh_cln16_f2elm_t *n,
+    PCurveIsogenyStruct CurveIsogeny) { // The doubling only 2-torsion Tate
+	                                    // pairing of order 2^eA, consisting of
+	                                    // the doubling only Miller loop and the
+	                                    // final exponentiation.]
+	// Computes 5 pairings at once: e(R1, R2), e(R1, P), e(R1, Q), e(R2, P),
+	// e(R2,Q).
 	oqs_sidh_cln16_point_ext_proj_t P1 = {0}, P2 = {0};
 	oqs_sidh_cln16_f2elm_t lx1, ly1, l01, v01, lx2, ly2, l02, v02;
 	oqs_sidh_cln16_f2elm_t invs[10], nd[10] = {0};
@@ -1052,74 +1318,98 @@ void oqs_sidh_cln16_Tate_pairings_2_torsion(const oqs_sidh_cln16_point_t R1, con
 	final_dbl_iteration(P2, P->x, nd[3], nd[8]);
 	final_dbl_iteration(P2, Q->x, nd[4], nd[9]);
 	oqs_sidh_cln16_mont_n_way_inv(nd, 10, invs);
-	final_exponentiation_2_torsion(nd[0], nd[5], invs[0], invs[5], n[0], CurveIsogeny);
-	final_exponentiation_2_torsion(nd[1], nd[6], invs[1], invs[6], n[1], CurveIsogeny);
-	final_exponentiation_2_torsion(nd[2], nd[7], invs[2], invs[7], n[2], CurveIsogeny);
-	final_exponentiation_2_torsion(nd[3], nd[8], invs[3], invs[8], n[3], CurveIsogeny);
-	final_exponentiation_2_torsion(nd[4], nd[9], invs[4], invs[9], n[4], CurveIsogeny);
+	final_exponentiation_2_torsion(nd[0], nd[5], invs[0], invs[5], n[0],
+	                               CurveIsogeny);
+	final_exponentiation_2_torsion(nd[1], nd[6], invs[1], invs[6], n[1],
+	                               CurveIsogeny);
+	final_exponentiation_2_torsion(nd[2], nd[7], invs[2], invs[7], n[2],
+	                               CurveIsogeny);
+	final_exponentiation_2_torsion(nd[3], nd[8], invs[3], invs[8], n[3],
+	                               CurveIsogeny);
+	final_exponentiation_2_torsion(nd[4], nd[9], invs[4], invs[9], n[4],
+	                               CurveIsogeny);
 }
 
-static void tpl_and_parabola(oqs_sidh_cln16_point_ext_proj_t P, const oqs_sidh_cln16_f2elm_t A, oqs_sidh_cln16_f2elm_t ly, oqs_sidh_cln16_f2elm_t lx2, oqs_sidh_cln16_f2elm_t lx1, oqs_sidh_cln16_f2elm_t lx0, oqs_sidh_cln16_f2elm_t vx, oqs_sidh_cln16_f2elm_t v0) { // Tripling step for computing the Tate pairing using Miller's algorithm.
-	                                                                                                                                                                                                                                                                   // This function computes a point tripling of P and returns the coefficients of the corresponding parabola.
-	oqs_sidh_cln16_felm_t *X2 = (oqs_sidh_cln16_felm_t *) P->X2, *XZ = (oqs_sidh_cln16_felm_t *) P->XZ, *YZ = (oqs_sidh_cln16_felm_t *) P->YZ, *Z2 = (oqs_sidh_cln16_felm_t *) P->Z2;
+static void
+tpl_and_parabola(oqs_sidh_cln16_point_ext_proj_t P,
+                 const oqs_sidh_cln16_f2elm_t A, oqs_sidh_cln16_f2elm_t ly,
+                 oqs_sidh_cln16_f2elm_t lx2, oqs_sidh_cln16_f2elm_t lx1,
+                 oqs_sidh_cln16_f2elm_t lx0, oqs_sidh_cln16_f2elm_t vx,
+                 oqs_sidh_cln16_f2elm_t v0) { // Tripling step for computing the
+	                                          // Tate pairing using Miller's
+	                                          // algorithm.
+	// This function computes a point tripling of P and returns the coefficients
+	// of the corresponding parabola.
+	oqs_sidh_cln16_felm_t *X2 = (oqs_sidh_cln16_felm_t *) P->X2,
+	                      *XZ = (oqs_sidh_cln16_felm_t *) P->XZ,
+	                      *YZ = (oqs_sidh_cln16_felm_t *) P->YZ,
+	                      *Z2 = (oqs_sidh_cln16_felm_t *) P->Z2;
 	oqs_sidh_cln16_f2elm_t AXZ, t0, t1, t2, t3, t4, tlx0, tlx1, tlx2;
 
-	oqs_sidh_cln16_fp2add751(YZ, YZ, ly);           //ly: = YZ + YZ
-	oqs_sidh_cln16_fp2sqr751_mont(ly, tlx2);        //lx2: = ly ^ 2
-	oqs_sidh_cln16_fp2mul751_mont(ly, tlx2, ly);    //ly: = ly*lx2
-	oqs_sidh_cln16_fp2mul751_mont(A, XZ, AXZ);      //AXZ: = A*XZ
-	oqs_sidh_cln16_fp2add751(AXZ, Z2, t0);          //t0: = AXZ + Z2
-	oqs_sidh_cln16_fp2add751(t0, t0, t0);           //t0: = t0 + t0
-	oqs_sidh_cln16_fp2add751(X2, Z2, t1);           //t1: = X2 + Z2
-	oqs_sidh_cln16_fp2add751(X2, X2, t2);           //t2: = X2 + X2
-	oqs_sidh_cln16_fp2sub751(X2, Z2, t3);           //t3: = X2 - Z2
-	oqs_sidh_cln16_fp2sqr751_mont(t3, t3);          //t3: = t3 ^ 2
-	oqs_sidh_cln16_fp2add751(t2, t0, t4);           //t4: = t2 + t0
-	oqs_sidh_cln16_fp2mul751_mont(t2, t4, tlx2);    //lx2: = t2*t4
-	oqs_sidh_cln16_fp2sub751(tlx2, t3, tlx2);       //lx2: = lx2 - t3
-	oqs_sidh_cln16_fp2add751(t4, t1, tlx1);         //lx1: = t4 + t1
-	oqs_sidh_cln16_fp2sqr751_mont(t1, t1);          //t1: = t1 ^ 2
-	oqs_sidh_cln16_fp2mul751_mont(AXZ, tlx1, tlx1); //lx1: = AXZ*lx1
-	oqs_sidh_cln16_fp2add751(t1, tlx1, tlx1);       //lx1: = t1 + lx1
-	oqs_sidh_cln16_fp2add751(tlx1, tlx1, tlx1);     //lx1: = lx1 + lx1
-	oqs_sidh_cln16_fp2add751(t3, tlx1, tlx1);       //lx1: = t3 + lx1
-	oqs_sidh_cln16_fp2mul751_mont(Z2, t0, tlx0);    //lx0: = Z2*t0
-	oqs_sidh_cln16_fp2sub751(t3, tlx0, tlx0);       //lx0: = t3 - lx0
-	oqs_sidh_cln16_fp2add751(tlx0, tlx0, tlx0);     //lx0: = lx0 + lx0
-	oqs_sidh_cln16_fp2sub751(t1, tlx0, tlx0);       //lx0: = t1 - lx0
-	oqs_sidh_cln16_fp2mul751_mont(Z2, tlx2, lx2);   //lx2_: = Z2*lx2
-	oqs_sidh_cln16_fp2mul751_mont(XZ, tlx1, lx1);   //lx1_: = XZ*lx1
-	oqs_sidh_cln16_fp2add751(lx1, lx1, lx1);        //lx1_: = lx1_ + lx1_
-	oqs_sidh_cln16_fp2mul751_mont(X2, tlx0, lx0);   //lx0_: = X2*lx0
-	                                                // lx2_, lx1_, lx0_ done
-	oqs_sidh_cln16_fp2sqr751_mont(tlx2, t3);        //t3: = lx2 ^ 2
-	oqs_sidh_cln16_fp2mul751_mont(ly, t3, t2);      //t2: = ly*t3
-	oqs_sidh_cln16_fp2sqr751_mont(tlx0, t4);        //t4: = lx0 ^ 2
-	oqs_sidh_cln16_fp2sqr751_mont(t4, t0);          //t0: = t4 ^ 2
-	oqs_sidh_cln16_fp2mul751_mont(X2, t0, t0);      //t0: = X2*t0
-	oqs_sidh_cln16_fp2mul751_mont(ly, t0, X2);      //X2_: = ly*t0
-	oqs_sidh_cln16_fp2mul751_mont(XZ, t2, XZ);      //XZ_: = XZ*t2
-	oqs_sidh_cln16_fp2mul751_mont(XZ, t4, XZ);      //XZ_: = XZ_*t4
-	oqs_sidh_cln16_fp2mul751_mont(Z2, t2, Z2);      //Z2_: = Z2*t2
-	oqs_sidh_cln16_fp2mul751_mont(Z2, t3, Z2);      //Z2_: = Z2_*t3
-	oqs_sidh_cln16_fp2mul751_mont(tlx0, tlx1, t2);  //t2: = lx0*lx1
-	oqs_sidh_cln16_fp2add751(t2, t2, YZ);           //YZ_: = t2 + t2
-	oqs_sidh_cln16_fp2add751(YZ, t3, YZ);           //YZ_: = YZ_ + t3
-	oqs_sidh_cln16_fp2mul751_mont(lx0, tlx2, t2);   //t2: = lx0_*lx2
-	oqs_sidh_cln16_fp2mul751_mont(t2, YZ, YZ);      //YZ_: = t2*YZ_
-	oqs_sidh_cln16_fp2add751(t0, YZ, YZ);           //YZ_: = t0 + YZ_
-	oqs_sidh_cln16_fp2mul751_mont(lx2, YZ, YZ);     //YZ_: = lx2_*YZ_
-	oqs_sidh_cln16_fp2neg751(YZ);                   //YZ_: = -YZ_
-	                                                // X2_,XZ_,Z2_,YZ_ done
-	oqs_sidh_cln16_fp2copy751(Z2, vx);              //vx: = Z2_
-	oqs_sidh_cln16_fp2copy751(XZ, v0);              //v0: = -XZ_
+	oqs_sidh_cln16_fp2add751(YZ, YZ, ly);           // ly: = YZ + YZ
+	oqs_sidh_cln16_fp2sqr751_mont(ly, tlx2);        // lx2: = ly ^ 2
+	oqs_sidh_cln16_fp2mul751_mont(ly, tlx2, ly);    // ly: = ly*lx2
+	oqs_sidh_cln16_fp2mul751_mont(A, XZ, AXZ);      // AXZ: = A*XZ
+	oqs_sidh_cln16_fp2add751(AXZ, Z2, t0);          // t0: = AXZ + Z2
+	oqs_sidh_cln16_fp2add751(t0, t0, t0);           // t0: = t0 + t0
+	oqs_sidh_cln16_fp2add751(X2, Z2, t1);           // t1: = X2 + Z2
+	oqs_sidh_cln16_fp2add751(X2, X2, t2);           // t2: = X2 + X2
+	oqs_sidh_cln16_fp2sub751(X2, Z2, t3);           // t3: = X2 - Z2
+	oqs_sidh_cln16_fp2sqr751_mont(t3, t3);          // t3: = t3 ^ 2
+	oqs_sidh_cln16_fp2add751(t2, t0, t4);           // t4: = t2 + t0
+	oqs_sidh_cln16_fp2mul751_mont(t2, t4, tlx2);    // lx2: = t2*t4
+	oqs_sidh_cln16_fp2sub751(tlx2, t3, tlx2);       // lx2: = lx2 - t3
+	oqs_sidh_cln16_fp2add751(t4, t1, tlx1);         // lx1: = t4 + t1
+	oqs_sidh_cln16_fp2sqr751_mont(t1, t1);          // t1: = t1 ^ 2
+	oqs_sidh_cln16_fp2mul751_mont(AXZ, tlx1, tlx1); // lx1: = AXZ*lx1
+	oqs_sidh_cln16_fp2add751(t1, tlx1, tlx1);       // lx1: = t1 + lx1
+	oqs_sidh_cln16_fp2add751(tlx1, tlx1, tlx1);     // lx1: = lx1 + lx1
+	oqs_sidh_cln16_fp2add751(t3, tlx1, tlx1);       // lx1: = t3 + lx1
+	oqs_sidh_cln16_fp2mul751_mont(Z2, t0, tlx0);    // lx0: = Z2*t0
+	oqs_sidh_cln16_fp2sub751(t3, tlx0, tlx0);       // lx0: = t3 - lx0
+	oqs_sidh_cln16_fp2add751(tlx0, tlx0, tlx0);     // lx0: = lx0 + lx0
+	oqs_sidh_cln16_fp2sub751(t1, tlx0, tlx0);       // lx0: = t1 - lx0
+	oqs_sidh_cln16_fp2mul751_mont(Z2, tlx2, lx2);   // lx2_: = Z2*lx2
+	oqs_sidh_cln16_fp2mul751_mont(XZ, tlx1, lx1);   // lx1_: = XZ*lx1
+	oqs_sidh_cln16_fp2add751(lx1, lx1, lx1);        // lx1_: = lx1_ + lx1_
+	oqs_sidh_cln16_fp2mul751_mont(X2, tlx0, lx0);   // lx0_: = X2*lx0
+	// lx2_, lx1_, lx0_ done
+	oqs_sidh_cln16_fp2sqr751_mont(tlx2, t3);       // t3: = lx2 ^ 2
+	oqs_sidh_cln16_fp2mul751_mont(ly, t3, t2);     // t2: = ly*t3
+	oqs_sidh_cln16_fp2sqr751_mont(tlx0, t4);       // t4: = lx0 ^ 2
+	oqs_sidh_cln16_fp2sqr751_mont(t4, t0);         // t0: = t4 ^ 2
+	oqs_sidh_cln16_fp2mul751_mont(X2, t0, t0);     // t0: = X2*t0
+	oqs_sidh_cln16_fp2mul751_mont(ly, t0, X2);     // X2_: = ly*t0
+	oqs_sidh_cln16_fp2mul751_mont(XZ, t2, XZ);     // XZ_: = XZ*t2
+	oqs_sidh_cln16_fp2mul751_mont(XZ, t4, XZ);     // XZ_: = XZ_*t4
+	oqs_sidh_cln16_fp2mul751_mont(Z2, t2, Z2);     // Z2_: = Z2*t2
+	oqs_sidh_cln16_fp2mul751_mont(Z2, t3, Z2);     // Z2_: = Z2_*t3
+	oqs_sidh_cln16_fp2mul751_mont(tlx0, tlx1, t2); // t2: = lx0*lx1
+	oqs_sidh_cln16_fp2add751(t2, t2, YZ);          // YZ_: = t2 + t2
+	oqs_sidh_cln16_fp2add751(YZ, t3, YZ);          // YZ_: = YZ_ + t3
+	oqs_sidh_cln16_fp2mul751_mont(lx0, tlx2, t2);  // t2: = lx0_*lx2
+	oqs_sidh_cln16_fp2mul751_mont(t2, YZ, YZ);     // YZ_: = t2*YZ_
+	oqs_sidh_cln16_fp2add751(t0, YZ, YZ);          // YZ_: = t0 + YZ_
+	oqs_sidh_cln16_fp2mul751_mont(lx2, YZ, YZ);    // YZ_: = lx2_*YZ_
+	oqs_sidh_cln16_fp2neg751(YZ);                  // YZ_: = -YZ_
+	// X2_,XZ_,Z2_,YZ_ done
+	oqs_sidh_cln16_fp2copy751(Z2, vx); // vx: = Z2_
+	oqs_sidh_cln16_fp2copy751(XZ, v0); // v0: = -XZ_
 	oqs_sidh_cln16_fp2neg751(v0);
 	// vx,v0 done
 }
 
-static void absorb_parab(const oqs_sidh_cln16_f2elm_t ly, const oqs_sidh_cln16_f2elm_t lx2, const oqs_sidh_cln16_f2elm_t lx1, const oqs_sidh_cln16_f2elm_t lx0, const oqs_sidh_cln16_f2elm_t vx, const oqs_sidh_cln16_f2elm_t v0, const oqs_sidh_cln16_point_t P, oqs_sidh_cln16_f2elm_t n, oqs_sidh_cln16_f2elm_t d) { // Absorbing parabola function values in Miller's algorithm.
-	                                                                                                                                                                                                                                                                                                                    // Evaluate the parabola at P and absorb the values into the running pairing value n/d, keeping numerator n and denominator d separate.
-	oqs_sidh_cln16_felm_t *x = (oqs_sidh_cln16_felm_t *) P->x, *y = (oqs_sidh_cln16_felm_t *) P->y;
+static void absorb_parab(
+    const oqs_sidh_cln16_f2elm_t ly, const oqs_sidh_cln16_f2elm_t lx2,
+    const oqs_sidh_cln16_f2elm_t lx1, const oqs_sidh_cln16_f2elm_t lx0,
+    const oqs_sidh_cln16_f2elm_t vx, const oqs_sidh_cln16_f2elm_t v0,
+    const oqs_sidh_cln16_point_t P, oqs_sidh_cln16_f2elm_t n,
+    oqs_sidh_cln16_f2elm_t
+        d) { // Absorbing parabola function values in Miller's algorithm.
+	// Evaluate the parabola at P and absorb the values into the running pairing
+	// value n/d, keeping numerator n and denominator d separate.
+	oqs_sidh_cln16_felm_t *x = (oqs_sidh_cln16_felm_t *) P->x,
+	                      *y = (oqs_sidh_cln16_felm_t *) P->y;
 	oqs_sidh_cln16_f2elm_t ln, ld;
 
 	oqs_sidh_cln16_fp2mul751_mont(lx0, x, ln); // ln = lx0*x
@@ -1137,7 +1427,14 @@ static void absorb_parab(const oqs_sidh_cln16_f2elm_t ly, const oqs_sidh_cln16_f
 	oqs_sidh_cln16_fp2mul751_mont(n, ln, n);   // n = n*ln
 }
 
-static void cube_and_absorb_parab(const oqs_sidh_cln16_f2elm_t ly, const oqs_sidh_cln16_f2elm_t lx2, const oqs_sidh_cln16_f2elm_t lx1, const oqs_sidh_cln16_f2elm_t lx0, const oqs_sidh_cln16_f2elm_t vx, const oqs_sidh_cln16_f2elm_t v0, const oqs_sidh_cln16_point_t P, oqs_sidh_cln16_f2elm_t n, oqs_sidh_cln16_f2elm_t d) { // Cube the running pairing value in Miller's algorithm and absorb parabola function values of the current Miller step.
+static void cube_and_absorb_parab(
+    const oqs_sidh_cln16_f2elm_t ly, const oqs_sidh_cln16_f2elm_t lx2,
+    const oqs_sidh_cln16_f2elm_t lx1, const oqs_sidh_cln16_f2elm_t lx0,
+    const oqs_sidh_cln16_f2elm_t vx, const oqs_sidh_cln16_f2elm_t v0,
+    const oqs_sidh_cln16_point_t P, oqs_sidh_cln16_f2elm_t n,
+    oqs_sidh_cln16_f2elm_t d) { // Cube the running pairing value in Miller's
+	                            // algorithm and absorb parabola function values
+	                            // of the current Miller step.
 	oqs_sidh_cln16_f2elm_t ln, ld;
 
 	oqs_sidh_cln16_fp2sqr751_mont(n, ln);    // ln = n ^ 2
@@ -1147,10 +1444,19 @@ static void cube_and_absorb_parab(const oqs_sidh_cln16_f2elm_t ly, const oqs_sid
 	absorb_parab(ly, lx2, lx1, lx0, vx, v0, P, n, d);
 }
 
-static void final_tpl(oqs_sidh_cln16_point_ext_proj_t P, const oqs_sidh_cln16_f2elm_t A, oqs_sidh_cln16_f2elm_t lam, oqs_sidh_cln16_f2elm_t mu, oqs_sidh_cln16_f2elm_t D) { // Special iteration for the final tripling step in Miller's algorithm. This is necessary since the tripling
-	                                                                                                                                                                        // at the end of the Miller loop is an exceptional case (tripling a point of order 3). Uses lines instead of
-	                                                                                                                                                                        // parabolas.
-	oqs_sidh_cln16_felm_t *X2 = (oqs_sidh_cln16_felm_t *) P->X2, *XZ = (oqs_sidh_cln16_felm_t *) P->XZ, *YZ = (oqs_sidh_cln16_felm_t *) P->YZ, *Z2 = (oqs_sidh_cln16_felm_t *) P->Z2;
+static void
+final_tpl(oqs_sidh_cln16_point_ext_proj_t P, const oqs_sidh_cln16_f2elm_t A,
+          oqs_sidh_cln16_f2elm_t lam, oqs_sidh_cln16_f2elm_t mu,
+          oqs_sidh_cln16_f2elm_t D) { // Special iteration for the final
+	                                  // tripling step in Miller's algorithm.
+	                                  // This is necessary since the tripling
+	// at the end of the Miller loop is an exceptional case (tripling a point of
+	// order 3). Uses lines instead of
+	// parabolas.
+	oqs_sidh_cln16_felm_t *X2 = (oqs_sidh_cln16_felm_t *) P->X2,
+	                      *XZ = (oqs_sidh_cln16_felm_t *) P->XZ,
+	                      *YZ = (oqs_sidh_cln16_felm_t *) P->YZ,
+	                      *Z2 = (oqs_sidh_cln16_felm_t *) P->Z2;
 	oqs_sidh_cln16_f2elm_t X, Y, Z, Y2, tX2, AX2, tXZ, tAXZ;
 
 	oqs_sidh_cln16_fp2copy751(XZ, X);
@@ -1175,9 +1481,16 @@ static void final_tpl(oqs_sidh_cln16_point_ext_proj_t P, const oqs_sidh_cln16_f2
 	oqs_sidh_cln16_fp2add751(YZ, YZ, D);      // D = YZ + YZ
 }
 
-static void final_tpl_iteration(const oqs_sidh_cln16_f2elm_t x, const oqs_sidh_cln16_f2elm_t y, const oqs_sidh_cln16_f2elm_t lam, const oqs_sidh_cln16_f2elm_t mu, const oqs_sidh_cln16_f2elm_t D, oqs_sidh_cln16_f2elm_t n, oqs_sidh_cln16_f2elm_t d) { // Special iteration for the final tripling step in Miller's algorithm. This is necessary since the tripling
-	                                                                                                                                                                                                                                                     // at the end of the Miller loop is an exceptional case (tripling a point of order 3).
-	                                                                                                                                                                                                                                                     // Cubes the running pairing value n/d and absorbs the line function values.
+static void final_tpl_iteration(
+    const oqs_sidh_cln16_f2elm_t x, const oqs_sidh_cln16_f2elm_t y,
+    const oqs_sidh_cln16_f2elm_t lam, const oqs_sidh_cln16_f2elm_t mu,
+    const oqs_sidh_cln16_f2elm_t D, oqs_sidh_cln16_f2elm_t n,
+    oqs_sidh_cln16_f2elm_t d) { // Special iteration for the final tripling step
+	                            // in Miller's algorithm. This is necessary
+	                            // since the tripling
+	// at the end of the Miller loop is an exceptional case (tripling a point of
+	// order 3).
+	// Cubes the running pairing value n/d and absorbs the line function values.
 	oqs_sidh_cln16_f2elm_t ln, ld, t;
 
 	oqs_sidh_cln16_fp2sqr751_mont(n, ln);      // ln = n ^ 2
@@ -1194,13 +1507,19 @@ static void final_tpl_iteration(const oqs_sidh_cln16_f2elm_t x, const oqs_sidh_c
 	oqs_sidh_cln16_fp2mul751_mont(d, ld, d);   // d = d*ld
 }
 
-static void final_exponentiation_3_torsion(oqs_sidh_cln16_f2elm_t n, oqs_sidh_cln16_f2elm_t d, const oqs_sidh_cln16_f2elm_t n_inv, const oqs_sidh_cln16_f2elm_t d_inv, oqs_sidh_cln16_f2elm_t nout, PCurveIsogenyStruct CurveIsogeny) { // The final exponentiation for pairings in the 3-torsion group. Raising the value n/d to the power (p^2-1)/3^eB.
+static void final_exponentiation_3_torsion(
+    oqs_sidh_cln16_f2elm_t n, oqs_sidh_cln16_f2elm_t d,
+    const oqs_sidh_cln16_f2elm_t n_inv, const oqs_sidh_cln16_f2elm_t d_inv,
+    oqs_sidh_cln16_f2elm_t nout,
+    PCurveIsogenyStruct CurveIsogeny) { // The final exponentiation for pairings
+	                                    // in the 3-torsion group. Raising the
+	                                    // value n/d to the power (p^2-1)/3^eB.
 	oqs_sidh_cln16_felm_t one = {0};
 	unsigned int i;
 
 	oqs_sidh_cln16_fpcopy751(CurveIsogeny->Montgomery_one, one);
 	oqs_sidh_cln16_fp2mul751_mont(n, d_inv, n); // n = n*d_inv
-	                                            // n = n^p. Just call conjugation function
+	// n = n^p. Just call conjugation function
 	oqs_sidh_cln16_inv_Fp2_cycl(n);
 	oqs_sidh_cln16_fp2mul751_mont(d, n_inv, d); // d = d*n_inv
 	oqs_sidh_cln16_fp2mul751_mont(n, d, n);     // n = n*d
@@ -1211,8 +1530,16 @@ static void final_exponentiation_3_torsion(oqs_sidh_cln16_f2elm_t n, oqs_sidh_cl
 	oqs_sidh_cln16_fp2copy751(n, nout);
 }
 
-void oqs_sidh_cln16_Tate_pairings_3_torsion(const oqs_sidh_cln16_point_t R1, const oqs_sidh_cln16_point_t R2, const oqs_sidh_cln16_point_t P, const oqs_sidh_cln16_point_t Q, const oqs_sidh_cln16_f2elm_t A, oqs_sidh_cln16_f2elm_t *n, PCurveIsogenyStruct CurveIsogeny) { // The tripling only 3-torsion Tate pairing of order 3^eB, consisting of the tripling only Miller loop and the final exponentiation.
-	                                                                                                                                                                                                                                                                         // Computes 5 pairings at once: e(R1, R2), e(R1, P), e(R1, Q), e(R2, P), e(R2,Q).
+void oqs_sidh_cln16_Tate_pairings_3_torsion(
+    const oqs_sidh_cln16_point_t R1, const oqs_sidh_cln16_point_t R2,
+    const oqs_sidh_cln16_point_t P, const oqs_sidh_cln16_point_t Q,
+    const oqs_sidh_cln16_f2elm_t A, oqs_sidh_cln16_f2elm_t *n,
+    PCurveIsogenyStruct CurveIsogeny) { // The tripling only 3-torsion Tate
+	                                    // pairing of order 3^eB, consisting of
+	                                    // the tripling only Miller loop and the
+	                                    // final exponentiation.
+	// Computes 5 pairings at once: e(R1, R2), e(R1, P), e(R1, Q), e(R2, P),
+	// e(R2,Q).
 	oqs_sidh_cln16_point_ext_proj_t P1 = {0}, P2 = {0};
 	oqs_sidh_cln16_f2elm_t ly, lx2, lx1, lx0, vx, v0, lam, mu, d;
 	oqs_sidh_cln16_f2elm_t invs[10], nd[10] = {0};
@@ -1252,16 +1579,25 @@ void oqs_sidh_cln16_Tate_pairings_3_torsion(const oqs_sidh_cln16_point_t R1, con
 	final_tpl_iteration(Q->x, Q->y, lam, mu, d, nd[4], nd[9]);
 
 	oqs_sidh_cln16_mont_n_way_inv(nd, 10, invs);
-	final_exponentiation_3_torsion(nd[0], nd[5], invs[0], invs[5], n[0], CurveIsogeny);
-	final_exponentiation_3_torsion(nd[1], nd[6], invs[1], invs[6], n[1], CurveIsogeny);
-	final_exponentiation_3_torsion(nd[2], nd[7], invs[2], invs[7], n[2], CurveIsogeny);
-	final_exponentiation_3_torsion(nd[3], nd[8], invs[3], invs[8], n[3], CurveIsogeny);
-	final_exponentiation_3_torsion(nd[4], nd[9], invs[4], invs[9], n[4], CurveIsogeny);
+	final_exponentiation_3_torsion(nd[0], nd[5], invs[0], invs[5], n[0],
+	                               CurveIsogeny);
+	final_exponentiation_3_torsion(nd[1], nd[6], invs[1], invs[6], n[1],
+	                               CurveIsogeny);
+	final_exponentiation_3_torsion(nd[2], nd[7], invs[2], invs[7], n[2],
+	                               CurveIsogeny);
+	final_exponentiation_3_torsion(nd[3], nd[8], invs[3], invs[8], n[3],
+	                               CurveIsogeny);
+	final_exponentiation_3_torsion(nd[4], nd[9], invs[4], invs[9], n[4],
+	                               CurveIsogeny);
 }
 
-void oqs_sidh_cln16_phn1(const oqs_sidh_cln16_f2elm_t q, const oqs_sidh_cln16_f2elm_t *LUT, const uint64_t a, const oqs_sidh_cln16_felm_t one, uint64_t *alpha_i) { // Pohlig-Hellman for groups of 2-power order up to 2^6
-	                                                                                                                                                                // This function solves the DLP in a subgroup of Fp2* of order 2^a, where a <= 6.
-	                                                                                                                                                                // The DL is returned in alpha which only needs a bits to store the result.
+void oqs_sidh_cln16_phn1(
+    const oqs_sidh_cln16_f2elm_t q, const oqs_sidh_cln16_f2elm_t *LUT,
+    const uint64_t a, const oqs_sidh_cln16_felm_t one,
+    uint64_t *alpha_i) { // Pohlig-Hellman for groups of 2-power order up to 2^6
+	// This function solves the DLP in a subgroup of Fp2* of order 2^a, where a <=
+	// 6.
+	// The DL is returned in alpha which only needs a bits to store the result.
 	oqs_sidh_cln16_f2elm_t u, v, tmp;
 	oqs_sidh_cln16_felm_t zero = {0};
 	uint64_t l, h;
@@ -1274,19 +1610,24 @@ void oqs_sidh_cln16_phn1(const oqs_sidh_cln16_f2elm_t q, const oqs_sidh_cln16_f2
 			oqs_sidh_cln16_sqr_Fp2_cycl(v, one);
 		}
 		oqs_sidh_cln16_fp2correction751(v);
-		if (oqs_sidh_cln16_fpequal751_non_constant_time(v[0], one) == false || oqs_sidh_cln16_fpequal751_non_constant_time(v[1], zero) == false) {
+		if (oqs_sidh_cln16_fpequal751_non_constant_time(v[0], one) == false ||
+		    oqs_sidh_cln16_fpequal751_non_constant_time(v[1], zero) == false) {
 			*alpha_i += ((uint64_t) 1 << l);
 			oqs_sidh_cln16_fp2copy751(LUT[6 - a + l], tmp); // tmp = LUT[6-a+l];
 			oqs_sidh_cln16_fp2mul751_mont(u, tmp, u);
 		}
 	}
 	oqs_sidh_cln16_fp2correction751(u);
-	if (oqs_sidh_cln16_fpequal751_non_constant_time(u[0], one) == false || oqs_sidh_cln16_fpequal751_non_constant_time(u[1], zero) == false) {
+	if (oqs_sidh_cln16_fpequal751_non_constant_time(u[0], one) == false ||
+	    oqs_sidh_cln16_fpequal751_non_constant_time(u[1], zero) == false) {
 		*alpha_i += ((uint64_t) 1 << (a - 1));
 	}
 }
 
-void oqs_sidh_cln16_phn5(oqs_sidh_cln16_f2elm_t q, const oqs_sidh_cln16_f2elm_t *LUT, const oqs_sidh_cln16_f2elm_t *LUT_1, const oqs_sidh_cln16_felm_t one, uint64_t *alpha_k) { // Pohlig-Hellman for groups of 2-power order 2^21
+void oqs_sidh_cln16_phn5(
+    oqs_sidh_cln16_f2elm_t q, const oqs_sidh_cln16_f2elm_t *LUT,
+    const oqs_sidh_cln16_f2elm_t *LUT_1, const oqs_sidh_cln16_felm_t one,
+    uint64_t *alpha_k) { // Pohlig-Hellman for groups of 2-power order 2^21
 	oqs_sidh_cln16_f2elm_t u, v, tmp;
 	oqs_sidh_cln16_felm_t zero = {0};
 	uint64_t alpha_i;
@@ -1307,12 +1648,18 @@ void oqs_sidh_cln16_phn5(oqs_sidh_cln16_f2elm_t q, const oqs_sidh_cln16_f2elm_t 
 	}
 	oqs_sidh_cln16_fp2correction751(u);
 	// Do the last part
-	if (oqs_sidh_cln16_fpequal751_non_constant_time(u[0], one) == false || oqs_sidh_cln16_fpequal751_non_constant_time(u[1], zero) == false) { // q order 2
+	if (oqs_sidh_cln16_fpequal751_non_constant_time(u[0], one) == false ||
+	    oqs_sidh_cln16_fpequal751_non_constant_time(u[1], zero) ==
+	        false) { // q order 2
 		*alpha_k += ((uint64_t) 1 << 20);
 	}
 }
 
-void oqs_sidh_cln16_phn21(oqs_sidh_cln16_f2elm_t q, const oqs_sidh_cln16_f2elm_t *LUT, const oqs_sidh_cln16_f2elm_t *LUT_0, const oqs_sidh_cln16_f2elm_t *LUT_1, const oqs_sidh_cln16_felm_t one, uint64_t *alpha_k) { // Pohlig-Hellman for groups of 2-power order 2^84
+void oqs_sidh_cln16_phn21(
+    oqs_sidh_cln16_f2elm_t q, const oqs_sidh_cln16_f2elm_t *LUT,
+    const oqs_sidh_cln16_f2elm_t *LUT_0, const oqs_sidh_cln16_f2elm_t *LUT_1,
+    const oqs_sidh_cln16_felm_t one,
+    uint64_t *alpha_k) { // Pohlig-Hellman for groups of 2-power order 2^84
 	oqs_sidh_cln16_f2elm_t u, v, tmp;
 	uint64_t alpha_i;
 	uint64_t i, j;
@@ -1335,7 +1682,12 @@ void oqs_sidh_cln16_phn21(oqs_sidh_cln16_f2elm_t q, const oqs_sidh_cln16_f2elm_t
 	alpha_k[1] = (alpha_i >> 1);
 }
 
-void oqs_sidh_cln16_phn84(oqs_sidh_cln16_f2elm_t r, const oqs_sidh_cln16_f2elm_t *t_ori, const oqs_sidh_cln16_f2elm_t *LUT, const oqs_sidh_cln16_f2elm_t *LUT_0, const oqs_sidh_cln16_f2elm_t *LUT_1, const oqs_sidh_cln16_f2elm_t *LUT_3, const oqs_sidh_cln16_felm_t one, uint64_t *alpha) { // Pohlig-Hellman for groups of 2-power order 2^372
+void oqs_sidh_cln16_phn84(
+    oqs_sidh_cln16_f2elm_t r, const oqs_sidh_cln16_f2elm_t *t_ori,
+    const oqs_sidh_cln16_f2elm_t *LUT, const oqs_sidh_cln16_f2elm_t *LUT_0,
+    const oqs_sidh_cln16_f2elm_t *LUT_1, const oqs_sidh_cln16_f2elm_t *LUT_3,
+    const oqs_sidh_cln16_felm_t one,
+    uint64_t *alpha) { // Pohlig-Hellman for groups of 2-power order 2^372
 	oqs_sidh_cln16_f2elm_t u, q, t, tmp;
 	uint64_t alpha_k[2], alpha_i, mask;
 	uint64_t i, j, k;
@@ -1373,7 +1725,12 @@ void oqs_sidh_cln16_phn84(oqs_sidh_cln16_f2elm_t r, const oqs_sidh_cln16_f2elm_t
 	}
 }
 
-void oqs_sidh_cln16_build_LUTs(const oqs_sidh_cln16_f2elm_t g, oqs_sidh_cln16_f2elm_t *t_ori, oqs_sidh_cln16_f2elm_t *LUT, oqs_sidh_cln16_f2elm_t *LUT_0, oqs_sidh_cln16_f2elm_t *LUT_1, oqs_sidh_cln16_f2elm_t *LUT_3, const oqs_sidh_cln16_felm_t one) { // Lookup table generation for 2-torsion PH in a group of order 2^372
+void oqs_sidh_cln16_build_LUTs(
+    const oqs_sidh_cln16_f2elm_t g, oqs_sidh_cln16_f2elm_t *t_ori,
+    oqs_sidh_cln16_f2elm_t *LUT, oqs_sidh_cln16_f2elm_t *LUT_0,
+    oqs_sidh_cln16_f2elm_t *LUT_1, oqs_sidh_cln16_f2elm_t *LUT_3,
+    const oqs_sidh_cln16_felm_t one) { // Lookup table generation for 2-torsion
+	                                   // PH in a group of order 2^372
 	oqs_sidh_cln16_f2elm_t tmp;
 	unsigned int i, j;
 
@@ -1422,7 +1779,8 @@ void oqs_sidh_cln16_build_LUTs(const oqs_sidh_cln16_f2elm_t g, oqs_sidh_cln16_f2
 	oqs_sidh_cln16_fp2copy751(tmp, LUT_1[2]); // LUT_1[2] = tmp, order 2^11
 	for (i = 0; i < 5; i++)
 		oqs_sidh_cln16_sqr_Fp2_cycl(tmp, one);
-	oqs_sidh_cln16_fp2copy751(tmp, LUT_1[3]); // LUT_1[3] = tmp, order 2^16 & 2^11 & 2^6
+	oqs_sidh_cln16_fp2copy751(
+	    tmp, LUT_1[3]);                       // LUT_1[3] = tmp, order 2^16 & 2^11 & 2^6
 	oqs_sidh_cln16_fp2copy751(tmp, LUT_3[5]); // LUT_3[5] = tmp
 	                                          // LUT_1, LUT_3 done
 	oqs_sidh_cln16_fp2copy751(tmp, LUT[0]);   // LUT = LUT_3[5]
@@ -1432,17 +1790,25 @@ void oqs_sidh_cln16_build_LUTs(const oqs_sidh_cln16_f2elm_t g, oqs_sidh_cln16_f2
 	}
 }
 
-void oqs_sidh_cln16_ph2(const oqs_sidh_cln16_point_t phiP, const oqs_sidh_cln16_point_t phiQ, const oqs_sidh_cln16_point_t PS, const oqs_sidh_cln16_point_t QS, const oqs_sidh_cln16_f2elm_t A, uint64_t *a0, uint64_t *b0, uint64_t *a1, uint64_t *b1, PCurveIsogenyStruct CurveIsogeny) { // Pohlig-Hellman function.
-	                                                                                                                                                                                                                                                                                        // This function computes the five pairings e(QS, PS), e(QS, phiP), e(QS, phiQ), e(PS, phiP), e(PS,phiQ),
-	                                                                                                                                                                                                                                                                                        // computes the lookup tables for the Pohlig-Hellman functions,
-	                                                                                                                                                                                                                                                                                        // and then computes the discrete logarithms of the last four pairing values to the base of the first pairing value.
+void oqs_sidh_cln16_ph2(
+    const oqs_sidh_cln16_point_t phiP, const oqs_sidh_cln16_point_t phiQ,
+    const oqs_sidh_cln16_point_t PS, const oqs_sidh_cln16_point_t QS,
+    const oqs_sidh_cln16_f2elm_t A, uint64_t *a0, uint64_t *b0, uint64_t *a1,
+    uint64_t *b1,
+    PCurveIsogenyStruct CurveIsogeny) { // Pohlig-Hellman function.
+	// This function computes the five pairings e(QS, PS), e(QS, phiP), e(QS,
+	// phiQ), e(PS, phiP), e(PS,phiQ),
+	// computes the lookup tables for the Pohlig-Hellman functions,
+	// and then computes the discrete logarithms of the last four pairing values
+	// to the base of the first pairing value.
 	oqs_sidh_cln16_f2elm_t t_ori[5], n[5], LUT[5], LUT_0[4], LUT_1[4], LUT_3[6];
 	oqs_sidh_cln16_felm_t one = {0};
 
 	oqs_sidh_cln16_fpcopy751(CurveIsogeny->Montgomery_one, one);
 
 	// Compute the pairings.
-	oqs_sidh_cln16_Tate_pairings_2_torsion(QS, PS, phiP, phiQ, A, n, CurveIsogeny);
+	oqs_sidh_cln16_Tate_pairings_2_torsion(QS, PS, phiP, phiQ, A, n,
+	                                       CurveIsogeny);
 
 	// Build the lookup tables from element n[0] of order 2^372.
 	oqs_sidh_cln16_build_LUTs(n[0], t_ori, LUT, LUT_0, LUT_1, LUT_3, one);
@@ -1450,18 +1816,25 @@ void oqs_sidh_cln16_ph2(const oqs_sidh_cln16_point_t phiP, const oqs_sidh_cln16_
 	// Finish computation
 	oqs_sidh_cln16_phn84(n[1], t_ori, LUT, LUT_0, LUT_1, LUT_3, one, a0);
 	oqs_sidh_cln16_phn84(n[3], t_ori, LUT, LUT_0, LUT_1, LUT_3, one, b0);
-	oqs_sidh_cln16_mp_sub(CurveIsogeny->Aorder, (digit_t *) b0, (digit_t *) b0, SIDH_NWORDS_ORDER);
+	oqs_sidh_cln16_mp_sub(CurveIsogeny->Aorder, (digit_t *) b0, (digit_t *) b0,
+	                      SIDH_NWORDS_ORDER);
 	oqs_sidh_cln16_phn84(n[2], t_ori, LUT, LUT_0, LUT_1, LUT_3, one, a1);
 	oqs_sidh_cln16_phn84(n[4], t_ori, LUT, LUT_0, LUT_1, LUT_3, one, b1);
-	oqs_sidh_cln16_mp_sub(CurveIsogeny->Aorder, (digit_t *) b1, (digit_t *) b1, SIDH_NWORDS_ORDER);
+	oqs_sidh_cln16_mp_sub(CurveIsogeny->Aorder, (digit_t *) b1, (digit_t *) b1,
+	                      SIDH_NWORDS_ORDER);
 }
 
-static void recover_os(const oqs_sidh_cln16_f2elm_t X1, const oqs_sidh_cln16_f2elm_t Z1, const oqs_sidh_cln16_f2elm_t X2, const oqs_sidh_cln16_f2elm_t Z2, const oqs_sidh_cln16_f2elm_t x, const oqs_sidh_cln16_f2elm_t y, const oqs_sidh_cln16_f2elm_t A, oqs_sidh_cln16_f2elm_t X3, oqs_sidh_cln16_f2elm_t Y3, oqs_sidh_cln16_f2elm_t Z3) {
+static void
+recover_os(const oqs_sidh_cln16_f2elm_t X1, const oqs_sidh_cln16_f2elm_t Z1,
+           const oqs_sidh_cln16_f2elm_t X2, const oqs_sidh_cln16_f2elm_t Z2,
+           const oqs_sidh_cln16_f2elm_t x, const oqs_sidh_cln16_f2elm_t y,
+           const oqs_sidh_cln16_f2elm_t A, oqs_sidh_cln16_f2elm_t X3,
+           oqs_sidh_cln16_f2elm_t Y3, oqs_sidh_cln16_f2elm_t Z3) {
 	oqs_sidh_cln16_f2elm_t t0, t1, t2, t3;
 
-	//X3 := 2*y*Z1*Z2*X1;
-	//Y3 := Z2*((X1+x*Z1+2*A*Z1)*(X1*x+Z1)-2*A*Z1^2)-(X1-x*Z1)^2*X2;
-	//Z3 := 2*y*Z1*Z2*Z1;
+	// X3 := 2*y*Z1*Z2*X1;
+	// Y3 := Z2*((X1+x*Z1+2*A*Z1)*(X1*x+Z1)-2*A*Z1^2)-(X1-x*Z1)^2*X2;
+	// Z3 := 2*y*Z1*Z2*Z1;
 
 	oqs_sidh_cln16_fp2add751(y, y, t0);
 	oqs_sidh_cln16_fp2mul751_mont(t0, Z1, t0);
@@ -1479,34 +1852,52 @@ static void recover_os(const oqs_sidh_cln16_f2elm_t X1, const oqs_sidh_cln16_f2e
 	oqs_sidh_cln16_fp2mul751_mont(x, X1, t2);  // t2 = x*X1
 	oqs_sidh_cln16_fp2add751(t2, Z1, t2);      // t2 = X1*x+Z1
 	oqs_sidh_cln16_fp2mul751_mont(t2, t3, t2); // t2 = (X1+x*Z1+2*A*Z1)*(X1*x+Z1)
-	oqs_sidh_cln16_fp2sub751(t2, t0, t0);      // t0 = (X1+x*Z1+2*A*Z1)*(X1*x+Z1)-2*A*Z1^2
+	oqs_sidh_cln16_fp2sub751(t2, t0,
+	                         t0);              // t0 = (X1+x*Z1+2*A*Z1)*(X1*x+Z1)-2*A*Z1^2
 	oqs_sidh_cln16_fp2mul751_mont(t1, X2, t1); // t1 = (X1-x*Z1)^2*X2
-	oqs_sidh_cln16_fp2mul751_mont(t0, Z2, t0); // t0 = Z2*[(X1+x*Z1+2*A*Z1)*(X1*x+Z1)-2*A*Z1^2]
-	oqs_sidh_cln16_fp2sub751(t0, t1, Y3);      // Y3 = Z2*[(X1+x*Z1+2*A*Z1)*(X1*x+Z1)-2*A*Z1^2] - (X1-x*Z1)^2*X2
+	oqs_sidh_cln16_fp2mul751_mont(
+	    t0, Z2, t0); // t0 = Z2*[(X1+x*Z1+2*A*Z1)*(X1*x+Z1)-2*A*Z1^2]
+	oqs_sidh_cln16_fp2sub751(
+	    t0, t1,
+	    Y3); // Y3 = Z2*[(X1+x*Z1+2*A*Z1)*(X1*x+Z1)-2*A*Z1^2] - (X1-x*Z1)^2*X2
 }
 
-void oqs_sidh_cln16_recover_y(const oqs_sidh_cln16_publickey_t PK, oqs_sidh_cln16_point_full_proj_t phiP, oqs_sidh_cln16_point_full_proj_t phiQ, oqs_sidh_cln16_point_full_proj_t phiX, oqs_sidh_cln16_f2elm_t A, PCurveIsogenyStruct CurveIsogeny) { // Recover the y-coordinates of the public key
-	                                                                                                                                                                                                                                                  // The three resulting points are (simultaneously) correct up to sign
+void oqs_sidh_cln16_recover_y(
+    const oqs_sidh_cln16_publickey_t PK, oqs_sidh_cln16_point_full_proj_t phiP,
+    oqs_sidh_cln16_point_full_proj_t phiQ,
+    oqs_sidh_cln16_point_full_proj_t phiX, oqs_sidh_cln16_f2elm_t A,
+    PCurveIsogenyStruct
+        CurveIsogeny) { // Recover the y-coordinates of the public key
+	// The three resulting points are (simultaneously) correct up to sign
 	oqs_sidh_cln16_f2elm_t tmp, phiXY, one = {0};
 
 	oqs_sidh_cln16_fpcopy751(CurveIsogeny->Montgomery_one, one[0]);
-	oqs_sidh_cln16_get_A(PK[0], PK[1], PK[2], A, CurveIsogeny); // NOTE: don't have to compress this, can output in keygen
+	oqs_sidh_cln16_get_A(
+	    PK[0], PK[1], PK[2], A,
+	    CurveIsogeny); // NOTE: don't have to compress this, can output in keygen
 
 	oqs_sidh_cln16_fp2add751(PK[2], A, tmp);
 	oqs_sidh_cln16_fp2mul751_mont(PK[2], tmp, tmp);
 	oqs_sidh_cln16_fp2add751(tmp, one, tmp);
-	oqs_sidh_cln16_fp2mul751_mont(PK[2], tmp, tmp); // tmp = PK[2]^3+A*PK[2]^2+PK[2];
+	oqs_sidh_cln16_fp2mul751_mont(PK[2], tmp,
+	                              tmp); // tmp = PK[2]^3+A*PK[2]^2+PK[2];
 	oqs_sidh_cln16_sqrt_Fp2(tmp, phiXY);
 	oqs_sidh_cln16_fp2copy751(PK[2], phiX->X);
 	oqs_sidh_cln16_fp2copy751(phiXY, phiX->Y);
 	oqs_sidh_cln16_fp2copy751(one, phiX->Z); // phiX = [PK[2],phiXY,1];
 
-	recover_os(PK[1], one, PK[0], one, PK[2], phiXY, A, phiQ->X, phiQ->Y, phiQ->Z);
+	recover_os(PK[1], one, PK[0], one, PK[2], phiXY, A, phiQ->X, phiQ->Y,
+	           phiQ->Z);
 	oqs_sidh_cln16_fp2neg751(phiXY);
-	recover_os(PK[0], one, PK[1], one, PK[2], phiXY, A, phiP->X, phiP->Y, phiP->Z);
+	recover_os(PK[0], one, PK[1], one, PK[2], phiXY, A, phiP->X, phiP->Y,
+	           phiP->Z);
 }
 
-void oqs_sidh_cln16_compress_2_torsion(const unsigned char *PublicKeyA, unsigned char *CompressedPKA, uint64_t *a0, uint64_t *b0, uint64_t *a1, uint64_t *b1, oqs_sidh_cln16_point_t R1, oqs_sidh_cln16_point_t R2, PCurveIsogenyStruct CurveIsogeny) { // 2-torsion compression
+void oqs_sidh_cln16_compress_2_torsion(
+    const unsigned char *PublicKeyA, unsigned char *CompressedPKA, uint64_t *a0,
+    uint64_t *b0, uint64_t *a1, uint64_t *b1, oqs_sidh_cln16_point_t R1,
+    oqs_sidh_cln16_point_t R2,
+    PCurveIsogenyStruct CurveIsogeny) { // 2-torsion compression
 	oqs_sidh_cln16_point_full_proj_t P, Q, phP, phQ, phX;
 	oqs_sidh_cln16_point_t phiP, phiQ;
 	oqs_sidh_cln16_publickey_t PK;
@@ -1515,9 +1906,14 @@ void oqs_sidh_cln16_compress_2_torsion(const unsigned char *PublicKeyA, unsigned
 	oqs_sidh_cln16_f2elm_t A, vec[4], Zinv[4];
 	digit_t tmp[2 * SIDH_NWORDS_ORDER];
 
-	oqs_sidh_cln16_to_fp2mont(((oqs_sidh_cln16_f2elm_t *) PublicKeyA)[0], ((oqs_sidh_cln16_f2elm_t *) &PK)[0]); // Converting to Montgomery representation
-	oqs_sidh_cln16_to_fp2mont(((oqs_sidh_cln16_f2elm_t *) PublicKeyA)[1], ((oqs_sidh_cln16_f2elm_t *) &PK)[1]);
-	oqs_sidh_cln16_to_fp2mont(((oqs_sidh_cln16_f2elm_t *) PublicKeyA)[2], ((oqs_sidh_cln16_f2elm_t *) &PK)[2]);
+	oqs_sidh_cln16_to_fp2mont(
+	    ((oqs_sidh_cln16_f2elm_t *) PublicKeyA)[0],
+	    ((oqs_sidh_cln16_f2elm_t
+	          *) &PK)[0]); // Converting to Montgomery representation
+	oqs_sidh_cln16_to_fp2mont(((oqs_sidh_cln16_f2elm_t *) PublicKeyA)[1],
+	                          ((oqs_sidh_cln16_f2elm_t *) &PK)[1]);
+	oqs_sidh_cln16_to_fp2mont(((oqs_sidh_cln16_f2elm_t *) PublicKeyA)[2],
+	                          ((oqs_sidh_cln16_f2elm_t *) &PK)[2]);
 
 	oqs_sidh_cln16_recover_y(PK, phP, phQ, phX, A, CurveIsogeny);
 	oqs_sidh_cln16_generate_2_torsion_basis(A, P, Q, CurveIsogeny);
@@ -1538,7 +1934,8 @@ void oqs_sidh_cln16_compress_2_torsion(const unsigned char *PublicKeyA, unsigned
 
 	oqs_sidh_cln16_ph2(phiP, phiQ, R1, R2, A, a0, b0, a1, b1, CurveIsogeny);
 
-	if ((a0[0] & 1) == 1) { // Storing [b1*a0inv, a1*a0inv, b0*a0inv] and setting bit384 to 0
+	if ((a0[0] & 1) ==
+	    1) { // Storing [b1*a0inv, a1*a0inv, b0*a0inv] and setting bit384 to 0
 		oqs_sidh_cln16_inv_mod_orderA((digit_t *) a0, inv);
 		oqs_sidh_cln16_multiply((digit_t *) b0, inv, tmp, SIDH_NWORDS_ORDER);
 		oqs_sidh_cln16_copy_words(tmp, &comp[0], SIDH_NWORDS_ORDER);
@@ -1547,7 +1944,8 @@ void oqs_sidh_cln16_compress_2_torsion(const unsigned char *PublicKeyA, unsigned
 		oqs_sidh_cln16_copy_words(tmp, &comp[SIDH_NWORDS_ORDER], SIDH_NWORDS_ORDER);
 		comp[2 * SIDH_NWORDS_ORDER - 1] &= (digit_t)(-1) >> 12;
 		oqs_sidh_cln16_multiply((digit_t *) b1, inv, tmp, SIDH_NWORDS_ORDER);
-		oqs_sidh_cln16_copy_words(tmp, &comp[2 * SIDH_NWORDS_ORDER], SIDH_NWORDS_ORDER);
+		oqs_sidh_cln16_copy_words(tmp, &comp[2 * SIDH_NWORDS_ORDER],
+		                          SIDH_NWORDS_ORDER);
 		comp[3 * SIDH_NWORDS_ORDER - 1] &= (digit_t)(-1) >> 12;
 	} else { // Storing [b1*b0inv, a1*b0inv, a0*b0inv] and setting bit384 to 1
 		oqs_sidh_cln16_inv_mod_orderA((digit_t *) b0, inv);
@@ -1558,20 +1956,28 @@ void oqs_sidh_cln16_compress_2_torsion(const unsigned char *PublicKeyA, unsigned
 		oqs_sidh_cln16_copy_words(tmp, &comp[SIDH_NWORDS_ORDER], SIDH_NWORDS_ORDER);
 		comp[2 * SIDH_NWORDS_ORDER - 1] &= (digit_t)(-1) >> 12;
 		oqs_sidh_cln16_multiply((digit_t *) b1, inv, tmp, SIDH_NWORDS_ORDER);
-		oqs_sidh_cln16_copy_words(tmp, &comp[2 * SIDH_NWORDS_ORDER], SIDH_NWORDS_ORDER);
+		oqs_sidh_cln16_copy_words(tmp, &comp[2 * SIDH_NWORDS_ORDER],
+		                          SIDH_NWORDS_ORDER);
 		comp[3 * SIDH_NWORDS_ORDER - 1] &= (digit_t)(-1) >> 12;
 		comp[3 * SIDH_NWORDS_ORDER - 1] |= (digit_t) 1 << (sizeof(digit_t) * 8 - 1);
 	}
 
-	oqs_sidh_cln16_from_fp2mont(A, (oqs_sidh_cln16_felm_t *) &comp[3 * SIDH_NWORDS_ORDER]); // Converting back from Montgomery representation
+	oqs_sidh_cln16_from_fp2mont(
+	    A,
+	    (oqs_sidh_cln16_felm_t *) &comp[3 * SIDH_NWORDS_ORDER]); // Converting back
+	                                                             // from Montgomery
+	                                                             // representation
 }
 
-void oqs_sidh_cln16_phn1_3(const oqs_sidh_cln16_f2elm_t q, const oqs_sidh_cln16_f2elm_t *LUT, const uint64_t a, const oqs_sidh_cln16_felm_t one, uint64_t *alpha_i) {
+void oqs_sidh_cln16_phn1_3(const oqs_sidh_cln16_f2elm_t q,
+                           const oqs_sidh_cln16_f2elm_t *LUT, const uint64_t a,
+                           const oqs_sidh_cln16_felm_t one, uint64_t *alpha_i) {
 	oqs_sidh_cln16_f2elm_t u, v, tmp;
 	oqs_sidh_cln16_felm_t zero = {0};
 	uint64_t l, h;
 	// Hardcoded powers of 3, 3^0 = 1, 3^1 = 3, 3^2 = 9
-	uint64_t pow3[3] = {0x0000000000000001, 0x0000000000000003, 0x0000000000000009};
+	uint64_t pow3[3] = {0x0000000000000001, 0x0000000000000003,
+	                    0x0000000000000009};
 
 	oqs_sidh_cln16_fp2copy751(q, u); // u = q
 	*alpha_i = 0;
@@ -1581,11 +1987,15 @@ void oqs_sidh_cln16_phn1_3(const oqs_sidh_cln16_f2elm_t q, const oqs_sidh_cln16_
 			oqs_sidh_cln16_cube_Fp2_cycl(v, one);
 		}
 		oqs_sidh_cln16_fp2correction751(v);
-		if (oqs_sidh_cln16_fpequal751_non_constant_time(v[0], LUT[3][0]) == true && oqs_sidh_cln16_fpequal751_non_constant_time(v[1], LUT[3][1]) == true) {
+		if (oqs_sidh_cln16_fpequal751_non_constant_time(v[0], LUT[3][0]) == true &&
+		    oqs_sidh_cln16_fpequal751_non_constant_time(v[1], LUT[3][1]) == true) {
 			*alpha_i += pow3[l];
 			oqs_sidh_cln16_fp2copy751(LUT[3 - a + l], tmp); // tmp = LUT[3-a+l];
 			oqs_sidh_cln16_fp2mul751_mont(u, tmp, u);
-		} else if (oqs_sidh_cln16_fpequal751_non_constant_time(v[0], one) == false || oqs_sidh_cln16_fpequal751_non_constant_time(v[1], zero) == false) {
+		} else if (oqs_sidh_cln16_fpequal751_non_constant_time(v[0], one) ==
+		               false ||
+		           oqs_sidh_cln16_fpequal751_non_constant_time(v[1], zero) ==
+		               false) {
 			*alpha_i += pow3[l] << 1;
 			oqs_sidh_cln16_fp2copy751(LUT[3 - a + l], tmp); // tmp = LUT[3-a+l];
 			oqs_sidh_cln16_sqr_Fp2_cycl(tmp, one);
@@ -1593,14 +2003,19 @@ void oqs_sidh_cln16_phn1_3(const oqs_sidh_cln16_f2elm_t q, const oqs_sidh_cln16_
 		}
 	}
 	oqs_sidh_cln16_fp2correction751(u);
-	if (oqs_sidh_cln16_fpequal751_non_constant_time(u[0], LUT[3][0]) == true && oqs_sidh_cln16_fpequal751_non_constant_time(u[1], LUT[3][1]) == true) {
+	if (oqs_sidh_cln16_fpequal751_non_constant_time(u[0], LUT[3][0]) == true &&
+	    oqs_sidh_cln16_fpequal751_non_constant_time(u[1], LUT[3][1]) == true) {
 		*alpha_i += pow3[a - 1];
-	} else if (oqs_sidh_cln16_fpequal751_non_constant_time(u[0], one) == false || oqs_sidh_cln16_fpequal751_non_constant_time(u[1], zero) == false) {
+	} else if (oqs_sidh_cln16_fpequal751_non_constant_time(u[0], one) == false ||
+	           oqs_sidh_cln16_fpequal751_non_constant_time(u[1], zero) == false) {
 		*alpha_i += pow3[a - 1] << 1;
 	}
 }
 
-void oqs_sidh_cln16_phn3(oqs_sidh_cln16_f2elm_t q, const oqs_sidh_cln16_f2elm_t *LUT, const oqs_sidh_cln16_f2elm_t *LUT_1, const oqs_sidh_cln16_felm_t one, uint64_t *alpha_k) {
+void oqs_sidh_cln16_phn3(oqs_sidh_cln16_f2elm_t q,
+                         const oqs_sidh_cln16_f2elm_t *LUT,
+                         const oqs_sidh_cln16_f2elm_t *LUT_1,
+                         const oqs_sidh_cln16_felm_t one, uint64_t *alpha_k) {
 	oqs_sidh_cln16_f2elm_t u, v, tmp;
 	uint64_t alpha_i;
 	uint64_t i, j;
@@ -1625,14 +2040,23 @@ void oqs_sidh_cln16_phn3(oqs_sidh_cln16_f2elm_t q, const oqs_sidh_cln16_f2elm_t 
 	*alpha_k += alpha_i * pow3[4];
 }
 
-void oqs_sidh_cln16_phn15_1(oqs_sidh_cln16_f2elm_t q, const oqs_sidh_cln16_f2elm_t *LUT, const oqs_sidh_cln16_f2elm_t *LUT_0, const oqs_sidh_cln16_f2elm_t *LUT_1, const oqs_sidh_cln16_felm_t one, uint64_t *alpha_k) {
+void oqs_sidh_cln16_phn15_1(oqs_sidh_cln16_f2elm_t q,
+                            const oqs_sidh_cln16_f2elm_t *LUT,
+                            const oqs_sidh_cln16_f2elm_t *LUT_0,
+                            const oqs_sidh_cln16_f2elm_t *LUT_1,
+                            const oqs_sidh_cln16_felm_t one,
+                            uint64_t *alpha_k) {
 	oqs_sidh_cln16_f2elm_t u, v, tmp;
-	uint64_t alpha_i, alpha_n[2], alpha_tmp[4]; // alpha_tmp[4] is overkill, only taking 4 since it is the result of a mp_mul with 2-word inputs.
+	uint64_t alpha_i, alpha_n[2], alpha_tmp[4]; // alpha_tmp[4] is overkill, only
+	                                            // taking 4 since it is the result
+	                                            // of a mp_mul with 2-word inputs.
 	uint64_t i, j;
 	// Powers of 3: 3^0 = 1, 3^15, 3^30
-	uint64_t pow3_15[3] = {0x0000000000000001, 0x0000000000DAF26B, 0x0000BB41C3CA78B9};
+	uint64_t pow3_15[3] = {0x0000000000000001, 0x0000000000DAF26B,
+	                       0x0000BB41C3CA78B9};
 	// Powers of 3: 3^0 = 1, 3^3 = 27, 3^6
-	uint64_t pow3_3[4] = {0x0000000000000001, 0x000000000000001B, 0x00000000000002D9, 0x0000000000004CE3};
+	uint64_t pow3_3[4] = {0x0000000000000001, 0x000000000000001B,
+	                      0x00000000000002D9, 0x0000000000004CE3};
 	// Powers of 3: 3^45 split up into two words.
 	uint64_t pow3_45[2] = {0x275329FD09495753, 0x00000000000000A0};
 
@@ -1650,8 +2074,10 @@ void oqs_sidh_cln16_phn15_1(oqs_sidh_cln16_f2elm_t q, const oqs_sidh_cln16_f2elm
 			oqs_sidh_cln16_cube_Fp2_cycl(v, one);
 		}
 		oqs_sidh_cln16_phn3(v, LUT, LUT_1, one, &alpha_i); // v order 3^15
-		oqs_sidh_cln16_multiply((digit_t *) &alpha_i, (digit_t *) &pow3_15[i], (digit_t *) alpha_tmp, 64 / RADIX);
-		oqs_sidh_cln16_mp_add((digit_t *) alpha_k, (digit_t *) alpha_tmp, (digit_t *) alpha_k, 2 * 64 / RADIX);
+		oqs_sidh_cln16_multiply((digit_t *) &alpha_i, (digit_t *) &pow3_15[i],
+		                        (digit_t *) alpha_tmp, 64 / RADIX);
+		oqs_sidh_cln16_mp_add((digit_t *) alpha_k, (digit_t *) alpha_tmp,
+		                      (digit_t *) alpha_k, 2 * 64 / RADIX);
 
 		oqs_sidh_cln16_fp2copy751(LUT_0[i], v);
 		for (j = 0; j < 5; j++) {
@@ -1686,17 +2112,28 @@ void oqs_sidh_cln16_phn15_1(oqs_sidh_cln16_f2elm_t q, const oqs_sidh_cln16_f2elm
 
 	oqs_sidh_cln16_phn1_3(u, LUT, 2, one, &alpha_i);
 	alpha_n[0] += alpha_i * pow3_3[3];
-	oqs_sidh_cln16_multiply((digit_t *) alpha_n, (digit_t *) pow3_45, (digit_t *) alpha_tmp, 2 * 64 / RADIX); // Can be optimized because alpha_n is only single precision and pow3_45 is only slightly larger than 64 bits.
-	oqs_sidh_cln16_mp_add((digit_t *) alpha_k, (digit_t *) alpha_tmp, (digit_t *) alpha_k, 2 * 64 / RADIX);
+	oqs_sidh_cln16_multiply((digit_t *) alpha_n, (digit_t *) pow3_45,
+	                        (digit_t *) alpha_tmp,
+	                        2 * 64 / RADIX); // Can be optimized because alpha_n
+	                                         // is only single precision and
+	                                         // pow3_45 is only slightly larger
+	                                         // than 64 bits.
+	oqs_sidh_cln16_mp_add((digit_t *) alpha_k, (digit_t *) alpha_tmp,
+	                      (digit_t *) alpha_k, 2 * 64 / RADIX);
 }
 
-void oqs_sidh_cln16_phn15(oqs_sidh_cln16_f2elm_t q, const oqs_sidh_cln16_f2elm_t *LUT, const oqs_sidh_cln16_f2elm_t *LUT_0, const oqs_sidh_cln16_f2elm_t *LUT_1, const oqs_sidh_cln16_felm_t one, uint64_t *alpha_k) {
+void oqs_sidh_cln16_phn15(oqs_sidh_cln16_f2elm_t q,
+                          const oqs_sidh_cln16_f2elm_t *LUT,
+                          const oqs_sidh_cln16_f2elm_t *LUT_0,
+                          const oqs_sidh_cln16_f2elm_t *LUT_1,
+                          const oqs_sidh_cln16_felm_t one, uint64_t *alpha_k) {
 	oqs_sidh_cln16_felm_t zero = {0};
 	oqs_sidh_cln16_f2elm_t u, v, tmp;
 	uint64_t alpha_i, alpha_n[2], alpha_tmp[4];
 	uint64_t i, j;
 	// Powers of 3: 3^0 = 1, 3^15, 3^30
-	uint64_t pow3_15[3] = {0x0000000000000001, 0x0000000000DAF26B, 0x0000BB41C3CA78B9};
+	uint64_t pow3_15[3] = {0x0000000000000001, 0x0000000000DAF26B,
+	                       0x0000BB41C3CA78B9};
 	// Powers of 3: 3^45 split up into two words.
 	uint64_t pow3_45[2] = {0x275329FD09495753, 0x00000000000000A0};
 	// Powers of 3: 3^60 split up into two words.
@@ -1718,8 +2155,10 @@ void oqs_sidh_cln16_phn15(oqs_sidh_cln16_f2elm_t q, const oqs_sidh_cln16_f2elm_t
 		}
 		oqs_sidh_cln16_phn3(v, LUT, LUT_1, one, &alpha_i); // u order 3^15
 
-		oqs_sidh_cln16_multiply((digit_t *) &alpha_i, (digit_t *) &pow3_15[i], (digit_t *) alpha_tmp, 64 / RADIX);
-		oqs_sidh_cln16_mp_add((digit_t *) alpha_k, (digit_t *) alpha_tmp, (digit_t *) alpha_k, 2 * 64 / RADIX);
+		oqs_sidh_cln16_multiply((digit_t *) &alpha_i, (digit_t *) &pow3_15[i],
+		                        (digit_t *) alpha_tmp, 64 / RADIX);
+		oqs_sidh_cln16_mp_add((digit_t *) alpha_k, (digit_t *) alpha_tmp,
+		                      (digit_t *) alpha_k, 2 * 64 / RADIX);
 
 		oqs_sidh_cln16_exp_Fp2_cycl(LUT_0[i], &alpha_i, one, tmp, 24);
 		oqs_sidh_cln16_fp2mul751_mont(u, tmp, u);
@@ -1729,20 +2168,31 @@ void oqs_sidh_cln16_phn15(oqs_sidh_cln16_f2elm_t q, const oqs_sidh_cln16_f2elm_t
 	oqs_sidh_cln16_cube_Fp2_cycl(v, one);
 	oqs_sidh_cln16_phn3(v, LUT, LUT_1, one, &alpha_n[0]); // u order 3^15
 
-	oqs_sidh_cln16_multiply((digit_t *) alpha_n, (digit_t *) pow3_45, (digit_t *) alpha_tmp, 2 * 64 / RADIX);
-	oqs_sidh_cln16_mp_add((digit_t *) alpha_k, (digit_t *) alpha_tmp, (digit_t *) alpha_k, 2 * 64 / RADIX);
+	oqs_sidh_cln16_multiply((digit_t *) alpha_n, (digit_t *) pow3_45,
+	                        (digit_t *) alpha_tmp, 2 * 64 / RADIX);
+	oqs_sidh_cln16_mp_add((digit_t *) alpha_k, (digit_t *) alpha_tmp,
+	                      (digit_t *) alpha_k, 2 * 64 / RADIX);
 
 	oqs_sidh_cln16_exp_Fp2_cycl(LUT_0[3], &alpha_n[0], one, tmp, 24);
 	oqs_sidh_cln16_fp2mul751_mont(u, tmp, u);
 	oqs_sidh_cln16_fp2correction751(u);
-	if (oqs_sidh_cln16_fpequal751_non_constant_time(u[0], LUT[3][0]) == true && oqs_sidh_cln16_fpequal751_non_constant_time(u[1], LUT[3][1]) == true) {
-		oqs_sidh_cln16_mp_add((digit_t *) alpha_k, (digit_t *) pow3_60, (digit_t *) alpha_k, 2 * 64 / RADIX);
-	} else if (oqs_sidh_cln16_fpequal751_non_constant_time(u[0], one) == false || oqs_sidh_cln16_fpequal751_non_constant_time(u[1], zero) == false) {
-		oqs_sidh_cln16_mp_add((digit_t *) alpha_k, (digit_t *) pow3_60_2, (digit_t *) alpha_k, 2 * 64 / RADIX);
+	if (oqs_sidh_cln16_fpequal751_non_constant_time(u[0], LUT[3][0]) == true &&
+	    oqs_sidh_cln16_fpequal751_non_constant_time(u[1], LUT[3][1]) == true) {
+		oqs_sidh_cln16_mp_add((digit_t *) alpha_k, (digit_t *) pow3_60,
+		                      (digit_t *) alpha_k, 2 * 64 / RADIX);
+	} else if (oqs_sidh_cln16_fpequal751_non_constant_time(u[0], one) == false ||
+	           oqs_sidh_cln16_fpequal751_non_constant_time(u[1], zero) == false) {
+		oqs_sidh_cln16_mp_add((digit_t *) alpha_k, (digit_t *) pow3_60_2,
+		                      (digit_t *) alpha_k, 2 * 64 / RADIX);
 	}
 }
 
-void oqs_sidh_cln16_phn61(oqs_sidh_cln16_f2elm_t r, oqs_sidh_cln16_f2elm_t *t_ori, const oqs_sidh_cln16_f2elm_t *LUT, const oqs_sidh_cln16_f2elm_t *LUT_0, const oqs_sidh_cln16_f2elm_t *LUT_1, const oqs_sidh_cln16_felm_t one, uint64_t *alpha) {
+void oqs_sidh_cln16_phn61(oqs_sidh_cln16_f2elm_t r,
+                          oqs_sidh_cln16_f2elm_t *t_ori,
+                          const oqs_sidh_cln16_f2elm_t *LUT,
+                          const oqs_sidh_cln16_f2elm_t *LUT_0,
+                          const oqs_sidh_cln16_f2elm_t *LUT_1,
+                          const oqs_sidh_cln16_felm_t one, uint64_t *alpha) {
 	oqs_sidh_cln16_f2elm_t u, v, tmp;
 	uint64_t alpha_k[5] = {0}, alpha_tmp[10] = {0};
 	uint64_t i, k;
@@ -1768,8 +2218,10 @@ void oqs_sidh_cln16_phn61(oqs_sidh_cln16_f2elm_t r, oqs_sidh_cln16_f2elm_t *t_or
 			oqs_sidh_cln16_cube_Fp2_cycl(v, one);
 		}
 		oqs_sidh_cln16_phn15(v, LUT, LUT_0, LUT_1, one, alpha_k); // q order 3^61
-		oqs_sidh_cln16_multiply((digit_t *) alpha_k, (digit_t *) &pow3_61[2 * k], (digit_t *) alpha_tmp, 2 * 64 / RADIX);
-		oqs_sidh_cln16_mp_add((digit_t *) alpha, (digit_t *) alpha_tmp, (digit_t *) alpha, 4 * 64 / RADIX);
+		oqs_sidh_cln16_multiply((digit_t *) alpha_k, (digit_t *) &pow3_61[2 * k],
+		                        (digit_t *) alpha_tmp, 2 * 64 / RADIX);
+		oqs_sidh_cln16_mp_add((digit_t *) alpha, (digit_t *) alpha_tmp,
+		                      (digit_t *) alpha, 4 * 64 / RADIX);
 
 		oqs_sidh_cln16_exp_Fp2_cycl(t_ori[k], alpha_k, one, tmp, 97);
 		oqs_sidh_cln16_fp2mul751_mont(u, tmp, u);
@@ -1779,17 +2231,26 @@ void oqs_sidh_cln16_phn61(oqs_sidh_cln16_f2elm_t r, oqs_sidh_cln16_f2elm_t *t_or
 		oqs_sidh_cln16_cube_Fp2_cycl(v, one);
 	}
 	oqs_sidh_cln16_phn15(v, LUT, LUT_0, LUT_1, one, alpha_k); // q order 3^61
-	oqs_sidh_cln16_multiply((digit_t *) alpha_k, (digit_t *) &pow3_61[4], (digit_t *) alpha_tmp, 4 * 64 / RADIX);
-	oqs_sidh_cln16_mp_add((digit_t *) alpha, (digit_t *) alpha_tmp, (digit_t *) alpha, SIDH_NWORDS_ORDER);
+	oqs_sidh_cln16_multiply((digit_t *) alpha_k, (digit_t *) &pow3_61[4],
+	                        (digit_t *) alpha_tmp, 4 * 64 / RADIX);
+	oqs_sidh_cln16_mp_add((digit_t *) alpha, (digit_t *) alpha_tmp,
+	                      (digit_t *) alpha, SIDH_NWORDS_ORDER);
 
 	oqs_sidh_cln16_exp_Fp2_cycl(t_ori[2], alpha_k, one, tmp, 97);
 	oqs_sidh_cln16_fp2mul751_mont(u, tmp, u);
 	oqs_sidh_cln16_phn15_1(u, LUT, LUT_0, LUT_1, one, alpha_k); // q order 3^56
-	oqs_sidh_cln16_multiply((digit_t *) alpha_k, (digit_t *) &pow3_61[8], (digit_t *) alpha_tmp, 5 * 64 / RADIX);
-	oqs_sidh_cln16_mp_add((digit_t *) alpha, (digit_t *) alpha_tmp, (digit_t *) alpha, SIDH_NWORDS_ORDER);
+	oqs_sidh_cln16_multiply((digit_t *) alpha_k, (digit_t *) &pow3_61[8],
+	                        (digit_t *) alpha_tmp, 5 * 64 / RADIX);
+	oqs_sidh_cln16_mp_add((digit_t *) alpha, (digit_t *) alpha_tmp,
+	                      (digit_t *) alpha, SIDH_NWORDS_ORDER);
 }
 
-void oqs_sidh_cln16_build_LUTs_3(oqs_sidh_cln16_f2elm_t g, oqs_sidh_cln16_f2elm_t *t_ori, oqs_sidh_cln16_f2elm_t *LUT, oqs_sidh_cln16_f2elm_t *LUT_0, oqs_sidh_cln16_f2elm_t *LUT_1, const oqs_sidh_cln16_felm_t one) { // Lookup table generation for 3-torsion PH
+void oqs_sidh_cln16_build_LUTs_3(
+    oqs_sidh_cln16_f2elm_t g, oqs_sidh_cln16_f2elm_t *t_ori,
+    oqs_sidh_cln16_f2elm_t *LUT, oqs_sidh_cln16_f2elm_t *LUT_0,
+    oqs_sidh_cln16_f2elm_t *LUT_1,
+    const oqs_sidh_cln16_felm_t
+        one) { // Lookup table generation for 3-torsion PH
 	oqs_sidh_cln16_f2elm_t tmp;
 	unsigned int i, j;
 
@@ -1836,17 +2297,25 @@ void oqs_sidh_cln16_build_LUTs_3(oqs_sidh_cln16_f2elm_t g, oqs_sidh_cln16_f2elm_
 	oqs_sidh_cln16_fp2correction751(LUT[3]);
 }
 
-void oqs_sidh_cln16_ph3(oqs_sidh_cln16_point_t phiP, oqs_sidh_cln16_point_t phiQ, oqs_sidh_cln16_point_t PS, oqs_sidh_cln16_point_t QS, oqs_sidh_cln16_f2elm_t A, uint64_t *a0, uint64_t *b0, uint64_t *a1, uint64_t *b1, PCurveIsogenyStruct CurveIsogeny) { // 3-torsion Pohlig-Hellman function
-	                                                                                                                                                                                                                                                          // This function computes the five pairings e(QS, PS), e(QS, phiP), e(QS, phiQ), e(PS, phiP), e(PS,phiQ),
-	                                                                                                                                                                                                                                                          // computes the lookup tables for the Pohlig-Hellman functions,
-	                                                                                                                                                                                                                                                          // and then computes the discrete logarithms of the last four pairing values to the base of the first pairing value.
+void oqs_sidh_cln16_ph3(
+    oqs_sidh_cln16_point_t phiP, oqs_sidh_cln16_point_t phiQ,
+    oqs_sidh_cln16_point_t PS, oqs_sidh_cln16_point_t QS,
+    oqs_sidh_cln16_f2elm_t A, uint64_t *a0, uint64_t *b0, uint64_t *a1,
+    uint64_t *b1,
+    PCurveIsogenyStruct CurveIsogeny) { // 3-torsion Pohlig-Hellman function
+	// This function computes the five pairings e(QS, PS), e(QS, phiP), e(QS,
+	// phiQ), e(PS, phiP), e(PS,phiQ),
+	// computes the lookup tables for the Pohlig-Hellman functions,
+	// and then computes the discrete logarithms of the last four pairing values
+	// to the base of the first pairing value.
 	oqs_sidh_cln16_f2elm_t t_ori[5], n[5], LUT[4], LUT_0[4], LUT_1[5];
 	oqs_sidh_cln16_felm_t one = {0};
 
 	oqs_sidh_cln16_fpcopy751(CurveIsogeny->Montgomery_one, one);
 
 	// Compute the pairings
-	oqs_sidh_cln16_Tate_pairings_3_torsion(QS, PS, phiP, phiQ, A, n, CurveIsogeny);
+	oqs_sidh_cln16_Tate_pairings_3_torsion(QS, PS, phiP, phiQ, A, n,
+	                                       CurveIsogeny);
 
 	// Build the look-up tables
 	oqs_sidh_cln16_build_LUTs_3(n[0], t_ori, LUT, LUT_0, LUT_1, one);
@@ -1854,14 +2323,16 @@ void oqs_sidh_cln16_ph3(oqs_sidh_cln16_point_t phiP, oqs_sidh_cln16_point_t phiQ
 	// Finish computation
 	oqs_sidh_cln16_phn61(n[1], t_ori, LUT, LUT_0, LUT_1, one, a0);
 	oqs_sidh_cln16_phn61(n[3], t_ori, LUT, LUT_0, LUT_1, one, b0);
-	oqs_sidh_cln16_mp_sub(CurveIsogeny->Border, (digit_t *) b0, (digit_t *) b0, SIDH_NWORDS_ORDER);
+	oqs_sidh_cln16_mp_sub(CurveIsogeny->Border, (digit_t *) b0, (digit_t *) b0,
+	                      SIDH_NWORDS_ORDER);
 	oqs_sidh_cln16_phn61(n[2], t_ori, LUT, LUT_0, LUT_1, one, a1);
 	oqs_sidh_cln16_phn61(n[4], t_ori, LUT, LUT_0, LUT_1, one, b1);
-	oqs_sidh_cln16_mp_sub(CurveIsogeny->Border, (digit_t *) b1, (digit_t *) b1, SIDH_NWORDS_ORDER);
+	oqs_sidh_cln16_mp_sub(CurveIsogeny->Border, (digit_t *) b1, (digit_t *) b1,
+	                      SIDH_NWORDS_ORDER);
 }
 
 unsigned int oqs_sidh_cln16_mod3(digit_t *a) { // Computes the input modulo 3
-	                                           // The input is assumed to be SIDH_NWORDS_ORDER long
+	// The input is assumed to be SIDH_NWORDS_ORDER long
 	digit_t temp;
 	hdigit_t *val = (hdigit_t *) a, r = 0;
 	int i;
@@ -1874,20 +2345,35 @@ unsigned int oqs_sidh_cln16_mod3(digit_t *a) { // Computes the input modulo 3
 	return r;
 }
 
-void oqs_sidh_cln16_compress_3_torsion(const unsigned char *pPublicKeyB, unsigned char *CompressedPKB, uint64_t *a0, uint64_t *b0, uint64_t *a1, uint64_t *b1, oqs_sidh_cln16_point_t R1, oqs_sidh_cln16_point_t R2, PCurveIsogenyStruct CurveIsogeny) { // 3-torsion compression function
+void oqs_sidh_cln16_compress_3_torsion(
+    const unsigned char *pPublicKeyB, unsigned char *CompressedPKB,
+    uint64_t *a0, uint64_t *b0, uint64_t *a1, uint64_t *b1,
+    oqs_sidh_cln16_point_t R1, oqs_sidh_cln16_point_t R2,
+    PCurveIsogenyStruct CurveIsogeny) { // 3-torsion compression function
 	oqs_sidh_cln16_point_full_proj_t P, Q, phP, phQ, phX;
 	oqs_sidh_cln16_point_t phiP, phiQ;
 	oqs_sidh_cln16_publickey_t PK;
 	digit_t *comp = (digit_t *) CompressedPKB;
 	digit_t inv[SIDH_NWORDS_ORDER];
 	oqs_sidh_cln16_f2elm_t A, vec[4], Zinv[4];
-	uint64_t Montgomery_Rprime[SIDH_NWORDS64_ORDER] = {0x1A55482318541298, 0x070A6370DFA12A03, 0xCB1658E0E3823A40, 0xB3B7384EB5DEF3F9, 0xCBCA952F7006EA33, 0x00569EF8EC94864C}; // Value (2^384)^2 mod 3^239
-	uint64_t Montgomery_rprime[SIDH_NWORDS64_ORDER] = {0x48062A91D3AB563D, 0x6CE572751303C2F5, 0x5D1319F3F160EC9D, 0xE35554E8C2D5623A, 0xCA29300232BC79A5, 0x8AAD843D646D78C5}; // Value -(3^239)^-1 mod 2^384
+	uint64_t Montgomery_Rprime[SIDH_NWORDS64_ORDER] = {
+	    0x1A55482318541298, 0x070A6370DFA12A03,
+	    0xCB1658E0E3823A40, 0xB3B7384EB5DEF3F9,
+	    0xCBCA952F7006EA33, 0x00569EF8EC94864C}; // Value (2^384)^2 mod 3^239
+	uint64_t Montgomery_rprime[SIDH_NWORDS64_ORDER] = {
+	    0x48062A91D3AB563D, 0x6CE572751303C2F5,
+	    0x5D1319F3F160EC9D, 0xE35554E8C2D5623A,
+	    0xCA29300232BC79A5, 0x8AAD843D646D78C5}; // Value -(3^239)^-1 mod 2^384
 	unsigned int bit;
 
-	oqs_sidh_cln16_to_fp2mont(((oqs_sidh_cln16_f2elm_t *) pPublicKeyB)[0], ((oqs_sidh_cln16_f2elm_t *) &PK)[0]); // Converting to Montgomery representation
-	oqs_sidh_cln16_to_fp2mont(((oqs_sidh_cln16_f2elm_t *) pPublicKeyB)[1], ((oqs_sidh_cln16_f2elm_t *) &PK)[1]);
-	oqs_sidh_cln16_to_fp2mont(((oqs_sidh_cln16_f2elm_t *) pPublicKeyB)[2], ((oqs_sidh_cln16_f2elm_t *) &PK)[2]);
+	oqs_sidh_cln16_to_fp2mont(
+	    ((oqs_sidh_cln16_f2elm_t *) pPublicKeyB)[0],
+	    ((oqs_sidh_cln16_f2elm_t
+	          *) &PK)[0]); // Converting to Montgomery representation
+	oqs_sidh_cln16_to_fp2mont(((oqs_sidh_cln16_f2elm_t *) pPublicKeyB)[1],
+	                          ((oqs_sidh_cln16_f2elm_t *) &PK)[1]);
+	oqs_sidh_cln16_to_fp2mont(((oqs_sidh_cln16_f2elm_t *) pPublicKeyB)[2],
+	                          ((oqs_sidh_cln16_f2elm_t *) &PK)[2]);
 
 	oqs_sidh_cln16_recover_y(PK, phP, phQ, phX, A, CurveIsogeny);
 	oqs_sidh_cln16_generate_3_torsion_basis(A, P, Q, CurveIsogeny);
@@ -1909,40 +2395,85 @@ void oqs_sidh_cln16_compress_3_torsion(const unsigned char *pPublicKeyB, unsigne
 	oqs_sidh_cln16_ph3(phiP, phiQ, R1, R2, A, a0, b0, a1, b1, CurveIsogeny);
 
 	bit = oqs_sidh_cln16_mod3((digit_t *) a0);
-	oqs_sidh_cln16_to_Montgomery_mod_order((digit_t *) a0, (digit_t *) a0, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime, (digit_t *) &Montgomery_Rprime); // Converting to Montgomery representation
-	oqs_sidh_cln16_to_Montgomery_mod_order((digit_t *) a1, (digit_t *) a1, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime, (digit_t *) &Montgomery_Rprime);
-	oqs_sidh_cln16_to_Montgomery_mod_order((digit_t *) b0, (digit_t *) b0, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime, (digit_t *) &Montgomery_Rprime);
-	oqs_sidh_cln16_to_Montgomery_mod_order((digit_t *) b1, (digit_t *) b1, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime, (digit_t *) &Montgomery_Rprime);
+	oqs_sidh_cln16_to_Montgomery_mod_order(
+	    (digit_t *) a0, (digit_t *) a0, CurveIsogeny->Border,
+	    (digit_t *) &Montgomery_rprime,
+	    (digit_t *) &Montgomery_Rprime); // Converting to Montgomery representation
+	oqs_sidh_cln16_to_Montgomery_mod_order(
+	    (digit_t *) a1, (digit_t *) a1, CurveIsogeny->Border,
+	    (digit_t *) &Montgomery_rprime, (digit_t *) &Montgomery_Rprime);
+	oqs_sidh_cln16_to_Montgomery_mod_order(
+	    (digit_t *) b0, (digit_t *) b0, CurveIsogeny->Border,
+	    (digit_t *) &Montgomery_rprime, (digit_t *) &Montgomery_Rprime);
+	oqs_sidh_cln16_to_Montgomery_mod_order(
+	    (digit_t *) b1, (digit_t *) b1, CurveIsogeny->Border,
+	    (digit_t *) &Montgomery_rprime, (digit_t *) &Montgomery_Rprime);
 
-	if (bit != 0) { // Storing [b1*a0inv, a1*a0inv, b0*a0inv] and setting bit384 to 0
-		oqs_sidh_cln16_Montgomery_inversion_mod_order_bingcd((digit_t *) a0, inv, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime, (digit_t *) &Montgomery_Rprime);
-		oqs_sidh_cln16_Montgomery_multiply_mod_order((digit_t *) b0, inv, &comp[0], CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
-		oqs_sidh_cln16_Montgomery_multiply_mod_order((digit_t *) a1, inv, &comp[SIDH_NWORDS_ORDER], CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
-		oqs_sidh_cln16_Montgomery_multiply_mod_order((digit_t *) b1, inv, &comp[2 * SIDH_NWORDS_ORDER], CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
-		oqs_sidh_cln16_from_Montgomery_mod_order(&comp[0], &comp[0], CurveIsogeny->Border, (digit_t *) &Montgomery_rprime); // Converting back from Montgomery representation
-		oqs_sidh_cln16_from_Montgomery_mod_order(&comp[SIDH_NWORDS_ORDER], &comp[SIDH_NWORDS_ORDER], CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
-		oqs_sidh_cln16_from_Montgomery_mod_order(&comp[2 * SIDH_NWORDS_ORDER], &comp[2 * SIDH_NWORDS_ORDER], CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
+	if (bit !=
+	    0) { // Storing [b1*a0inv, a1*a0inv, b0*a0inv] and setting bit384 to 0
+		oqs_sidh_cln16_Montgomery_inversion_mod_order_bingcd(
+		    (digit_t *) a0, inv, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime,
+		    (digit_t *) &Montgomery_Rprime);
+		oqs_sidh_cln16_Montgomery_multiply_mod_order((digit_t *) b0, inv, &comp[0],
+		                                             CurveIsogeny->Border,
+		                                             (digit_t *) &Montgomery_rprime);
+		oqs_sidh_cln16_Montgomery_multiply_mod_order(
+		    (digit_t *) a1, inv, &comp[SIDH_NWORDS_ORDER], CurveIsogeny->Border,
+		    (digit_t *) &Montgomery_rprime);
+		oqs_sidh_cln16_Montgomery_multiply_mod_order(
+		    (digit_t *) b1, inv, &comp[2 * SIDH_NWORDS_ORDER], CurveIsogeny->Border,
+		    (digit_t *) &Montgomery_rprime);
+		oqs_sidh_cln16_from_Montgomery_mod_order(
+		    &comp[0], &comp[0], CurveIsogeny->Border,
+		    (digit_t *) &Montgomery_rprime); // Converting back from Montgomery
+		                                     // representation
+		oqs_sidh_cln16_from_Montgomery_mod_order(
+		    &comp[SIDH_NWORDS_ORDER], &comp[SIDH_NWORDS_ORDER],
+		    CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
+		oqs_sidh_cln16_from_Montgomery_mod_order(
+		    &comp[2 * SIDH_NWORDS_ORDER], &comp[2 * SIDH_NWORDS_ORDER],
+		    CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
 		comp[3 * SIDH_NWORDS_ORDER - 1] &= (digit_t)(-1) >> 1;
 	} else { // Storing [b1*b0inv, a1*b0inv, a0*b0inv] and setting bit384 to 1
-		oqs_sidh_cln16_Montgomery_inversion_mod_order_bingcd((digit_t *) b0, inv, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime, (digit_t *) &Montgomery_Rprime);
-		oqs_sidh_cln16_Montgomery_multiply_mod_order((digit_t *) a0, inv, &comp[0], CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
-		oqs_sidh_cln16_Montgomery_multiply_mod_order((digit_t *) a1, inv, &comp[SIDH_NWORDS_ORDER], CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
-		oqs_sidh_cln16_Montgomery_multiply_mod_order((digit_t *) b1, inv, &comp[2 * SIDH_NWORDS_ORDER], CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
-		oqs_sidh_cln16_from_Montgomery_mod_order(&comp[0], &comp[0], CurveIsogeny->Border, (digit_t *) &Montgomery_rprime); // Converting back from Montgomery representation
-		oqs_sidh_cln16_from_Montgomery_mod_order(&comp[SIDH_NWORDS_ORDER], &comp[SIDH_NWORDS_ORDER], CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
-		oqs_sidh_cln16_from_Montgomery_mod_order(&comp[2 * SIDH_NWORDS_ORDER], &comp[2 * SIDH_NWORDS_ORDER], CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
+		oqs_sidh_cln16_Montgomery_inversion_mod_order_bingcd(
+		    (digit_t *) b0, inv, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime,
+		    (digit_t *) &Montgomery_Rprime);
+		oqs_sidh_cln16_Montgomery_multiply_mod_order((digit_t *) a0, inv, &comp[0],
+		                                             CurveIsogeny->Border,
+		                                             (digit_t *) &Montgomery_rprime);
+		oqs_sidh_cln16_Montgomery_multiply_mod_order(
+		    (digit_t *) a1, inv, &comp[SIDH_NWORDS_ORDER], CurveIsogeny->Border,
+		    (digit_t *) &Montgomery_rprime);
+		oqs_sidh_cln16_Montgomery_multiply_mod_order(
+		    (digit_t *) b1, inv, &comp[2 * SIDH_NWORDS_ORDER], CurveIsogeny->Border,
+		    (digit_t *) &Montgomery_rprime);
+		oqs_sidh_cln16_from_Montgomery_mod_order(
+		    &comp[0], &comp[0], CurveIsogeny->Border,
+		    (digit_t *) &Montgomery_rprime); // Converting back from Montgomery
+		                                     // representation
+		oqs_sidh_cln16_from_Montgomery_mod_order(
+		    &comp[SIDH_NWORDS_ORDER], &comp[SIDH_NWORDS_ORDER],
+		    CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
+		oqs_sidh_cln16_from_Montgomery_mod_order(
+		    &comp[2 * SIDH_NWORDS_ORDER], &comp[2 * SIDH_NWORDS_ORDER],
+		    CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
 		comp[3 * SIDH_NWORDS_ORDER - 1] |= (digit_t) 1 << (sizeof(digit_t) * 8 - 1);
 	}
 
-	oqs_sidh_cln16_from_fp2mont(A, (oqs_sidh_cln16_felm_t *) &comp[3 * SIDH_NWORDS_ORDER]);
+	oqs_sidh_cln16_from_fp2mont(
+	    A, (oqs_sidh_cln16_felm_t *) &comp[3 * SIDH_NWORDS_ORDER]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-///////////////             FUNCTIONS FOR DECOMPRESSION             ///////////////
+///////////////             FUNCTIONS FOR DECOMPRESSION ///////////////
 
-void oqs_sidh_cln16_ADD(const oqs_sidh_cln16_point_full_proj_t P, const oqs_sidh_cln16_f2elm_t QX, const oqs_sidh_cln16_f2elm_t QY, const oqs_sidh_cln16_f2elm_t QZ, const oqs_sidh_cln16_f2elm_t A, oqs_sidh_cln16_point_full_proj_t R) { // General addition.
-	                                                                                                                                                                                                                                       // Input: projective Montgomery points P=(XP:YP:ZP) and Q=(XQ:YQ:ZQ).
-	                                                                                                                                                                                                                                       // Output: projective Montgomery point R <- P+Q = (XQP:YQP:ZQP).
+void oqs_sidh_cln16_ADD(
+    const oqs_sidh_cln16_point_full_proj_t P, const oqs_sidh_cln16_f2elm_t QX,
+    const oqs_sidh_cln16_f2elm_t QY, const oqs_sidh_cln16_f2elm_t QZ,
+    const oqs_sidh_cln16_f2elm_t A,
+    oqs_sidh_cln16_point_full_proj_t R) { // General addition.
+	// Input: projective Montgomery points P=(XP:YP:ZP) and Q=(XQ:YQ:ZQ).
+	// Output: projective Montgomery point R <- P+Q = (XQP:YQP:ZQP).
 	oqs_sidh_cln16_f2elm_t t0, t1, t2, t3, t4, t5, t6, t7;
 
 	oqs_sidh_cln16_fp2mul751_mont(QX, P->Z, t0);   // t0 = x2*Z1
@@ -1985,14 +2516,21 @@ void oqs_sidh_cln16_ADD(const oqs_sidh_cln16_point_full_proj_t P, const oqs_sidh
 	oqs_sidh_cln16_fp2mul751_mont(t3, t0, R->Z);   // Z3 = t3*t0
 }
 
-void oqs_sidh_cln16_Mont_ladder(const oqs_sidh_cln16_f2elm_t x, const digit_t *m, oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_point_proj_t Q, const oqs_sidh_cln16_f2elm_t A24, const unsigned int order_bits, const unsigned int order_fullbits, PCurveIsogenyStruct CurveIsogeny) { // The Montgomery ladder, running in non constant-time
-	                                                                                                                                                                                                                                                                                    // Inputs: the affine x-coordinate of a point P on E: B*y^2=x^3+A*x^2+x,
-	                                                                                                                                                                                                                                                                                    //         scalar m
-	                                                                                                                                                                                                                                                                                    //         curve constant A24 = (A+2)/4
-	                                                                                                                                                                                                                                                                                    //         order_bits = subgroup order bitlength
-	                                                                                                                                                                                                                                                                                    //         order_fullbits = smallest multiple of 32 larger than the order bitlength
-	                                                                                                                                                                                                                                                                                    // Output: P = m*(x:1)
-	                                                                                                                                                                                                                                                                                    // CurveIsogeny must be set up in advance using SIDH_curve_initialize().
+void oqs_sidh_cln16_Mont_ladder(
+    const oqs_sidh_cln16_f2elm_t x, const digit_t *m,
+    oqs_sidh_cln16_point_proj_t P, oqs_sidh_cln16_point_proj_t Q,
+    const oqs_sidh_cln16_f2elm_t A24, const unsigned int order_bits,
+    const unsigned int order_fullbits,
+    PCurveIsogenyStruct
+        CurveIsogeny) { // The Montgomery ladder, running in non constant-time
+	// Inputs: the affine x-coordinate of a point P on E: B*y^2=x^3+A*x^2+x,
+	//         scalar m
+	//         curve constant A24 = (A+2)/4
+	//         order_bits = subgroup order bitlength
+	//         order_fullbits = smallest multiple of 32 larger than the order
+	//         bitlength
+	// Output: P = m*(x:1)
+	// CurveIsogeny must be set up in advance using SIDH_curve_initialize().
 	unsigned int bit = 0, owords = NBITS_TO_NWORDS(order_fullbits);
 	digit_t scalar[SIDH_NWORDS_ORDER];
 	digit_t mask;
@@ -2020,34 +2558,48 @@ void oqs_sidh_cln16_Mont_ladder(const oqs_sidh_cln16_f2elm_t x, const digit_t *m
 		mask = 0 - (digit_t) bit;
 
 		oqs_sidh_cln16_swap_points(P, Q, mask);
-		oqs_sidh_cln16_xDBLADD(P, Q, x, A24);   // If bit=0 then P <- 2*P and Q <- P+Q,
-		oqs_sidh_cln16_swap_points(P, Q, mask); // else if bit=1 then Q <- 2*Q and P <- P+Q
+		oqs_sidh_cln16_xDBLADD(P, Q, x,
+		                       A24); // If bit=0 then P <- 2*P and Q <- P+Q,
+		oqs_sidh_cln16_swap_points(
+		    P, Q, mask); // else if bit=1 then Q <- 2*Q and P <- P+Q
 	}
 }
 
-void oqs_sidh_cln16_mont_twodim_scalarmult(digit_t *a, const oqs_sidh_cln16_point_t R, const oqs_sidh_cln16_point_t S, const oqs_sidh_cln16_f2elm_t A, const oqs_sidh_cln16_f2elm_t A24, oqs_sidh_cln16_point_full_proj_t P, PCurveIsogenyStruct CurveIsogeny) { // Computes R+aS
+void oqs_sidh_cln16_mont_twodim_scalarmult(
+    digit_t *a, const oqs_sidh_cln16_point_t R, const oqs_sidh_cln16_point_t S,
+    const oqs_sidh_cln16_f2elm_t A, const oqs_sidh_cln16_f2elm_t A24,
+    oqs_sidh_cln16_point_full_proj_t P,
+    PCurveIsogenyStruct CurveIsogeny) { // Computes R+aS
 	oqs_sidh_cln16_point_proj_t P0, P1;
 	oqs_sidh_cln16_point_full_proj_t P2;
 	oqs_sidh_cln16_f2elm_t one = {0};
 
 	oqs_sidh_cln16_fpcopy751(CurveIsogeny->Montgomery_one, one[0]);
-	oqs_sidh_cln16_Mont_ladder(S->x, a, P0, P1, A24, CurveIsogeny->oBbits, CurveIsogeny->owordbits, CurveIsogeny); // Hardwired to oBbits
+	oqs_sidh_cln16_Mont_ladder(S->x, a, P0, P1, A24, CurveIsogeny->oBbits,
+	                           CurveIsogeny->owordbits,
+	                           CurveIsogeny); // Hardwired to oBbits
 	recover_os(P0->X, P0->Z, P1->X, P1->Z, S->x, S->y, A, P2->X, P2->Y, P2->Z);
 	oqs_sidh_cln16_ADD(P2, R->x, R->y, one, A, P);
 }
 
-void oqs_sidh_cln16_decompress_2_torsion(const unsigned char *SecretKey, const unsigned char *CompressedPKB, oqs_sidh_cln16_point_proj_t R, oqs_sidh_cln16_f2elm_t A, PCurveIsogenyStruct CurveIsogeny) { // 2-torsion decompression function
+void oqs_sidh_cln16_decompress_2_torsion(
+    const unsigned char *SecretKey, const unsigned char *CompressedPKB,
+    oqs_sidh_cln16_point_proj_t R, oqs_sidh_cln16_f2elm_t A,
+    PCurveIsogenyStruct CurveIsogeny) { // 2-torsion decompression function
 	oqs_sidh_cln16_point_t R1, R2;
 	oqs_sidh_cln16_point_full_proj_t P, Q;
 	digit_t *comp = (digit_t *) CompressedPKB;
 	oqs_sidh_cln16_f2elm_t A24, vec[2], invs[2], one = {0};
-	digit_t tmp1[2 * SIDH_NWORDS_ORDER], tmp2[2 * SIDH_NWORDS_ORDER], vone[2 * SIDH_NWORDS_ORDER] = {0}, mask = (digit_t)(-1);
+	digit_t tmp1[2 * SIDH_NWORDS_ORDER], tmp2[2 * SIDH_NWORDS_ORDER],
+	    vone[2 * SIDH_NWORDS_ORDER] = {0}, mask = (digit_t)(-1);
 	unsigned int bit;
 
 	mask >>= (CurveIsogeny->owordbits - CurveIsogeny->oAbits);
 	vone[0] = 1;
 	oqs_sidh_cln16_fpcopy751(CurveIsogeny->Montgomery_one, one[0]);
-	oqs_sidh_cln16_to_fp2mont((oqs_sidh_cln16_felm_t *) &comp[3 * SIDH_NWORDS_ORDER], A); // Converting to Montgomery representation
+	oqs_sidh_cln16_to_fp2mont(
+	    (oqs_sidh_cln16_felm_t *) &comp[3 * SIDH_NWORDS_ORDER],
+	    A); // Converting to Montgomery representation
 	oqs_sidh_cln16_generate_2_torsion_basis(A, P, Q, CurveIsogeny);
 
 	// normalize basis points
@@ -2068,46 +2620,66 @@ void oqs_sidh_cln16_decompress_2_torsion(const unsigned char *SecretKey, const u
 	comp[3 * SIDH_NWORDS_ORDER - 1] &= (digit_t)(-1) >> 1;
 
 	if (bit == 0) {
-		oqs_sidh_cln16_multiply((digit_t *) SecretKey, &comp[SIDH_NWORDS_ORDER], tmp1, SIDH_NWORDS_ORDER);
+		oqs_sidh_cln16_multiply((digit_t *) SecretKey, &comp[SIDH_NWORDS_ORDER],
+		                        tmp1, SIDH_NWORDS_ORDER);
 		oqs_sidh_cln16_mp_add(tmp1, vone, tmp1, SIDH_NWORDS_ORDER);
 		tmp1[SIDH_NWORDS_ORDER - 1] &= mask;
 		oqs_sidh_cln16_inv_mod_orderA(tmp1, tmp2);
-		oqs_sidh_cln16_multiply((digit_t *) SecretKey, &comp[2 * SIDH_NWORDS_ORDER], tmp1, SIDH_NWORDS_ORDER);
+		oqs_sidh_cln16_multiply((digit_t *) SecretKey, &comp[2 * SIDH_NWORDS_ORDER],
+		                        tmp1, SIDH_NWORDS_ORDER);
 		oqs_sidh_cln16_mp_add(&comp[0], tmp1, tmp1, SIDH_NWORDS_ORDER);
 		oqs_sidh_cln16_multiply(tmp1, tmp2, vone, SIDH_NWORDS_ORDER);
 		vone[SIDH_NWORDS_ORDER - 1] &= mask;
-		oqs_sidh_cln16_mont_twodim_scalarmult(vone, R1, R2, A, A24, P, CurveIsogeny);
+		oqs_sidh_cln16_mont_twodim_scalarmult(vone, R1, R2, A, A24, P,
+		                                      CurveIsogeny);
 	} else {
-		oqs_sidh_cln16_multiply((digit_t *) SecretKey, &comp[2 * SIDH_NWORDS_ORDER], tmp1, SIDH_NWORDS_ORDER);
+		oqs_sidh_cln16_multiply((digit_t *) SecretKey, &comp[2 * SIDH_NWORDS_ORDER],
+		                        tmp1, SIDH_NWORDS_ORDER);
 		oqs_sidh_cln16_mp_add(tmp1, vone, tmp1, SIDH_NWORDS_ORDER);
 		tmp1[SIDH_NWORDS_ORDER - 1] &= mask;
 		oqs_sidh_cln16_inv_mod_orderA(tmp1, tmp2);
-		oqs_sidh_cln16_multiply((digit_t *) SecretKey, &comp[SIDH_NWORDS_ORDER], tmp1, SIDH_NWORDS_ORDER);
+		oqs_sidh_cln16_multiply((digit_t *) SecretKey, &comp[SIDH_NWORDS_ORDER],
+		                        tmp1, SIDH_NWORDS_ORDER);
 		oqs_sidh_cln16_mp_add(&comp[0], tmp1, tmp1, SIDH_NWORDS_ORDER);
 		oqs_sidh_cln16_multiply(tmp1, tmp2, vone, SIDH_NWORDS_ORDER);
 		vone[SIDH_NWORDS_ORDER - 1] &= mask;
-		oqs_sidh_cln16_mont_twodim_scalarmult(vone, R2, R1, A, A24, P, CurveIsogeny);
+		oqs_sidh_cln16_mont_twodim_scalarmult(vone, R2, R1, A, A24, P,
+		                                      CurveIsogeny);
 	}
 
 	oqs_sidh_cln16_fp2copy751(P->X, R->X);
 	oqs_sidh_cln16_fp2copy751(P->Z, R->Z);
 }
 
-void oqs_sidh_cln16_decompress_3_torsion(const unsigned char *SecretKey, const unsigned char *CompressedPKA, oqs_sidh_cln16_point_proj_t R, oqs_sidh_cln16_f2elm_t A, PCurveIsogenyStruct CurveIsogeny) { // 3-torsion decompression function
+void oqs_sidh_cln16_decompress_3_torsion(
+    const unsigned char *SecretKey, const unsigned char *CompressedPKA,
+    oqs_sidh_cln16_point_proj_t R, oqs_sidh_cln16_f2elm_t A,
+    PCurveIsogenyStruct CurveIsogeny) { // 3-torsion decompression function
 	oqs_sidh_cln16_point_t R1, R2;
 	oqs_sidh_cln16_point_full_proj_t P, Q;
 	digit_t *comp = (digit_t *) CompressedPKA;
 	digit_t *SKin = (digit_t *) SecretKey;
 	oqs_sidh_cln16_f2elm_t A24, vec[2], invs[2], one = {0};
-	digit_t t1[SIDH_NWORDS_ORDER], t2[SIDH_NWORDS_ORDER], t3[SIDH_NWORDS_ORDER], t4[SIDH_NWORDS_ORDER], vone[SIDH_NWORDS_ORDER] = {0};
-	uint64_t Montgomery_Rprime[SIDH_NWORDS64_ORDER] = {0x1A55482318541298, 0x070A6370DFA12A03, 0xCB1658E0E3823A40, 0xB3B7384EB5DEF3F9, 0xCBCA952F7006EA33, 0x00569EF8EC94864C}; // Value (2^384)^2 mod 3^239
-	uint64_t Montgomery_rprime[SIDH_NWORDS64_ORDER] = {0x48062A91D3AB563D, 0x6CE572751303C2F5, 0x5D1319F3F160EC9D, 0xE35554E8C2D5623A, 0xCA29300232BC79A5, 0x8AAD843D646D78C5}; // Value -(3^239)^-1 mod 2^384
+	digit_t t1[SIDH_NWORDS_ORDER], t2[SIDH_NWORDS_ORDER], t3[SIDH_NWORDS_ORDER],
+	    t4[SIDH_NWORDS_ORDER], vone[SIDH_NWORDS_ORDER] = {0};
+	uint64_t Montgomery_Rprime[SIDH_NWORDS64_ORDER] = {
+	    0x1A55482318541298, 0x070A6370DFA12A03,
+	    0xCB1658E0E3823A40, 0xB3B7384EB5DEF3F9,
+	    0xCBCA952F7006EA33, 0x00569EF8EC94864C}; // Value (2^384)^2 mod 3^239
+	uint64_t Montgomery_rprime[SIDH_NWORDS64_ORDER] = {
+	    0x48062A91D3AB563D, 0x6CE572751303C2F5,
+	    0x5D1319F3F160EC9D, 0xE35554E8C2D5623A,
+	    0xCA29300232BC79A5, 0x8AAD843D646D78C5}; // Value -(3^239)^-1 mod 2^384
 	unsigned int bit;
 
 	vone[0] = 1;
-	oqs_sidh_cln16_to_Montgomery_mod_order(vone, vone, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime, (digit_t *) &Montgomery_Rprime); // Converting to Montgomery representation
+	oqs_sidh_cln16_to_Montgomery_mod_order(
+	    vone, vone, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime,
+	    (digit_t *) &Montgomery_Rprime); // Converting to Montgomery representation
 	oqs_sidh_cln16_fpcopy751(CurveIsogeny->Montgomery_one, one[0]);
-	oqs_sidh_cln16_to_fp2mont((oqs_sidh_cln16_felm_t *) &comp[3 * SIDH_NWORDS_ORDER], A); // Converting to Montgomery representation
+	oqs_sidh_cln16_to_fp2mont(
+	    (oqs_sidh_cln16_felm_t *) &comp[3 * SIDH_NWORDS_ORDER],
+	    A); // Converting to Montgomery representation
 	oqs_sidh_cln16_generate_3_torsion_basis(A, P, Q, CurveIsogeny);
 
 	// normalize basis points
@@ -2126,28 +2698,52 @@ void oqs_sidh_cln16_decompress_3_torsion(const unsigned char *SecretKey, const u
 
 	bit = comp[3 * SIDH_NWORDS_ORDER - 1] >> (sizeof(digit_t) * 8 - 1);
 	comp[3 * SIDH_NWORDS_ORDER - 1] &= (digit_t)(-1) >> 1;
-	oqs_sidh_cln16_to_Montgomery_mod_order(SKin, t1, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime, (digit_t *) &Montgomery_Rprime); // Converting to Montgomery representation
-	oqs_sidh_cln16_to_Montgomery_mod_order(&comp[0], t2, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime, (digit_t *) &Montgomery_Rprime);
-	oqs_sidh_cln16_to_Montgomery_mod_order(&comp[SIDH_NWORDS_ORDER], t3, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime, (digit_t *) &Montgomery_Rprime);
-	oqs_sidh_cln16_to_Montgomery_mod_order(&comp[2 * SIDH_NWORDS_ORDER], t4, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime, (digit_t *) &Montgomery_Rprime);
+	oqs_sidh_cln16_to_Montgomery_mod_order(
+	    SKin, t1, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime,
+	    (digit_t *) &Montgomery_Rprime); // Converting to Montgomery representation
+	oqs_sidh_cln16_to_Montgomery_mod_order(&comp[0], t2, CurveIsogeny->Border,
+	                                       (digit_t *) &Montgomery_rprime,
+	                                       (digit_t *) &Montgomery_Rprime);
+	oqs_sidh_cln16_to_Montgomery_mod_order(
+	    &comp[SIDH_NWORDS_ORDER], t3, CurveIsogeny->Border,
+	    (digit_t *) &Montgomery_rprime, (digit_t *) &Montgomery_Rprime);
+	oqs_sidh_cln16_to_Montgomery_mod_order(
+	    &comp[2 * SIDH_NWORDS_ORDER], t4, CurveIsogeny->Border,
+	    (digit_t *) &Montgomery_rprime, (digit_t *) &Montgomery_Rprime);
 
 	if (bit == 0) {
-		oqs_sidh_cln16_Montgomery_multiply_mod_order(t1, t3, t3, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
+		oqs_sidh_cln16_Montgomery_multiply_mod_order(
+		    t1, t3, t3, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
 		oqs_sidh_cln16_mp_add(t3, vone, t3, SIDH_NWORDS_ORDER);
-		oqs_sidh_cln16_Montgomery_inversion_mod_order_bingcd(t3, t3, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime, (digit_t *) &Montgomery_Rprime);
-		oqs_sidh_cln16_Montgomery_multiply_mod_order(t1, t4, t4, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
+		oqs_sidh_cln16_Montgomery_inversion_mod_order_bingcd(
+		    t3, t3, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime,
+		    (digit_t *) &Montgomery_Rprime);
+		oqs_sidh_cln16_Montgomery_multiply_mod_order(
+		    t1, t4, t4, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
 		oqs_sidh_cln16_mp_add(t2, t4, t4, SIDH_NWORDS_ORDER);
-		oqs_sidh_cln16_Montgomery_multiply_mod_order(t3, t4, t3, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
-		oqs_sidh_cln16_from_Montgomery_mod_order(t3, t3, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime); // Converting back from Montgomery representation
+		oqs_sidh_cln16_Montgomery_multiply_mod_order(
+		    t3, t4, t3, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
+		oqs_sidh_cln16_from_Montgomery_mod_order(
+		    t3, t3, CurveIsogeny->Border,
+		    (digit_t *) &Montgomery_rprime); // Converting back from Montgomery
+		                                     // representation
 		oqs_sidh_cln16_mont_twodim_scalarmult(t3, R1, R2, A, A24, P, CurveIsogeny);
 	} else {
-		oqs_sidh_cln16_Montgomery_multiply_mod_order(t1, t4, t4, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
+		oqs_sidh_cln16_Montgomery_multiply_mod_order(
+		    t1, t4, t4, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
 		oqs_sidh_cln16_mp_add(t4, vone, t4, SIDH_NWORDS_ORDER);
-		oqs_sidh_cln16_Montgomery_inversion_mod_order_bingcd(t4, t4, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime, (digit_t *) &Montgomery_Rprime);
-		oqs_sidh_cln16_Montgomery_multiply_mod_order(t1, t3, t3, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
+		oqs_sidh_cln16_Montgomery_inversion_mod_order_bingcd(
+		    t4, t4, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime,
+		    (digit_t *) &Montgomery_Rprime);
+		oqs_sidh_cln16_Montgomery_multiply_mod_order(
+		    t1, t3, t3, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
 		oqs_sidh_cln16_mp_add(t2, t3, t3, SIDH_NWORDS_ORDER);
-		oqs_sidh_cln16_Montgomery_multiply_mod_order(t3, t4, t3, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
-		oqs_sidh_cln16_from_Montgomery_mod_order(t3, t3, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime); // Converting back from Montgomery representation
+		oqs_sidh_cln16_Montgomery_multiply_mod_order(
+		    t3, t4, t3, CurveIsogeny->Border, (digit_t *) &Montgomery_rprime);
+		oqs_sidh_cln16_from_Montgomery_mod_order(
+		    t3, t3, CurveIsogeny->Border,
+		    (digit_t *) &Montgomery_rprime); // Converting back from Montgomery
+		                                     // representation
 		oqs_sidh_cln16_mont_twodim_scalarmult(t3, R2, R1, A, A24, P, CurveIsogeny);
 	}
 

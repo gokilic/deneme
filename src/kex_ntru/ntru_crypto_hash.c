@@ -14,7 +14,7 @@
  * You can copy, modify, distribute and perform the work, even for commercial
  * purposes, all without asking permission. You should have received a copy of
  * the creative commons license (CC0 1.0 universal) along with this program.
- * See the license file for more information. 
+ * See the license file for more information.
  *
  *
  *********************************************************************************/
@@ -30,19 +30,12 @@
 #include "ntru_crypto.h"
 #include "ntru_crypto_hash.h"
 
-typedef uint32_t (*NTRU_CRYPTO_HASH_INIT_FN)(
-    void *c);
-typedef uint32_t (*NTRU_CRYPTO_HASH_UPDATE_FN)(
-    void *c,
-    void const *data,
-    uint32_t len);
-typedef uint32_t (*NTRU_CRYPTO_HASH_FINAL_FN)(
-    void *c,
-    void *md);
-typedef uint32_t (*NTRU_CRYPTO_HASH_DIGEST_FN)(
-    void const *data,
-    uint32_t len,
-    void *md);
+typedef uint32_t (*NTRU_CRYPTO_HASH_INIT_FN)(void *c);
+typedef uint32_t (*NTRU_CRYPTO_HASH_UPDATE_FN)(void *c, void const *data,
+                                               uint32_t len);
+typedef uint32_t (*NTRU_CRYPTO_HASH_FINAL_FN)(void *c, void *md);
+typedef uint32_t (*NTRU_CRYPTO_HASH_DIGEST_FN)(void const *data, uint32_t len,
+                                               void *md);
 
 typedef struct _NTRU_CRYPTO_HASH_ALG_PARAMS {
 	uint8_t algid;
@@ -56,18 +49,14 @@ typedef struct _NTRU_CRYPTO_HASH_ALG_PARAMS {
 
 static NTRU_CRYPTO_HASH_ALG_PARAMS const algs_params[] = {
     {
-        NTRU_CRYPTO_HASH_ALGID_SHA1,
-        SHA_1_BLK_LEN,
-        SHA_1_MD_LEN,
+        NTRU_CRYPTO_HASH_ALGID_SHA1, SHA_1_BLK_LEN, SHA_1_MD_LEN,
         (NTRU_CRYPTO_HASH_INIT_FN) SHA_1_INIT_FN,
         (NTRU_CRYPTO_HASH_UPDATE_FN) SHA_1_UPDATE_FN,
         (NTRU_CRYPTO_HASH_FINAL_FN) SHA_1_FINAL_FN,
         (NTRU_CRYPTO_HASH_DIGEST_FN) SHA_1_DIGEST_FN,
     },
     {
-        NTRU_CRYPTO_HASH_ALGID_SHA256,
-        SHA_256_BLK_LEN,
-        SHA_256_MD_LEN,
+        NTRU_CRYPTO_HASH_ALGID_SHA256, SHA_256_BLK_LEN, SHA_256_MD_LEN,
         (NTRU_CRYPTO_HASH_INIT_FN) SHA_256_INIT_FN,
         (NTRU_CRYPTO_HASH_UPDATE_FN) SHA_256_UPDATE_FN,
         (NTRU_CRYPTO_HASH_FINAL_FN) SHA_256_FINAL_FN,
@@ -83,8 +72,7 @@ static int const numalgs = (sizeof(algs_params) / sizeof(algs_params[0]));
  * specified, by looking for algid in the global algs_params table.
  * If not found, return NULL.
  */
-static NTRU_CRYPTO_HASH_ALG_PARAMS const *
-get_alg_params(
+static NTRU_CRYPTO_HASH_ALG_PARAMS const *get_alg_params(
     NTRU_CRYPTO_HASH_ALGID algid) /*  in - the hash algorithm to find */
 {
 	int i;
@@ -108,8 +96,7 @@ get_alg_params(
  * Returns NTRU_CRYPTO_HASH_BAD_ALG if the specified algorithm is not supported.
  */
 
-uint32_t
-ntru_crypto_hash_set_alg(
+uint32_t ntru_crypto_hash_set_alg(
     NTRU_CRYPTO_HASH_ALGID algid, /*      in - hash algorithm to be used */
     NTRU_CRYPTO_HASH_CTX *c)      /*  in/out - pointer to the hash context */
 {
@@ -139,8 +126,7 @@ ntru_crypto_hash_set_alg(
  * Returns NTRU_CRYPTO_HASH_BAD_ALG if the algorithm has not been set.
  */
 
-uint32_t
-ntru_crypto_hash_block_length(
+uint32_t ntru_crypto_hash_block_length(
     NTRU_CRYPTO_HASH_CTX *c, /*  in - pointer to the hash context */
     uint16_t *blk_len)       /* out - address for block length in bytes */
 {
@@ -169,8 +155,7 @@ ntru_crypto_hash_block_length(
  * Returns NTRU_CRYPTO_HASH_BAD_ALG if the algorithm has not been set.
  */
 
-uint32_t
-ntru_crypto_hash_digest_length(
+uint32_t ntru_crypto_hash_digest_length(
     NTRU_CRYPTO_HASH_CTX const *c, /*  in - pointer to the hash context */
     uint16_t *md_len)              /* out - addr for digest length in bytes */
 {
@@ -197,8 +182,7 @@ ntru_crypto_hash_digest_length(
  * Returns NTRU_CRYPTO_HASH_BAD_ALG if the algorithm has not been set.
  */
 
-uint32_t
-ntru_crypto_hash_init(
+uint32_t ntru_crypto_hash_init(
     NTRU_CRYPTO_HASH_CTX *c) /* in/out - pointer to hash context */
 {
 	if (!c) {
@@ -226,8 +210,7 @@ ntru_crypto_hash_init(
  * Returns NTRU_CRYPTO_HASH_BAD_ALG if the algorithm has not been set.
  */
 
-uint32_t
-ntru_crypto_hash_update(
+uint32_t ntru_crypto_hash_update(
     NTRU_CRYPTO_HASH_CTX *c, /* in/out - pointer to hash context */
     uint8_t const *data,     /*     in - pointer to input data */
     uint32_t data_len)       /*     in - number of bytes of input data */
@@ -246,7 +229,7 @@ ntru_crypto_hash_update(
 /* ntru_crypto_hash_final
  *
  * This routine completes the hash calculation and returns the message digest.
- * 
+ *
  * Returns NTRU_CRYPTO_HASH_OK on success.
  * Returns NTRU_CRYPTO_HASH_FAIL with corrupted context.
  * Returns NTRU_CRYPTO_HASH_BAD_PARAMETER if inappropriate NULL pointers are
@@ -254,8 +237,7 @@ ntru_crypto_hash_update(
  * Returns NTRU_CRYPTO_HASH_BAD_ALG if the algorithm has not been set.
  */
 
-uint32_t
-ntru_crypto_hash_final(
+uint32_t ntru_crypto_hash_final(
     NTRU_CRYPTO_HASH_CTX *c, /* in/out - pointer to hash context */
     uint8_t *md)             /*   out  - address for message digest */
 {
@@ -286,8 +268,7 @@ ntru_crypto_hash_final(
  * Returns NTRU_CRYPTO_HASH_BAD_ALG if the specified algorithm is not supported.
  */
 
-uint32_t
-ntru_crypto_hash_digest(
+uint32_t ntru_crypto_hash_digest(
     NTRU_CRYPTO_HASH_ALGID algid, /*  in - the hash algorithm to use */
     uint8_t const *data,          /*  in - pointer to input data */
     uint32_t data_len,            /*  in - number of bytes of input data */

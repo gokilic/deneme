@@ -14,7 +14,7 @@
  * You can copy, modify, distribute and perform the work, even for commercial
  * purposes, all without asking permission. You should have received a copy of
  * the creative commons license (CC0 1.0 universal) along with this program.
- * See the license file for more information. 
+ * See the license file for more information.
  *
  *
  *********************************************************************************/
@@ -319,7 +319,7 @@ ntru_crypto_ntru_encrypt_subjectPublicKeyInfo2PublicKey(
                                                  pubkey blob */
     uint8_t *pubkey_blob,          /*    out - address for pubkey blob */
     uint8_t **next,                /*    out - address for ptr to encoded
-                                                 data following the 
+                                                 data following the
                                                  subjectPublicKeyInfo */
     uint32_t *remaining_data_len); /* in/out - number of bytes remaining in
                                                     buffer *next */
@@ -329,8 +329,7 @@ ntru_crypto_ntru_encrypt_subjectPublicKeyInfo2PublicKey(
  * Returns pointer to null terminated parameter set name
  * or NULL if parameter set ID is not found.
  */
-const char *
-ntru_encrypt_get_param_set_name(
+const char *ntru_encrypt_get_param_set_name(
     NTRU_ENCRYPT_PARAM_SET_ID id); /*  in - parameter-set id */
 
 #if defined(__cplusplus)

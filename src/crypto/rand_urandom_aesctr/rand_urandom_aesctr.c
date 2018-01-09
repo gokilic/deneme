@@ -30,7 +30,8 @@ typedef struct oqs_rand_urandom_aesctr_ctx {
 
 static oqs_rand_urandom_aesctr_ctx *oqs_rand_urandom_aesctr_ctx_new() {
 	oqs_rand_urandom_aesctr_ctx *rand_ctx = NULL;
-	rand_ctx = (oqs_rand_urandom_aesctr_ctx *) malloc(sizeof(oqs_rand_urandom_aesctr_ctx));
+	rand_ctx = (oqs_rand_urandom_aesctr_ctx *) malloc(
+	    sizeof(oqs_rand_urandom_aesctr_ctx));
 	if (rand_ctx == NULL) {
 		goto err;
 	}
@@ -110,7 +111,8 @@ uint64_t OQS_RAND_urandom_aesctr_64(OQS_RAND *r) {
 
 void OQS_RAND_urandom_aesctr_free(OQS_RAND *r) {
 	if (r) {
-		oqs_rand_urandom_aesctr_ctx *rand_ctx = (oqs_rand_urandom_aesctr_ctx *) r->ctx;
+		oqs_rand_urandom_aesctr_ctx *rand_ctx =
+		    (oqs_rand_urandom_aesctr_ctx *) r->ctx;
 		if (rand_ctx) {
 			OQS_AES128_free_schedule(rand_ctx->schedule);
 		}

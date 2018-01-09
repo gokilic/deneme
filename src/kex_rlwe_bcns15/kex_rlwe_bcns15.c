@@ -48,7 +48,8 @@ OQS_KEX *OQS_KEX_rlwe_bcns15_new(OQS_RAND *rand) {
 	return k;
 }
 
-int OQS_KEX_rlwe_bcns15_alice_0(OQS_KEX *k, void **alice_priv, uint8_t **alice_msg, size_t *alice_msg_len) {
+int OQS_KEX_rlwe_bcns15_alice_0(OQS_KEX *k, void **alice_priv,
+                                uint8_t **alice_msg, size_t *alice_msg_len) {
 
 	int ret;
 	uint32_t *alice_msg_32 = NULL;
@@ -67,7 +68,9 @@ int OQS_KEX_rlwe_bcns15_alice_0(OQS_KEX *k, void **alice_priv, uint8_t **alice_m
 	}
 
 	/* generate public/private key pair */
-	oqs_kex_rlwe_bcns15_generate_keypair(oqs_kex_rlwe_bcns15_a, (uint32_t *) *alice_priv, alice_msg_32, k->ctx, k->rand);
+	oqs_kex_rlwe_bcns15_generate_keypair(oqs_kex_rlwe_bcns15_a,
+	                                     (uint32_t *) *alice_priv, alice_msg_32,
+	                                     k->ctx, k->rand);
 	*alice_msg = (uint8_t *) alice_msg_32;
 	*alice_msg_len = 1024 * sizeof(uint32_t);
 
@@ -84,7 +87,10 @@ cleanup:
 	return ret;
 }
 
-int OQS_KEX_rlwe_bcns15_bob(OQS_KEX *k, const uint8_t *alice_msg, const size_t alice_msg_len, uint8_t **bob_msg, size_t *bob_msg_len, uint8_t **key, size_t *key_len) {
+int OQS_KEX_rlwe_bcns15_bob(OQS_KEX *k, const uint8_t *alice_msg,
+                            const size_t alice_msg_len, uint8_t **bob_msg,
+                            size_t *bob_msg_len, uint8_t **key,
+                            size_t *key_len) {
 
 	int ret;
 
@@ -113,11 +119,14 @@ int OQS_KEX_rlwe_bcns15_bob(OQS_KEX *k, const uint8_t *alice_msg, const size_t a
 	}
 
 	/* generate public/private key pair */
-	oqs_kex_rlwe_bcns15_generate_keypair(oqs_kex_rlwe_bcns15_a, bob_priv, (uint32_t *) *bob_msg, k->ctx, k->rand);
+	oqs_kex_rlwe_bcns15_generate_keypair(oqs_kex_rlwe_bcns15_a, bob_priv,
+	                                     (uint32_t *) *bob_msg, k->ctx, k->rand);
 
 	/* generate Bob's response */
 	uint8_t *bob_rec = *bob_msg + 1024 * sizeof(uint32_t);
-	oqs_kex_rlwe_bcns15_compute_key_bob((uint32_t *) alice_msg, bob_priv, (uint64_t *) bob_rec, key_64, k->ctx, k->rand);
+	oqs_kex_rlwe_bcns15_compute_key_bob((uint32_t *) alice_msg, bob_priv,
+	                                    (uint64_t *) bob_rec, key_64, k->ctx,
+	                                    k->rand);
 	*bob_msg_len = 1024 * sizeof(uint32_t) + 16 * sizeof(uint64_t);
 	*key = (uint8_t *) key_64;
 	*key_len = 16 * sizeof(uint64_t);
@@ -137,7 +146,10 @@ cleanup:
 	return ret;
 }
 
-int OQS_KEX_rlwe_bcns15_alice_1(OQS_KEX *k, const void *alice_priv, const uint8_t *bob_msg, const size_t bob_msg_len, uint8_t **key, size_t *key_len) {
+int OQS_KEX_rlwe_bcns15_alice_1(OQS_KEX *k, const void *alice_priv,
+                                const uint8_t *bob_msg,
+                                const size_t bob_msg_len, uint8_t **key,
+                                size_t *key_len) {
 
 	int ret;
 
@@ -157,7 +169,9 @@ int OQS_KEX_rlwe_bcns15_alice_1(OQS_KEX *k, const void *alice_priv, const uint8_
 
 	/* generate Alice's session key */
 	const uint8_t *bob_rec = bob_msg + 1024 * sizeof(uint32_t);
-	oqs_kex_rlwe_bcns15_compute_key_alice((uint32_t *) bob_msg, (uint32_t *) alice_priv, (uint64_t *) bob_rec, key_64, k->ctx);
+	oqs_kex_rlwe_bcns15_compute_key_alice((uint32_t *) bob_msg,
+	                                      (uint32_t *) alice_priv,
+	                                      (uint64_t *) bob_rec, key_64, k->ctx);
 	*key = (uint8_t *) key_64;
 	*key_len = 16 * sizeof(uint64_t);
 

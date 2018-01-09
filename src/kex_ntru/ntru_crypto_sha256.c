@@ -14,7 +14,7 @@
  * You can copy, modify, distribute and perform the work, even for commercial
  * purposes, all without asking permission. You should have received a copy of
  * the creative commons license (CC0 1.0 universal) along with this program.
- * See the license file for more information. 
+ * See the license file for more information.
  *
  *
  *********************************************************************************/
@@ -38,8 +38,7 @@
  * Returns SHA_BAD_PARAMETER if inappropriate NULL pointers are passed.
  */
 
-uint32_t
-ntru_crypto_sha256_init(
+uint32_t ntru_crypto_sha256_init(
     NTRU_CRYPTO_SHA2_CTX *c) /* in/out - pointer to SHA-2 context */
 {
 	return ntru_crypto_sha2(NTRU_CRYPTO_HASH_ALGID_SHA256, c, NULL, NULL, 0,
@@ -56,8 +55,7 @@ ntru_crypto_sha256_init(
  * Returns SHA_OVERFLOW if more than 2^64 - 1 bytes are hashed.
  */
 
-uint32_t
-ntru_crypto_sha256_update(
+uint32_t ntru_crypto_sha256_update(
     NTRU_CRYPTO_SHA2_CTX *c, /* in/out - pointer to SHA-2 context */
     uint8_t const *data,     /*     in - pointer to input data */
     uint32_t data_len)       /*     in - no. of bytes of input data */
@@ -70,15 +68,14 @@ ntru_crypto_sha256_update(
  *
  * This routine completes the SHA-256 hash calculation and returns the
  * message digest.
- * 
+ *
  * Returns SHA_OK on success.
  * Returns SHA_FAIL with corrupted context.
  * Returns SHA_BAD_PARAMETER if inappropriate NULL pointers are passed.
  * Returns SHA_OVERFLOW if more than 2^64 - 1 bytes are hashed.
  */
 
-uint32_t
-ntru_crypto_sha256_final(
+uint32_t ntru_crypto_sha256_final(
     NTRU_CRYPTO_SHA2_CTX *c, /* in/out - pointer to SHA-2 context */
     uint8_t *md)             /*    out - address for message digest */
 {
@@ -96,8 +93,7 @@ ntru_crypto_sha256_final(
  * Returns SHA_OVERFLOW if more than 2^64 - 1 bytes are hashed.
  */
 
-uint32_t
-ntru_crypto_sha256_digest(
+uint32_t ntru_crypto_sha256_digest(
     uint8_t const *data, /*  in - pointer to input data */
     uint32_t data_len,   /*  in - number of bytes of input data */
     uint8_t *md)         /* out - address for message digest */

@@ -4,10 +4,8 @@
 
 #define PAD(N) ((N + 0x0007) & 0xfff8)
 
-void ntru_ring_mult_indices_memreq(
-    uint16_t N,
-    uint16_t *tmp_polys,
-    uint16_t *poly_coeffs) {
+void ntru_ring_mult_indices_memreq(uint16_t N, uint16_t *tmp_polys,
+                                   uint16_t *poly_coeffs) {
 	if (tmp_polys) {
 		*tmp_polys = 2;
 	}

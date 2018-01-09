@@ -13,8 +13,7 @@ extern "C" {
  * @param str2
  * @return the concatenation of {@code str1, str2}
  */
-char *oqs_sidh_iqc_ref_concat(char *str1,
-                              const char *str2);
+char *oqs_sidh_iqc_ref_concat(char *str1, const char *str2);
 
 /**
  * Generates a random char array of length {@code num_bytes}.
@@ -34,8 +33,7 @@ void oqs_sidh_iqc_ref_get_random_mpz(mpz_t x);
  * @param lenght
  * @return the bitwise xor of the two arrays
  */
-char *oqs_sidh_iqc_ref_array_xor(const char *array1,
-                                 const char *array2,
+char *oqs_sidh_iqc_ref_array_xor(const char *array1, const char *array2,
                                  long lenght);
 
 #ifdef __cplusplus

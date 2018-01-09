@@ -4,11 +4,10 @@
 #define PAD(N) ((N + 0x000f) & 0xfff0)
 
 static void
-grade_school_mul(
-    uint16_t *res1,    /* out - a * b in Z[x], must be length 2N */
-    uint16_t const *a, /*  in - polynomial */
-    uint16_t const *b, /*  in - polynomial */
-    uint16_t const N)  /*  in - number of coefficients in a and b */
+grade_school_mul(uint16_t *res1,    /* out - a * b in Z[x], must be length 2N */
+                 uint16_t const *a, /*  in - polynomial */
+                 uint16_t const *b, /*  in - polynomial */
+                 uint16_t const N)  /*  in - number of coefficients in a and b */
 {
 	uint16_t i;
 	uint16_t j;
@@ -28,12 +27,11 @@ grade_school_mul(
 }
 
 static void
-karatsuba(
-    uint16_t *res1,    /* out - a * b in Z[x], must be length 2k */
-    uint16_t *tmp1,    /*  in - k coefficients of scratch space */
-    uint16_t const *a, /*  in - polynomial */
-    uint16_t const *b, /*  in - polynomial */
-    uint16_t const k)  /*  in - number of coefficients in a and b */
+karatsuba(uint16_t *res1,    /* out - a * b in Z[x], must be length 2k */
+          uint16_t *tmp1,    /*  in - k coefficients of scratch space */
+          uint16_t const *a, /*  in - polynomial */
+          uint16_t const *b, /*  in - polynomial */
+          uint16_t const k)  /*  in - number of coefficients in a and b */
 {
 	uint16_t i;
 
@@ -89,10 +87,8 @@ karatsuba(
 	return;
 }
 
-void ntru_ring_mult_coefficients_memreq(
-    uint16_t N,
-    uint16_t *tmp_polys,
-    uint16_t *poly_coeffs) {
+void ntru_ring_mult_coefficients_memreq(uint16_t N, uint16_t *tmp_polys,
+                                        uint16_t *poly_coeffs) {
 	if (tmp_polys) {
 		*tmp_polys = 3;
 	}

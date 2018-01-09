@@ -14,7 +14,7 @@
  * You can copy, modify, distribute and perform the work, even for commercial
  * purposes, all without asking permission. You should have received a copy of
  * the creative commons license (CC0 1.0 universal) along with this program.
- * See the license file for more information. 
+ * See the license file for more information.
  *
  *
  *********************************************************************************/
@@ -51,8 +51,7 @@
  * Returns FALSE if the blob is invalid.
  */
 
-extern bool
-ntru_crypto_ntru_encrypt_key_parse(
+extern bool ntru_crypto_ntru_encrypt_key_parse(
     bool pubkey_parse,               /*  in - if parsing pubkey
                                                          blob */
     uint16_t key_blob_len,           /*  in - no. octets in key
@@ -78,8 +77,7 @@ ntru_crypto_ntru_encrypt_key_parse(
  * and privkey_blob_len to NULL.
  */
 
-extern void
-ntru_crypto_ntru_encrypt_key_get_blob_params(
+extern void ntru_crypto_ntru_encrypt_key_get_blob_params(
     NTRU_ENCRYPT_PARAM_SET const *params, /*  in - pointer to
                                                                param set
                                                                parameters */
@@ -99,8 +97,7 @@ ntru_crypto_ntru_encrypt_key_get_blob_params(
  * Returns a public key blob, packed according to the packing type provided.
  */
 
-extern uint32_t
-ntru_crypto_ntru_encrypt_key_create_pubkey_blob(
+extern uint32_t ntru_crypto_ntru_encrypt_key_create_pubkey_blob(
     NTRU_ENCRYPT_PARAM_SET const *params, /*  in - pointer to
                                                                param set
                                                                parameters */
@@ -117,8 +114,7 @@ ntru_crypto_ntru_encrypt_key_create_pubkey_blob(
  * Returns a public key blob, recreated from an already-packed public key.
  */
 
-extern uint32_t
-ntru_crypto_ntru_encrypt_key_recreate_pubkey_blob(
+extern uint32_t ntru_crypto_ntru_encrypt_key_recreate_pubkey_blob(
     NTRU_ENCRYPT_PARAM_SET const *params, /*  in - pointer to
                                                                param set
                                                                parameters */
@@ -136,8 +132,7 @@ ntru_crypto_ntru_encrypt_key_recreate_pubkey_blob(
  * Returns a privlic key blob, packed according to the packing type provided.
  */
 
-extern uint32_t
-ntru_crypto_ntru_encrypt_key_create_privkey_blob(
+extern uint32_t ntru_crypto_ntru_encrypt_key_create_privkey_blob(
     NTRU_ENCRYPT_PARAM_SET const *params, /*  in - pointer to
                                                                param set
                                                                parameters */

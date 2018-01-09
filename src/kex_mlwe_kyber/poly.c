@@ -11,7 +11,8 @@ typedef struct {
 
 /* include cbd.c */
 static uint32_t load_littleendian(const unsigned char *x) {
-	return x[0] | (((uint32_t) x[1]) << 8) | (((uint32_t) x[2]) << 16) | (((uint32_t) x[3]) << 24);
+	return x[0] | (((uint32_t) x[1]) << 8) | (((uint32_t) x[2]) << 16) |
+	       (((uint32_t) x[3]) << 24);
 }
 
 static void cbd(poly *r, const unsigned char *buf) {
@@ -102,18 +103,31 @@ static void poly_tobytes(unsigned char *r, const poly *a) {
 static void poly_frombytes(poly *r, const unsigned char *a) {
 	int i;
 	for (i = 0; i < KYBER_N / 8; i++) {
-		r->coeffs[8 * i + 0] = a[13 * i + 0] | (((uint16_t) a[13 * i + 1] & 0x1f) << 8);
-		r->coeffs[8 * i + 1] = (a[13 * i + 1] >> 5) | (((uint16_t) a[13 * i + 2]) << 3) | (((uint16_t) a[13 * i + 3] & 0x03) << 11);
-		r->coeffs[8 * i + 2] = (a[13 * i + 3] >> 2) | (((uint16_t) a[13 * i + 4] & 0x7f) << 6);
-		r->coeffs[8 * i + 3] = (a[13 * i + 4] >> 7) | (((uint16_t) a[13 * i + 5]) << 1) | (((uint16_t) a[13 * i + 6] & 0x0f) << 9);
-		r->coeffs[8 * i + 4] = (a[13 * i + 6] >> 4) | (((uint16_t) a[13 * i + 7]) << 4) | (((uint16_t) a[13 * i + 8] & 0x01) << 12);
-		r->coeffs[8 * i + 5] = (a[13 * i + 8] >> 1) | (((uint16_t) a[13 * i + 9] & 0x3f) << 7);
-		r->coeffs[8 * i + 6] = (a[13 * i + 9] >> 6) | (((uint16_t) a[13 * i + 10]) << 2) | (((uint16_t) a[13 * i + 11] & 0x07) << 10);
-		r->coeffs[8 * i + 7] = (a[13 * i + 11] >> 3) | (((uint16_t) a[13 * i + 12]) << 5);
+		r->coeffs[8 * i + 0] =
+		    a[13 * i + 0] | (((uint16_t) a[13 * i + 1] & 0x1f) << 8);
+		r->coeffs[8 * i + 1] = (a[13 * i + 1] >> 5) |
+		                       (((uint16_t) a[13 * i + 2]) << 3) |
+		                       (((uint16_t) a[13 * i + 3] & 0x03) << 11);
+		r->coeffs[8 * i + 2] =
+		    (a[13 * i + 3] >> 2) | (((uint16_t) a[13 * i + 4] & 0x7f) << 6);
+		r->coeffs[8 * i + 3] = (a[13 * i + 4] >> 7) |
+		                       (((uint16_t) a[13 * i + 5]) << 1) |
+		                       (((uint16_t) a[13 * i + 6] & 0x0f) << 9);
+		r->coeffs[8 * i + 4] = (a[13 * i + 6] >> 4) |
+		                       (((uint16_t) a[13 * i + 7]) << 4) |
+		                       (((uint16_t) a[13 * i + 8] & 0x01) << 12);
+		r->coeffs[8 * i + 5] =
+		    (a[13 * i + 8] >> 1) | (((uint16_t) a[13 * i + 9] & 0x3f) << 7);
+		r->coeffs[8 * i + 6] = (a[13 * i + 9] >> 6) |
+		                       (((uint16_t) a[13 * i + 10]) << 2) |
+		                       (((uint16_t) a[13 * i + 11] & 0x07) << 10);
+		r->coeffs[8 * i + 7] =
+		    (a[13 * i + 11] >> 3) | (((uint16_t) a[13 * i + 12]) << 5);
 	}
 }
 
-static void poly_getnoise(poly *r, const unsigned char *seed, unsigned char nonce) {
+static void poly_getnoise(poly *r, const unsigned char *seed,
+                          unsigned char nonce) {
 	unsigned char buf[KYBER_N];
 
 	OQS_SHA3_cshake128_simple(buf, KYBER_N, nonce, seed, KYBER_NOISESEEDBYTES);
@@ -144,7 +158,8 @@ static void poly_sub(poly *r, const poly *a, const poly *b) {
 		r->coeffs[i] = barrett_reduce(a->coeffs[i] + 3 * KYBER_Q - b->coeffs[i]);
 }
 
-static void poly_frommsg(poly *r, const unsigned char msg[KYBER_SHAREDKEYBYTES]) {
+static void poly_frommsg(poly *r,
+                         const unsigned char msg[KYBER_SHAREDKEYBYTES]) {
 	uint16_t i, j, mask;
 
 	for (i = 0; i < KYBER_SHAREDKEYBYTES; i++) {

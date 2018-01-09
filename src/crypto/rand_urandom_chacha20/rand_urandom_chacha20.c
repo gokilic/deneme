@@ -60,7 +60,8 @@ OQS_RAND *OQS_RAND_urandom_chacha20_new() {
 
 static OQS_RAND_urandom_chacha20_ctx *OQS_RAND_urandom_chacha20_ctx_new() {
 	OQS_RAND_urandom_chacha20_ctx *rand_ctx = NULL;
-	rand_ctx = (OQS_RAND_urandom_chacha20_ctx *) malloc(sizeof(OQS_RAND_urandom_chacha20_ctx));
+	rand_ctx = (OQS_RAND_urandom_chacha20_ctx *) malloc(
+	    sizeof(OQS_RAND_urandom_chacha20_ctx));
 	if (rand_ctx == NULL) {
 		goto err;
 	}
@@ -81,13 +82,15 @@ okay:
 }
 
 static void OQS_RAND_urandom_chacha20_fill_cache(OQS_RAND *r) {
-	OQS_RAND_urandom_chacha20_ctx *rand_ctx = (OQS_RAND_urandom_chacha20_ctx *) r->ctx;
+	OQS_RAND_urandom_chacha20_ctx *rand_ctx =
+	    (OQS_RAND_urandom_chacha20_ctx *) r->ctx;
 	r->rand_n(r, rand_ctx->cache, 64);
 	rand_ctx->cache_next_byte = 0;
 }
 
 uint8_t OQS_RAND_urandom_chacha20_8(OQS_RAND *r) {
-	OQS_RAND_urandom_chacha20_ctx *rand_ctx = (OQS_RAND_urandom_chacha20_ctx *) r->ctx;
+	OQS_RAND_urandom_chacha20_ctx *rand_ctx =
+	    (OQS_RAND_urandom_chacha20_ctx *) r->ctx;
 	if (rand_ctx->cache_next_byte > 64 - 1) {
 		OQS_RAND_urandom_chacha20_fill_cache(r);
 	}
@@ -97,7 +100,8 @@ uint8_t OQS_RAND_urandom_chacha20_8(OQS_RAND *r) {
 }
 
 uint32_t OQS_RAND_urandom_chacha20_32(OQS_RAND *r) {
-	OQS_RAND_urandom_chacha20_ctx *rand_ctx = (OQS_RAND_urandom_chacha20_ctx *) r->ctx;
+	OQS_RAND_urandom_chacha20_ctx *rand_ctx =
+	    (OQS_RAND_urandom_chacha20_ctx *) r->ctx;
 	if (rand_ctx->cache_next_byte > 64 - 4) {
 		OQS_RAND_urandom_chacha20_fill_cache(r);
 	}
@@ -108,7 +112,8 @@ uint32_t OQS_RAND_urandom_chacha20_32(OQS_RAND *r) {
 }
 
 uint64_t OQS_RAND_urandom_chacha20_64(OQS_RAND *r) {
-	OQS_RAND_urandom_chacha20_ctx *rand_ctx = (OQS_RAND_urandom_chacha20_ctx *) r->ctx;
+	OQS_RAND_urandom_chacha20_ctx *rand_ctx =
+	    (OQS_RAND_urandom_chacha20_ctx *) r->ctx;
 	if (rand_ctx->cache_next_byte > 64 - 8) {
 		OQS_RAND_urandom_chacha20_fill_cache(r);
 	}
@@ -119,7 +124,8 @@ uint64_t OQS_RAND_urandom_chacha20_64(OQS_RAND *r) {
 }
 
 void OQS_RAND_urandom_chacha20_n(OQS_RAND *r, uint8_t *out, size_t n) {
-	OQS_RAND_urandom_chacha20_ctx *rand_ctx = (OQS_RAND_urandom_chacha20_ctx *) r->ctx;
+	OQS_RAND_urandom_chacha20_ctx *rand_ctx =
+	    (OQS_RAND_urandom_chacha20_ctx *) r->ctx;
 	rand_ctx->nonce[0]++;
 	if (rand_ctx->nonce[0] == 0) {
 		rand_ctx->nonce[1]++;

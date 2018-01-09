@@ -14,7 +14,7 @@
  * You can copy, modify, distribute and perform the work, even for commercial
  * purposes, all without asking permission. You should have received a copy of
  * the creative commons license (CC0 1.0 universal) along with this program.
- * See the license file for more information. 
+ * See the license file for more information.
  *
  *
  *********************************************************************************/
@@ -499,8 +499,7 @@ static size_t numParamSets =
  * Returns NULL if the parameter set cannot be found.
  */
 
-NTRU_ENCRYPT_PARAM_SET *
-ntru_encrypt_get_params_with_id(
+NTRU_ENCRYPT_PARAM_SET *ntru_encrypt_get_params_with_id(
     NTRU_ENCRYPT_PARAM_SET_ID id) /*  in - parameter-set id */
 {
 	size_t i;
@@ -523,8 +522,7 @@ ntru_encrypt_get_params_with_id(
  * Returns NULL if the parameter set cannot be found.
  */
 
-NTRU_ENCRYPT_PARAM_SET *
-ntru_encrypt_get_params_with_OID(
+NTRU_ENCRYPT_PARAM_SET *ntru_encrypt_get_params_with_OID(
     uint8_t const *oid) /*  in - pointer to parameter-set OID */
 {
 	size_t i;
@@ -547,8 +545,7 @@ ntru_encrypt_get_params_with_OID(
  * Returns NULL if the parameter set cannot be found.
  */
 
-NTRU_ENCRYPT_PARAM_SET *
-ntru_encrypt_get_params_with_DER_id(
+NTRU_ENCRYPT_PARAM_SET *ntru_encrypt_get_params_with_DER_id(
     uint8_t der_id) /*  in - parameter-set DER id */
 {
 	size_t i;
@@ -561,8 +558,7 @@ ntru_encrypt_get_params_with_DER_id(
 	return NULL;
 }
 
-const char *
-ntru_encrypt_get_param_set_name(
+const char *ntru_encrypt_get_param_set_name(
     NTRU_ENCRYPT_PARAM_SET_ID id) /*  in - parameter-set id */
 {
 	size_t i;

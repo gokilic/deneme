@@ -17,12 +17,10 @@ extern "C" {
  * @param l a prime number
  * @param e a positive integer
  */
-void oqs_sidh_iqc_ref_elliptic_curve_prime_power_dlp(mpz_t x,
-                                                     const point_t P,
+void oqs_sidh_iqc_ref_elliptic_curve_prime_power_dlp(mpz_t x, const point_t P,
                                                      const point_t Q,
                                                      const elliptic_curve_t E,
-                                                     long l,
-                                                     long e);
+                                                     long l, long e);
 
 /**
  * Computes the discrete logarithm {@code P = x * Q} in a group of order
@@ -33,8 +31,7 @@ void oqs_sidh_iqc_ref_elliptic_curve_prime_power_dlp(mpz_t x,
  * @param l a prime number
  * @return the discrete logarithm if it exists, or -1 otherwise
  */
-long oqs_sidh_iqc_ref_elliptic_curve_prime_dlp(const point_t P,
-                                               const point_t Q,
+long oqs_sidh_iqc_ref_elliptic_curve_prime_dlp(const point_t P, const point_t Q,
                                                const elliptic_curve_t E,
                                                long l);
 

@@ -32,8 +32,7 @@ typedef isogeny_struct isogeny_t[1];
  * @param isogeny
  * @param kernel_size
  */
-void oqs_sidh_iqc_ref_isogeny_init(isogeny_t isogeny,
-                                   long kernel_size);
+void oqs_sidh_iqc_ref_isogeny_init(isogeny_t isogeny, long kernel_size);
 
 /**
  * Frees the memory allocated to {@code isogeny}.
@@ -55,8 +54,7 @@ void oqs_sidh_iqc_ref_isogeny_compute(isogeny_t isogeny,
  * @param isogeny
  * @param P
  */
-void oqs_sidh_iqc_ref_isogeny_evaluate_velu(point_t Q,
-                                            const isogeny_t isogeny,
+void oqs_sidh_iqc_ref_isogeny_evaluate_velu(point_t Q, const isogeny_t isogeny,
                                             const point_t P);
 
 /**
@@ -65,8 +63,7 @@ void oqs_sidh_iqc_ref_isogeny_evaluate_velu(point_t Q,
  * @param isogeny
  * @param P
  */
-void oqs_sidh_iqc_ref_isogeny_evaluate_kohel(point_t Q,
-                                             const isogeny_t isogeny,
+void oqs_sidh_iqc_ref_isogeny_evaluate_kohel(point_t Q, const isogeny_t isogeny,
                                              const point_t P);
 
 /**
@@ -106,12 +103,9 @@ void oqs_sidh_iqc_ref_isogeny_set_kernel_size(isogeny_t isogeny,
  * chain of l-isogenies of length e is computed by doing e / 2 {l^2-isogenies}.
  */
 void oqs_sidh_iqc_ref_isogeny_evaluate_naive(elliptic_curve_t E,
-                                             point_t *points,
-                                             long num_points,
-                                             const point_t kernel_gen,
-                                             long l,
-                                             long e,
-                                             long isogeny_jump);
+                                             point_t *points, long num_points,
+                                             const point_t kernel_gen, long l,
+                                             long e, long isogeny_jump);
 
 /**
  * Computes the images of the elliptic curve {@code E} through the isogeny
@@ -125,12 +119,12 @@ void oqs_sidh_iqc_ref_isogeny_evaluate_naive(elliptic_curve_t E,
  */
 void oqs_sidh_iqc_ref_isogeny_evaluate_naive_curve(elliptic_curve_t E,
                                                    const point_t kernel_gen,
-                                                   long l,
-                                                   long e,
+                                                   long l, long e,
                                                    long isogeny_jump);
 
 /**
- * A helper method for {@link oqs_sidh_iqc_ref_isogeny_evaluate_naive}. All the arguments except
+ * A helper method for {@link oqs_sidh_iqc_ref_isogeny_evaluate_naive}. All the
+ * arguments except
  * {@code num_points, le} will be pushed through the isogeny. For example
  * {@code E} will be the codomain of the isogeny. This method should not be
  * called directly.
@@ -141,12 +135,9 @@ void oqs_sidh_iqc_ref_isogeny_evaluate_naive_curve(elliptic_curve_t E,
  * @param kernel_gen
  * @param le
  */
-void oqs_sidh_iqc_ref_isogeny_evaluate_naive_helper(isogeny_t isogeny,
-                                                    elliptic_curve_t E,
-                                                    point_t *points,
-                                                    long num_points,
-                                                    point_t kernel_gen,
-                                                    const mpz_t le);
+void oqs_sidh_iqc_ref_isogeny_evaluate_naive_helper(
+    isogeny_t isogeny, elliptic_curve_t E, point_t *points, long num_points,
+    point_t kernel_gen, const mpz_t le);
 
 /**
  * The recursion for {@link oqs_sidh_iqc_ref_isogeny_evaluate_strategy}.
@@ -160,14 +151,9 @@ void oqs_sidh_iqc_ref_isogeny_evaluate_naive_helper(isogeny_t isogeny,
  * @param e
  * @param ratio see {@link oqs_sidh_iqc_ref_isogeny_evaluate_strategy}
  */
-void oqs_sidh_iqc_ref_isogeny_evaluate_strategy_rec(elliptic_curve_t E,
-                                                    point_t *points,
-                                                    long num_points,
-                                                    point_t *kernel_gens,
-                                                    long num_gens,
-                                                    long l,
-                                                    long e,
-                                                    float ratio);
+void oqs_sidh_iqc_ref_isogeny_evaluate_strategy_rec(
+    elliptic_curve_t E, point_t *points, long num_points, point_t *kernel_gens,
+    long num_gens, long l, long e, float ratio);
 
 /**
  * This method implements the optimal strategy approach proposed in the paper
@@ -188,14 +174,14 @@ void oqs_sidh_iqc_ref_isogeny_evaluate_strategy(elliptic_curve_t E,
                                                 point_t *points,
                                                 long num_points,
                                                 const point_t kernel_gen,
-                                                long l,
-                                                long e,
-                                                float ratio);
+                                                long l, long e, float ratio);
 
 /**
- * The same as {@link oqs_sidh_iqc_ref_isogeny_evaluate_strategy} except there is no point
+ * The same as {@link oqs_sidh_iqc_ref_isogeny_evaluate_strategy} except there
+ * is no point
  * to evaluate through the isogeny. This method simply calls
- * {@link oqs_sidh_iqc_ref_isogeny_evaluate_strategy} with {@code points = NULL, num_points = 0}.
+ * {@link oqs_sidh_iqc_ref_isogeny_evaluate_strategy} with {@code points = NULL,
+ * num_points = 0}.
  * @param E
  * @param kernel_gen
  * @param l
@@ -204,8 +190,7 @@ void oqs_sidh_iqc_ref_isogeny_evaluate_strategy(elliptic_curve_t E,
  */
 void oqs_sidh_iqc_ref_isogeny_evaluate_strategy_curve(elliptic_curve_t E,
                                                       const point_t kernel_gen,
-                                                      long l,
-                                                      long e,
+                                                      long l, long e,
                                                       float ratio);
 
 #ifdef __cplusplus

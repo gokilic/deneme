@@ -14,7 +14,7 @@
  * You can copy, modify, distribute and perform the work, even for commercial
  * purposes, all without asking permission. You should have received a copy of
  * the creative commons license (CC0 1.0 universal) along with this program.
- * See the license file for more information. 
+ * See the license file for more information.
  *
  *
  *********************************************************************************/
@@ -94,12 +94,12 @@ bool ntru_crypto_ntru_encrypt_key_parse(
 	case NTRU_ENCRYPT_PRIVKEY_INDICES_TAG:
 
 		/* Version 0:
-             *  byte  0:   tag
-             *  byte  1:   no. of octets in OID
-             *  bytes 2-4: OID
-             *  bytes 5- : packed pubkey
-             *             [packed privkey]
-             */
+ *  byte  0:   tag
+ *  byte  1:   no. of octets in OID
+ *  bytes 2-4: OID
+ *  bytes 5- : packed pubkey
+ *             [packed privkey]
+ */
 
 		{
 			NTRU_ENCRYPT_PARAM_SET *p = NULL;
@@ -138,8 +138,7 @@ bool ntru_crypto_ntru_encrypt_key_parse(
 
 				/* check packing type for product-form private keys */
 
-				if (p->is_product_form &&
-				    (tag == NTRU_ENCRYPT_PRIVKEY_TRITS_TAG)) {
+				if (p->is_product_form && (tag == NTRU_ENCRYPT_PRIVKEY_TRITS_TAG)) {
 					return FALSE;
 				}
 
@@ -159,8 +158,7 @@ bool ntru_crypto_ntru_encrypt_key_parse(
 
 				if (tag == NTRU_ENCRYPT_PRIVKEY_DEFAULT_TAG) {
 					if (p->is_product_form ||
-					    (privkey_packed_indices_len <=
-					     privkey_packed_trits_len)) {
+					    (privkey_packed_indices_len <= privkey_packed_trits_len)) {
 						tag = NTRU_ENCRYPT_PRIVKEY_INDICES_TAG;
 					} else {
 						tag = NTRU_ENCRYPT_PRIVKEY_TRITS_TAG;
@@ -179,7 +177,9 @@ bool ntru_crypto_ntru_encrypt_key_parse(
 
 				*pubkey = key_blob + 5;
 				*privkey = *pubkey + pubkey_packed_len;
-				*privkey_pack_type = (tag == NTRU_ENCRYPT_PRIVKEY_TRITS_TAG) ? NTRU_ENCRYPT_KEY_PACKED_TRITS : NTRU_ENCRYPT_KEY_PACKED_INDICES;
+				*privkey_pack_type = (tag == NTRU_ENCRYPT_PRIVKEY_TRITS_TAG)
+				                         ? NTRU_ENCRYPT_KEY_PACKED_TRITS
+				                         : NTRU_ENCRYPT_KEY_PACKED_INDICES;
 			}
 
 			/* return parameter set pointer */
@@ -242,12 +242,10 @@ void ntru_crypto_ntru_encrypt_key_get_blob_params(
 		if (params->is_product_form ||
 		    (privkey_packed_indices_len <= privkey_packed_trits_len)) {
 			*privkey_pack_type = NTRU_ENCRYPT_KEY_PACKED_INDICES;
-			*privkey_blob_len =
-			    5 + pubkey_packed_len + privkey_packed_indices_len;
+			*privkey_blob_len = 5 + pubkey_packed_len + privkey_packed_indices_len;
 		} else {
 			*privkey_pack_type = NTRU_ENCRYPT_KEY_PACKED_TRITS;
-			*privkey_blob_len =
-			    5 + pubkey_packed_len + privkey_packed_trits_len;
+			*privkey_blob_len = 5 + pubkey_packed_len + privkey_packed_trits_len;
 		}
 	}
 
@@ -259,8 +257,7 @@ void ntru_crypto_ntru_encrypt_key_get_blob_params(
  * Returns a public key blob, packed according to the packing type provided.
  */
 
-uint32_t
-ntru_crypto_ntru_encrypt_key_create_pubkey_blob(
+uint32_t ntru_crypto_ntru_encrypt_key_create_pubkey_blob(
     NTRU_ENCRYPT_PARAM_SET const *params, /*  in - pointer to
                                                                param set
                                                                parameters */
@@ -279,8 +276,7 @@ ntru_crypto_ntru_encrypt_key_create_pubkey_blob(
 		*pubkey_blob++ = (uint8_t) sizeof(params->OID);
 		memcpy(pubkey_blob, params->OID, sizeof(params->OID));
 		pubkey_blob += sizeof(params->OID);
-		ntru_elements_2_octets(params->N, pubkey, params->q_bits,
-		                       pubkey_blob);
+		ntru_elements_2_octets(params->N, pubkey, params->q_bits, pubkey_blob);
 		break;
 
 	default:
@@ -295,8 +291,7 @@ ntru_crypto_ntru_encrypt_key_create_pubkey_blob(
  * Returns a public key blob, recreated from an already-packed public key.
  */
 
-uint32_t
-ntru_crypto_ntru_encrypt_key_recreate_pubkey_blob(
+uint32_t ntru_crypto_ntru_encrypt_key_recreate_pubkey_blob(
     NTRU_ENCRYPT_PARAM_SET const *params, /*  in - pointer to
                                                                param set
                                                                parameters */
@@ -331,8 +326,7 @@ ntru_crypto_ntru_encrypt_key_recreate_pubkey_blob(
  * Returns a private key blob, packed according to the packing type provided.
  */
 
-uint32_t
-ntru_crypto_ntru_encrypt_key_create_privkey_blob(
+uint32_t ntru_crypto_ntru_encrypt_key_create_privkey_blob(
     NTRU_ENCRYPT_PARAM_SET const *params, /*  in - pointer to
                                                                param set
                                                                parameters */
@@ -358,29 +352,27 @@ ntru_crypto_ntru_encrypt_key_create_privkey_blob(
 		*privkey_blob++ = (uint8_t) sizeof(params->OID);
 		memcpy(privkey_blob, params->OID, sizeof(params->OID));
 		privkey_blob += sizeof(params->OID);
-		ntru_elements_2_octets(params->N, pubkey, params->q_bits,
-		                       privkey_blob);
+		ntru_elements_2_octets(params->N, pubkey, params->q_bits, privkey_blob);
 		privkey_blob += (params->N * params->q_bits + 7) >> 3;
 
 		/* add packed private key */
 
 		if (privkey_pack_type == NTRU_ENCRYPT_KEY_PACKED_TRITS) {
 			ntru_indices_2_packed_trits(privkey, (uint16_t) params->dF_r,
-			                            (uint16_t) params->dF_r,
-			                            params->N, buf, privkey_blob);
+			                            (uint16_t) params->dF_r, params->N, buf,
+			                            privkey_blob);
 		} else {
 			uint32_t dF;
 
 			if (params->is_product_form) {
-				dF = (params->dF_r & 0xff) +
-				     ((params->dF_r >> 8) & 0xff) +
+				dF = (params->dF_r & 0xff) + ((params->dF_r >> 8) & 0xff) +
 				     ((params->dF_r >> 16) & 0xff);
 			} else {
 				dF = params->dF_r;
 			}
 
-			ntru_elements_2_octets((uint16_t) dF << 1, privkey,
-			                       params->N_bits, privkey_blob);
+			ntru_elements_2_octets((uint16_t) dF << 1, privkey, params->N_bits,
+			                       privkey_blob);
 		}
 		break;
 

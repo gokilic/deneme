@@ -82,8 +82,8 @@ void ntru_ring_mult_indices_64(
 		/* second half -- from 0 to start -1 */
 
 		/* at this point we have used (N-bi[iB + bi_P1_len]) and iA should be
-         * equal to bi[iB+bi_P1_len]+1.
-         */
+* equal to bi[iB+bi_P1_len]+1.
+*/
 		end = oend[iA & 3];
 
 		for (iT = 0; iA < end; iA += 4, iT += 4) {
@@ -143,8 +143,8 @@ void ntru_ring_mult_indices_64(
 		/* second half -- from 0 to start -1 */
 
 		/* at this point we have used (N-bi[iB + bi_P1_len]) and iA should be
-         * equal to bi[iB+bi_P1_len]+1.
-         */
+* equal to bi[iB+bi_P1_len]+1.
+*/
 		end = oend[iA & 3];
 
 		for (iT = 0; iA < end; iA += 4, iT += 4) {

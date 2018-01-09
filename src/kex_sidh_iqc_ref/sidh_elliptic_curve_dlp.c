@@ -1,12 +1,10 @@
 #include "sidh_elliptic_curve_dlp.h"
 #include <stdio.h>
 
-void oqs_sidh_iqc_ref_elliptic_curve_prime_power_dlp(mpz_t x,
-                                                     const point_t P,
+void oqs_sidh_iqc_ref_elliptic_curve_prime_power_dlp(mpz_t x, const point_t P,
                                                      const point_t Q,
                                                      const elliptic_curve_t E,
-                                                     long l,
-                                                     long e) {
+                                                     long l, long e) {
 	mpz_t exponent1;
 	mpz_t exponent2;
 	point_t temp_P;
@@ -29,7 +27,8 @@ void oqs_sidh_iqc_ref_elliptic_curve_prime_power_dlp(mpz_t x,
 
 	// compute the first ladic coefficient
 	oqs_sidh_iqc_ref_point_mul_scaler(temp_Q, Q, exponent1, E);
-	long ladic_coeff = oqs_sidh_iqc_ref_elliptic_curve_prime_dlp(PP, temp_Q, E, l);
+	long ladic_coeff =
+	    oqs_sidh_iqc_ref_elliptic_curve_prime_dlp(PP, temp_Q, E, l);
 
 	for (int j = 1; j < e; j++) {
 		if (ladic_coeff >= 0) {
@@ -69,8 +68,7 @@ void oqs_sidh_iqc_ref_elliptic_curve_prime_power_dlp(mpz_t x,
 	oqs_sidh_iqc_ref_point_clear(PP);
 }
 
-long oqs_sidh_iqc_ref_elliptic_curve_prime_dlp(const point_t P,
-                                               const point_t Q,
+long oqs_sidh_iqc_ref_elliptic_curve_prime_dlp(const point_t P, const point_t Q,
                                                const elliptic_curve_t E,
                                                long l) {
 	if (oqs_sidh_iqc_ref_point_is_zero(Q))

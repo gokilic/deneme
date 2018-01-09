@@ -63,24 +63,24 @@ void oqs_sidh_iqc_ref_public_key_encrypt(ciphertext_t ciphertext,
 
 	point_t kernel_gen;
 	oqs_sidh_iqc_ref_point_init(kernel_gen);
-	oqs_sidh_iqc_ref_private_key_compute_kernel_gen(kernel_gen,
-	                                                private_key_temp,
-	                                                paramsB->P,
-	                                                paramsB->Q,
-	                                                paramsB->le,
-	                                                paramsB->E);
+	oqs_sidh_iqc_ref_private_key_compute_kernel_gen(kernel_gen, private_key_temp,
+	                                                paramsB->P, paramsB->Q,
+	                                                paramsB->le, paramsB->E);
 
 	public_key_t public_key_temp;
 	oqs_sidh_iqc_ref_public_key_init(public_key_temp);
-	oqs_sidh_iqc_ref_public_key_generate(public_key_temp, kernel_gen, paramsB, paramsA);
+	oqs_sidh_iqc_ref_public_key_generate(public_key_temp, kernel_gen, paramsB,
+	                                     paramsA);
 
 	fp2_element_t shared_key;
 	oqs_sidh_iqc_ref_fp2_init(shared_key);
-	oqs_sidh_iqc_ref_shared_key_generate(shared_key, public_keyA, private_key_temp, paramsB);
-	char *hash = oqs_sidh_iqc_ref_public_key_encryption_hash(shared_key, plaintext->size);
+	oqs_sidh_iqc_ref_shared_key_generate(shared_key, public_keyA,
+	                                     private_key_temp, paramsB);
+	char *hash =
+	    oqs_sidh_iqc_ref_public_key_encryption_hash(shared_key, plaintext->size);
 
-	ciphertext->content = oqs_sidh_iqc_ref_array_xor(plaintext->content,
-	                                                 hash, plaintext->size);
+	ciphertext->content =
+	    oqs_sidh_iqc_ref_array_xor(plaintext->content, hash, plaintext->size);
 	ciphertext->size = plaintext->size;
 	oqs_sidh_iqc_ref_elliptic_curve_set(ciphertext->E, public_key_temp->E);
 	oqs_sidh_iqc_ref_point_set(ciphertext->P, public_key_temp->P);
@@ -106,11 +106,13 @@ void oqs_sidh_iqc_ref_public_key_decrypt(plaintext_t plaintext,
 
 	fp2_element_t shared_key;
 	oqs_sidh_iqc_ref_fp2_init(shared_key);
-	oqs_sidh_iqc_ref_shared_key_generate(shared_key, public_key_temp, private_keyA, paramsA);
-	char *hash = oqs_sidh_iqc_ref_public_key_encryption_hash(shared_key, ciphertext->size);
+	oqs_sidh_iqc_ref_shared_key_generate(shared_key, public_key_temp,
+	                                     private_keyA, paramsA);
+	char *hash =
+	    oqs_sidh_iqc_ref_public_key_encryption_hash(shared_key, ciphertext->size);
 
-	plaintext->content = oqs_sidh_iqc_ref_array_xor(ciphertext->content, hash,
-	                                                ciphertext->size);
+	plaintext->content =
+	    oqs_sidh_iqc_ref_array_xor(ciphertext->content, hash, ciphertext->size);
 	plaintext->size = ciphertext->size;
 
 	oqs_sidh_iqc_ref_public_key_clear(public_key_temp);

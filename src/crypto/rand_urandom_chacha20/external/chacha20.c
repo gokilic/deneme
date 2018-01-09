@@ -72,7 +72,8 @@ static void ECRYPT_ivsetup(u32 input[16], const u8 iv[8]) {
 	input[15] = U8TO32_LITTLE(iv + 4);
 }
 
-static void ECRYPT_encrypt_bytes(u32 input[16], const u8 *m, u8 *c, size_t bytes) {
+static void ECRYPT_encrypt_bytes(u32 input[16], const u8 *m, u8 *c,
+                                 size_t bytes) {
 	u8 output[64];
 	size_t i;
 

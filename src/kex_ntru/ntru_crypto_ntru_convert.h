@@ -14,7 +14,7 @@
  * You can copy, modify, distribute and perform the work, even for commercial
  * purposes, all without asking permission. You should have received a copy of
  * the creative commons license (CC0 1.0 universal) along with this program.
- * See the license file for more information. 
+ * See the license file for more information.
  *
  *
  *********************************************************************************/
@@ -42,10 +42,9 @@
  */
 
 extern void
-ntru_bits_2_trits(
-    uint8_t const *octets, /*  in - pointer to array of octets */
-    uint16_t num_trits,    /*  in - number of trits to produce */
-    uint8_t *trits);       /* out - address for array of trits */
+ntru_bits_2_trits(uint8_t const *octets, /*  in - pointer to array of octets */
+                  uint16_t num_trits,    /*  in - number of trits to produce */
+                  uint8_t *trits);       /* out - address for array of trits */
 
 /* ntru_trits_2_bits
  *
@@ -58,10 +57,9 @@ ntru_bits_2_trits(
  */
 
 extern bool
-ntru_trits_2_bits(
-    uint8_t const *trits, /*  in - pointer to array of trits */
-    uint32_t num_trits,   /*  in - number of trits to convert */
-    uint8_t *octets);     /* out - address for array of octets */
+ntru_trits_2_bits(uint8_t const *trits, /*  in - pointer to array of trits */
+                  uint32_t num_trits,   /*  in - number of trits to convert */
+                  uint8_t *octets);     /* out - address for array of octets */
 
 /* ntru_coeffs_mod4_2_octets
  *
@@ -69,8 +67,7 @@ ntru_trits_2_bits(
  * octet string.
  */
 
-extern void
-ntru_coeffs_mod4_2_octets(
+extern void ntru_coeffs_mod4_2_octets(
     uint16_t num_coeffs,    /*  in - number of coefficients */
     uint16_t const *coeffs, /*  in - pointer to coefficients */
     uint8_t *octets);       /* out - address for octets */
@@ -81,19 +78,16 @@ ntru_coeffs_mod4_2_octets(
  */
 
 extern void
-ntru_trits_2_octet(
-    uint8_t const *trits, /*  in - pointer to trits */
-    uint8_t *octet);      /* out - address for octet */
+ntru_trits_2_octet(uint8_t const *trits, /*  in - pointer to trits */
+                   uint8_t *octet);      /* out - address for octet */
 
 /* ntru_octet_2_trits
  *
  * Unpacks an octet to 5 trits, where a trit is 0, 1, or 2 (-1).
  */
 
-extern void
-ntru_octet_2_trits(
-    uint8_t octet,   /*  in - octet to be unpacked */
-    uint8_t *trits); /* out - address for trits */
+extern void ntru_octet_2_trits(uint8_t octet,   /*  in - octet to be unpacked */
+                               uint8_t *trits); /* out - address for trits */
 
 /* ntru_indices_2_trits
  *
@@ -102,21 +96,19 @@ ntru_octet_2_trits(
  */
 
 extern void
-ntru_indices_2_trits(
-    uint16_t in_len,    /*  in - no. of indices */
-    uint16_t const *in, /*  in - pointer to list of indices */
-    bool plus1,         /*  in - if list is +1 coefficients */
-    uint8_t *out);      /* out - address of output polynomial */
+ntru_indices_2_trits(uint16_t in_len,    /*  in - no. of indices */
+                     uint16_t const *in, /*  in - pointer to list of indices */
+                     bool plus1,         /*  in - if list is +1 coefficients */
+                     uint8_t *out);      /* out - address of output polynomial */
 
 /* ntru_packed_trits_2_indices
  *
- * Unpacks an array of N trits and creates a list of array indices 
+ * Unpacks an array of N trits and creates a list of array indices
  * corresponding to trits = +1, and list of array indices corresponding to
  * trits = -1.
  */
 
-extern void
-ntru_packed_trits_2_indices(
+extern void ntru_packed_trits_2_indices(
     uint8_t const *in,         /*  in - pointer to packed-trit octets */
     uint16_t num_trits,        /*  in - no. of packed trits */
     uint16_t *indices_plus1,   /* out - address for indices of +1 trits */
@@ -129,8 +121,7 @@ ntru_packed_trits_2_indices(
  * lists into octets, 5 trits per octet.
  */
 
-extern void
-ntru_indices_2_packed_trits(
+extern void ntru_indices_2_packed_trits(
     uint16_t const *indices, /*  in - pointer to indices */
     uint16_t num_plus1,      /*  in - no. of indices for +1 trits */
     uint16_t num_minus1,     /*  in - no. of indices for -1 trits */
@@ -144,8 +135,7 @@ ntru_indices_2_packed_trits(
  * ((in_len * n_bits) + 7) / 8 octets, 8 < n_bits < 16.
  */
 
-extern void
-ntru_elements_2_octets(
+extern void ntru_elements_2_octets(
     uint16_t in_len,    /*  in - no. of elements to be packed */
     uint16_t const *in, /*  in - ptr to elements to be packed */
     uint8_t n_bits,     /*  in - no. of bits in input element */
@@ -157,8 +147,7 @@ ntru_elements_2_octets(
  * n-bit elements, 8 < n < 16.  Any extra bits are discarded.
  */
 
-extern void
-ntru_octets_2_elements(
+extern void ntru_octets_2_elements(
     uint16_t in_len,   /*  in - no. of octets to be unpacked */
     uint8_t const *in, /*  in - ptr to octets to be unpacked */
     uint8_t n_bits,    /*  in - no. of bits in output element */

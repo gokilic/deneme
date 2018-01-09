@@ -14,7 +14,7 @@
  * You can copy, modify, distribute and perform the work, even for commercial
  * purposes, all without asking permission. You should have received a copy of
  * the creative commons license (CC0 1.0 universal) along with this program.
- * See the license file for more information. 
+ * See the license file for more information.
  *
  *
  *********************************************************************************/
@@ -67,9 +67,8 @@
 #define s1(a) (RR((a), 17) ^ RR((a), 19) ^ ((a) >> 10))
 
 static void
-sha2_blk(
-    uint32_t const *data, /*     in - ptr to 16 32-bit word input block */
-    uint32_t *state)      /* in/out - ptr to 8 32-bit word chaining state */
+sha2_blk(uint32_t const *data, /*     in - ptr to 16 32-bit word input block */
+         uint32_t *state)      /* in/out - ptr to 8 32-bit word chaining state */
 {
 	uint32_t A, B, C, D, E, F, G, H;
 	uint32_t w[16];
@@ -373,8 +372,7 @@ sha2_blk(
  * Returns SHA_OVERFLOW if more than 2^64 - 1 bytes are hashed.
  */
 
-uint32_t
-ntru_crypto_sha2(
+uint32_t ntru_crypto_sha2(
     NTRU_CRYPTO_HASH_ALGID algid, /*     in - hash algorithm ID */
     NTRU_CRYPTO_SHA2_CTX *c,      /* in/out - pointer to SHA-2 context */
     uint32_t const *init,         /*     in - pointer to alternate */
@@ -464,8 +462,8 @@ ntru_crypto_sha2(
 		if (in_len < space) {
 
 			/* input does not fill block buffer:
-             * add input to buffer
-             */
+* add input to buffer
+*/
 
 			memcpy(c->unhashed + c->unhashed_len, in, in_len);
 			c->unhashed_len += in_len;
@@ -474,10 +472,10 @@ ntru_crypto_sha2(
 			uint32_t blks;
 
 			/* input will fill block buffer:
-             *  fill unhashed data buffer,
-             *  convert to block buffer,
-             *  and process block
-             */
+*  fill unhashed data buffer,
+*  convert to block buffer,
+*  and process block
+*/
 
 			in_len -= space;
 
@@ -485,8 +483,7 @@ ntru_crypto_sha2(
 				*d++ = *in++;
 			}
 
-			ntru_crypto_msbyte_2_uint32(in_blk, (uint8_t const *) c->unhashed,
-			                            16);
+			ntru_crypto_msbyte_2_uint32(in_blk, (uint8_t const *) c->unhashed, 16);
 			sha2_blk((uint32_t const *) in_blk, c->state);
 
 			/* process any remaining full blocks */
@@ -510,8 +507,8 @@ ntru_crypto_sha2(
 		space = 64 - c->unhashed_len;
 
 		/* add 0x80 padding byte to the unhashed data buffer
-         * (there is always space since the buffer can't be full)
-         */
+* (there is always space since the buffer can't be full)
+*/
 
 		d = c->unhashed + c->unhashed_len;
 		*d++ = 0x80;
@@ -521,22 +518,21 @@ ntru_crypto_sha2(
 
 		if (space < 8) {
 			/* no space for count:
-             *  fill remainder of unhashed data buffer with zeros,
-             *  convert to input block,
-             *  process block,
-             *  fill all but 8 bytes of unhashed data buffer with zeros
-             */
+*  fill remainder of unhashed data buffer with zeros,
+*  convert to input block,
+*  process block,
+*  fill all but 8 bytes of unhashed data buffer with zeros
+*/
 
 			memset(d, 0, space);
-			ntru_crypto_msbyte_2_uint32(in_blk,
-			                            (uint8_t const *) c->unhashed, 16);
+			ntru_crypto_msbyte_2_uint32(in_blk, (uint8_t const *) c->unhashed, 16);
 			sha2_blk((uint32_t const *) in_blk, c->state);
 			memset(c->unhashed, 0, 56);
 
 		} else {
 			/* fill unhashed data buffer with zeros,
-             *  leaving space for bit count
-             */
+*  leaving space for bit count
+*/
 
 			for (space -= 8; space; space--) {
 				*d++ = 0;
@@ -544,11 +540,10 @@ ntru_crypto_sha2(
 		}
 
 		/* convert partially filled unhashed data buffer to input block and
-         *  add bit count to input block
-         */
+*  add bit count to input block
+*/
 
-		ntru_crypto_msbyte_2_uint32(in_blk, (uint8_t const *) c->unhashed,
-		                            14);
+		ntru_crypto_msbyte_2_uint32(in_blk, (uint8_t const *) c->unhashed, 14);
 		in_blk[14] = c->num_bits_hashed[1];
 		in_blk[15] = c->num_bits_hashed[0];
 

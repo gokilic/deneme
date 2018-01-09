@@ -14,7 +14,7 @@
  * You can copy, modify, distribute and perform the work, even for commercial
  * purposes, all without asking permission. You should have received a copy of
  * the creative commons license (CC0 1.0 universal) along with this program.
- * See the license file for more information. 
+ * See the license file for more information.
  *
  *
  *********************************************************************************/
@@ -58,24 +58,23 @@
  */
 
 extern uint32_t
-ntru_gen_poly(
-    NTRU_CRYPTO_HASH_ALGID hash_algid, /*  in - hash algorithm ID for
-                                                      IGF-2 */
-    uint8_t md_len,                    /*  in - no. of octets in digest */
-    uint8_t min_calls,                 /*  in - minimum no. of hash
+ntru_gen_poly(NTRU_CRYPTO_HASH_ALGID hash_algid, /*  in - hash algorithm ID for
+                                                                IGF-2 */
+              uint8_t md_len,                    /*  in - no. of octets in digest */
+              uint8_t min_calls,                 /*  in - minimum no. of hash
                                                       calls */
-    uint16_t seed_len,                 /*  in - no. of octets in seed */
-    uint8_t *seed,                     /*  in - pointer to seed */
-    uint8_t *buf,                      /*  in - pointer to working
+              uint16_t seed_len,                 /*  in - no. of octets in seed */
+              uint8_t *seed,                     /*  in - pointer to seed */
+              uint8_t *buf,                      /*  in - pointer to working
                                                       buffer */
-    uint16_t N,                        /*  in - max index + 1 */
-    uint8_t c_bits,                    /*  in - no. bits for candidate */
-    uint16_t limit,                    /*  in - conversion to index
+              uint16_t N,                        /*  in - max index + 1 */
+              uint8_t c_bits,                    /*  in - no. bits for candidate */
+              uint16_t limit,                    /*  in - conversion to index
                                                       limit */
-    bool is_product_form,              /*  in - if generating multiple
+              bool is_product_form,              /*  in - if generating multiple
                                                       polys */
-    uint32_t indices_counts,           /*  in - nos. of indices needed */
-    uint16_t *indices);                /* out - address for indices */
+              uint32_t indices_counts,           /*  in - nos. of indices needed */
+              uint16_t *indices);                /* out - address for indices */
 
 /* ntru_poly_check_min_weight
  *
@@ -83,8 +82,7 @@ ntru_gen_poly(
  * a minimum weight.
  */
 
-extern bool
-ntru_poly_check_min_weight(
+extern bool ntru_poly_check_min_weight(
     uint16_t num_els, /*  in - degree of polynomial */
     uint8_t *ringels, /*  in - pointer to trinary ring elements */
     uint16_t min_wt); /*  in - minimum weight */
@@ -109,8 +107,7 @@ ntru_poly_check_min_weight(
  */
 
 /* wrapper */
-extern void
-ntru_ring_mult_indices(
+extern void ntru_ring_mult_indices(
     uint16_t const *a,        /*  in - pointer to ring element a */
     uint16_t const bi_P1_len, /*  in - no. of +1 coefficients in b */
     uint16_t const bi_M1_len, /*  in - no. of -1 coefficients in b */
@@ -145,8 +142,7 @@ ntru_ring_mult_indices(
  * beyond 16 bits does not matter.
  */
 
-extern void
-ntru_ring_mult_product_indices(
+extern void ntru_ring_mult_product_indices(
     uint16_t const *a,      /*  in - pointer to ring element a */
     uint16_t const b1i_len, /*  in - no. of +1 or -1 coefficients in b1 */
     uint16_t const b2i_len, /*  in - no. of +1 or -1 coefficients in b2 */
@@ -173,8 +169,7 @@ ntru_ring_mult_product_indices(
  * beyond 16 bits does not matter.
  */
 
-extern void
-ntru_ring_mult_coefficients(
+extern void ntru_ring_mult_coefficients(
     uint16_t const *a, /*  in - pointer to polynomial a */
     uint16_t const *b, /*  in - pointer to polynomial b */
     uint16_t N,        /*  in - degree of (x^N - 1) */
@@ -192,11 +187,10 @@ ntru_ring_mult_coefficients(
  */
 
 extern bool
-ntru_ring_inv(
-    uint16_t *a,      /*  in - pointer to polynomial a */
-    uint16_t N,       /*  in - no. of coefficients in a */
-    uint16_t *t,      /*  in - temp buffer of 2N elements */
-    uint16_t *a_inv); /* out - address for polynomial a^-1 */
+ntru_ring_inv(uint16_t *a,      /*  in - pointer to polynomial a */
+              uint16_t N,       /*  in - no. of coefficients in a */
+              uint16_t *t,      /*  in - temp buffer of 2N elements */
+              uint16_t *a_inv); /* out - address for polynomial a^-1 */
 
 /* ntru_ring_lift_inv_pow2_standard
  *
@@ -212,13 +206,9 @@ ntru_ring_inv(
  * Requires scratch space for ntru_ring_mult_coefficients + one extra
  * polynomial with the same padding.
  */
-uint32_t
-ntru_ring_lift_inv_pow2_standard(
-    uint16_t *inv,
-    uint16_t const *f,
-    uint16_t const N,
-    uint16_t const q,
-    uint16_t *t);
+uint32_t ntru_ring_lift_inv_pow2_standard(uint16_t *inv, uint16_t const *f,
+                                          uint16_t const N, uint16_t const q,
+                                          uint16_t *t);
 
 /* ntru_ring_lift_inv_pow2_product
  *
@@ -235,16 +225,11 @@ ntru_ring_lift_inv_pow2_standard(
  * Requires scratch space for ntru_ring_mult_coefficients + one extra
  * polynomial with the same padding.
  */
-uint32_t
-ntru_ring_lift_inv_pow2_product(
-    uint16_t *inv,
-    uint16_t const dF1,
-    uint16_t const dF2,
-    uint16_t const dF3,
-    uint16_t const *F_buf,
-    uint16_t const N,
-    uint16_t const q,
-    uint16_t *t);
+uint32_t ntru_ring_lift_inv_pow2_product(uint16_t *inv, uint16_t const dF1,
+                                         uint16_t const dF2, uint16_t const dF3,
+                                         uint16_t const *F_buf,
+                                         uint16_t const N, uint16_t const q,
+                                         uint16_t *t);
 
 /* ntru_ring_mult_coefficients_memreq
  *
@@ -255,10 +240,8 @@ ntru_ring_lift_inv_pow2_product(
  * a number of scratch polynomials and the number of coefficients needed
  * per polynomial.
  */
-void ntru_ring_mult_coefficients_memreq(
-    uint16_t N,
-    uint16_t *num_scratch_polys,
-    uint16_t *pad_deg);
+void ntru_ring_mult_coefficients_memreq(uint16_t N, uint16_t *num_scratch_polys,
+                                        uint16_t *pad_deg);
 
 /* ntru_ring_mult_indices_memreq
  *
@@ -272,9 +255,7 @@ void ntru_ring_mult_coefficients_memreq(
  * Note that ntru_ring_mult_prod_indices requires one additional polynomial
  * of degree pad_deg for holding a temporary result.
  */
-void ntru_ring_mult_indices_memreq(
-    uint16_t N,
-    uint16_t *num_scratch_polys,
-    uint16_t *pad_deg);
+void ntru_ring_mult_indices_memreq(uint16_t N, uint16_t *num_scratch_polys,
+                                   uint16_t *pad_deg);
 
 #endif /* NTRU_CRYPTO_NTRU_POLY_H */

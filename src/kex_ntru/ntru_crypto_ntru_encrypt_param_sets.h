@@ -14,7 +14,7 @@
  * You can copy, modify, distribute and perform the work, even for commercial
  * purposes, all without asking permission. You should have received a copy of
  * the creative commons license (CC0 1.0 universal) along with this program.
- * See the license file for more information. 
+ * See the license file for more information.
  *
  *
  *********************************************************************************/
@@ -41,38 +41,38 @@ typedef struct _NTRU_ENCRYPT_PARAM_SET {
 	uint8_t const OID[3];              /* pointer to OID */
 	uint8_t der_id;                    /* parameter-set DER id */
 	uint8_t N_bits;                    /* no. of bits in N (i.e. in
-                                                     an index */
+                                               an index */
 	uint16_t N;                        /* ring dimension */
 	uint16_t sec_strength_len;         /* no. of octets of
-                                                     security strength */
+                                               security strength */
 	uint16_t b_len;                    /* no. of octets for random
-                                                     string b */
+                                               string b */
 	uint16_t q;                        /* big modulus */
 	uint8_t q_bits;                    /* no. of bits in q (i.e. in
-                                                     a coefficient */
+                                               a coefficient */
 	bool is_product_form;              /* if product form used */
 	uint32_t dF_r;                     /* no. of 1 or -1 coefficients
-                                                     in ring elements F, r */
+                                               in ring elements F, r */
 	uint16_t dg;                       /* no. - 1 of 1 coefficients
-                                                     or no. of -1 coefficients
-                                                     in ring element g */
+                                               or no. of -1 coefficients
+                                               in ring element g */
 	uint16_t m_len_max;                /* max no. of plaintext
-                                                     octets */
+                                               octets */
 	uint16_t min_msg_rep_wt;           /* min. message
-                                                     representative weight */
+                                               representative weight */
 	uint16_t no_bias_limit;            /* limit for no bias in
-                                                     IGF-2 */
+                                               IGF-2 */
 	uint8_t c_bits;                    /* no. bits in candidate for
-                                                     deriving an index in
-                                                     IGF-2 */
+                                               deriving an index in
+                                               IGF-2 */
 	uint8_t m_len_len;                 /* no. of octets to hold
-                                                     mLenOctets */
+                                               mLenOctets */
 	uint8_t min_IGF_hash_calls;        /* min. no. of hash calls for
-                                                     IGF-2 */
+                                               IGF-2 */
 	uint8_t min_MGF_hash_calls;        /* min. no. of hash calls for
-                                                     MGF-TP-1 */
+                                               MGF-TP-1 */
 	NTRU_CRYPTO_HASH_ALGID hash_algid; /* hash function for MGF-TP-1,
-                                                     HMAC-DRBG, etc. */
+                                               HMAC-DRBG, etc. */
 } NTRU_ENCRYPT_PARAM_SET;
 
 /* function declarations */
@@ -86,8 +86,7 @@ typedef struct _NTRU_ENCRYPT_PARAM_SET {
  * Returns NULL if the parameter set cannot be found.
  */
 
-extern NTRU_ENCRYPT_PARAM_SET *
-ntru_encrypt_get_params_with_id(
+extern NTRU_ENCRYPT_PARAM_SET *ntru_encrypt_get_params_with_id(
     NTRU_ENCRYPT_PARAM_SET_ID id); /*  in - parameter-set id */
 
 /* ntru_encrypt_get_params_with_OID
@@ -99,8 +98,7 @@ ntru_encrypt_get_params_with_id(
  * Returns NULL if the parameter set cannot be found.
  */
 
-extern NTRU_ENCRYPT_PARAM_SET *
-ntru_encrypt_get_params_with_OID(
+extern NTRU_ENCRYPT_PARAM_SET *ntru_encrypt_get_params_with_OID(
     uint8_t const *oid); /*  in - pointer to parameter-set OID */
 
 /* ntru_encrypt_get_params_with_DER_id
@@ -112,8 +110,7 @@ ntru_encrypt_get_params_with_OID(
  * Returns NULL if the parameter set cannot be found.
  */
 
-extern NTRU_ENCRYPT_PARAM_SET *
-ntru_encrypt_get_params_with_DER_id(
+extern NTRU_ENCRYPT_PARAM_SET *ntru_encrypt_get_params_with_DER_id(
     uint8_t der_id); /*  in - parameter-set DER id */
 
 #endif /* NTRU_CRYPTO_NTRU_ENCRYPT_PARAM_SETS_H */

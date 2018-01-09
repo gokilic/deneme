@@ -1,5 +1,6 @@
 /****************************************************************************************
-* LatticeCrypto: an efficient post-quantum Ring-Learning With Errors cryptography library
+* LatticeCrypto: an efficient post-quantum Ring-Learning With Errors
+*cryptography library
 *
 *    Copyright (c) Microsoft Corporation. All rights reserved.
 *
@@ -21,7 +22,8 @@ int32_t oqs_rlwe_msrln16_reduce12289(int64_t a) { // Reduction modulo q
 	return (3 * c0 - c1);
 }
 
-int32_t oqs_rlwe_msrln16_reduce12289_2x(int64_t a) { // Two merged reductions modulo q
+int32_t
+oqs_rlwe_msrln16_reduce12289_2x(int64_t a) { // Two merged reductions modulo q
 	int32_t c0, c1, c2;
 
 	c0 = (int32_t)(a & mask12);
@@ -31,7 +33,8 @@ int32_t oqs_rlwe_msrln16_reduce12289_2x(int64_t a) { // Two merged reductions mo
 	return (9 * c0 - 3 * c1 + c2);
 }
 
-void oqs_rlwe_msrln16_NTT_CT_std2rev_12289(int32_t *a, const int32_t *psi_rev, unsigned int N) { // Forward NTT
+void oqs_rlwe_msrln16_NTT_CT_std2rev_12289(int32_t *a, const int32_t *psi_rev,
+                                           unsigned int N) { // Forward NTT
 	unsigned int m, i, j, j1, j2, k = N;
 	int32_t S, U, V;
 
@@ -80,7 +83,11 @@ void oqs_rlwe_msrln16_NTT_CT_std2rev_12289(int32_t *a, const int32_t *psi_rev, u
 	return;
 }
 
-void oqs_rlwe_msrln16_INTT_GS_rev2std_12289(int32_t *a, const int32_t *omegainv_rev, const int32_t omegainv1N_rev, const int32_t Ninv, unsigned int N) { // Inverse NTT
+void oqs_rlwe_msrln16_INTT_GS_rev2std_12289(int32_t *a,
+                                            const int32_t *omegainv_rev,
+                                            const int32_t omegainv1N_rev,
+                                            const int32_t Ninv,
+                                            unsigned int N) { // Inverse NTT
 	unsigned int m, h, i, j, j1, j2, k = 1;
 	int32_t S, U, V;
 	int64_t temp;
@@ -116,7 +123,8 @@ void oqs_rlwe_msrln16_INTT_GS_rev2std_12289(int32_t *a, const int32_t *omegainv_
 	return;
 }
 
-void oqs_rlwe_msrln16_two_reduce12289(int32_t *a, unsigned int N) { // Two consecutive reductions modulo q
+void oqs_rlwe_msrln16_two_reduce12289(
+    int32_t *a, unsigned int N) { // Two consecutive reductions modulo q
 	unsigned int i;
 
 	for (i = 0; i < N; i++) {
@@ -125,7 +133,8 @@ void oqs_rlwe_msrln16_two_reduce12289(int32_t *a, unsigned int N) { // Two conse
 	}
 }
 
-void oqs_rlwe_msrln16_pmul(int32_t *a, int32_t *b, int32_t *c, unsigned int N) { // Component-wise multiplication
+void oqs_rlwe_msrln16_pmul(int32_t *a, int32_t *b, int32_t *c,
+                           unsigned int N) { // Component-wise multiplication
 	unsigned int i;
 
 	for (i = 0; i < N; i++) {
@@ -134,7 +143,9 @@ void oqs_rlwe_msrln16_pmul(int32_t *a, int32_t *b, int32_t *c, unsigned int N) {
 	}
 }
 
-void oqs_rlwe_msrln16_pmuladd(int32_t *a, int32_t *b, int32_t *c, int32_t *d, unsigned int N) { // Component-wise multiplication and addition
+void oqs_rlwe_msrln16_pmuladd(
+    int32_t *a, int32_t *b, int32_t *c, int32_t *d,
+    unsigned int N) { // Component-wise multiplication and addition
 	unsigned int i;
 
 	for (i = 0; i < N; i++) {
@@ -143,7 +154,9 @@ void oqs_rlwe_msrln16_pmuladd(int32_t *a, int32_t *b, int32_t *c, int32_t *d, un
 	}
 }
 
-void oqs_rlwe_msrln16_smul(int32_t *a, int32_t scalar, unsigned int N) { // Component-wise multiplication with scalar
+void oqs_rlwe_msrln16_smul(
+    int32_t *a, int32_t scalar,
+    unsigned int N) { // Component-wise multiplication with scalar
 	unsigned int i;
 
 	for (i = 0; i < N; i++) {
@@ -151,7 +164,8 @@ void oqs_rlwe_msrln16_smul(int32_t *a, int32_t scalar, unsigned int N) { // Comp
 	}
 }
 
-void oqs_rlwe_msrln16_correction(int32_t *a, int32_t p, unsigned int N) { // Correction modulo q
+void oqs_rlwe_msrln16_correction(int32_t *a, int32_t p,
+                                 unsigned int N) { // Correction modulo q
 	unsigned int i;
 	int32_t mask;
 

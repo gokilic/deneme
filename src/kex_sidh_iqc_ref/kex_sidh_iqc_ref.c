@@ -11,7 +11,8 @@
 #include "kex_sidh_iqc_ref.h"
 #include "kex_sidh_iqc_ref_params.h"
 
-OQS_KEX *OQS_KEX_sidh_iqc_ref_new(OQS_RAND *rand, const char *named_parameters) {
+OQS_KEX *OQS_KEX_sidh_iqc_ref_new(OQS_RAND *rand,
+                                  const char *named_parameters) {
 
 	if (named_parameters == NULL) {
 		named_parameters = "params771";

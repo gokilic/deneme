@@ -13,34 +13,29 @@ static char *Picnic_L3_FS_name = "Picnic_L3_FS";
 static char *Picnic_L3_UR_name = "Picnic_L3_UR";
 static char *Picnic_L5_FS_name = "Picnic_L5_FS";
 static char *Picnic_L5_UR_name = "Picnic_L5_UR";
-static size_t PRIV_KEY_LEN[] = {
-    0,
-    PICNIC_PRIVATE_KEY_SIZE(Picnic_L1_FS),
-    PICNIC_PRIVATE_KEY_SIZE(Picnic_L1_UR),
-    PICNIC_PRIVATE_KEY_SIZE(Picnic_L3_FS),
-    PICNIC_PRIVATE_KEY_SIZE(Picnic_L3_UR),
-    PICNIC_PRIVATE_KEY_SIZE(Picnic_L5_FS),
-    PICNIC_PRIVATE_KEY_SIZE(Picnic_L5_UR)};
-static size_t PUB_KEY_LEN[] = {
-    0,
-    PICNIC_PUBLIC_KEY_SIZE(Picnic_L1_FS),
-    PICNIC_PUBLIC_KEY_SIZE(Picnic_L1_UR),
-    PICNIC_PUBLIC_KEY_SIZE(Picnic_L3_FS),
-    PICNIC_PUBLIC_KEY_SIZE(Picnic_L3_UR),
-    PICNIC_PUBLIC_KEY_SIZE(Picnic_L5_FS),
-    PICNIC_PUBLIC_KEY_SIZE(Picnic_L5_UR)};
-static size_t SIG_LEN[] = {
-    0,
-    PICNIC_SIGNATURE_SIZE_Picnic_L1_FS,
-    PICNIC_SIGNATURE_SIZE_Picnic_L1_UR,
-    PICNIC_SIGNATURE_SIZE_Picnic_L3_FS,
-    PICNIC_SIGNATURE_SIZE_Picnic_L3_UR,
-    PICNIC_SIGNATURE_SIZE_Picnic_L5_FS,
-    PICNIC_SIGNATURE_SIZE_Picnic_L5_UR};
+static size_t PRIV_KEY_LEN[] = {0,
+                                PICNIC_PRIVATE_KEY_SIZE(Picnic_L1_FS),
+                                PICNIC_PRIVATE_KEY_SIZE(Picnic_L1_UR),
+                                PICNIC_PRIVATE_KEY_SIZE(Picnic_L3_FS),
+                                PICNIC_PRIVATE_KEY_SIZE(Picnic_L3_UR),
+                                PICNIC_PRIVATE_KEY_SIZE(Picnic_L5_FS),
+                                PICNIC_PRIVATE_KEY_SIZE(Picnic_L5_UR)};
+static size_t PUB_KEY_LEN[] = {0,
+                               PICNIC_PUBLIC_KEY_SIZE(Picnic_L1_FS),
+                               PICNIC_PUBLIC_KEY_SIZE(Picnic_L1_UR),
+                               PICNIC_PUBLIC_KEY_SIZE(Picnic_L3_FS),
+                               PICNIC_PUBLIC_KEY_SIZE(Picnic_L3_UR),
+                               PICNIC_PUBLIC_KEY_SIZE(Picnic_L5_FS),
+                               PICNIC_PUBLIC_KEY_SIZE(Picnic_L5_UR)};
+static size_t SIG_LEN[] = {0,
+                           PICNIC_SIGNATURE_SIZE_Picnic_L1_FS,
+                           PICNIC_SIGNATURE_SIZE_Picnic_L1_UR,
+                           PICNIC_SIGNATURE_SIZE_Picnic_L3_FS,
+                           PICNIC_SIGNATURE_SIZE_Picnic_L3_UR,
+                           PICNIC_SIGNATURE_SIZE_Picnic_L5_FS,
+                           PICNIC_SIGNATURE_SIZE_Picnic_L5_UR};
 
-typedef struct PICNIC_CTX {
-	picnic_params_t params;
-} PICNIC_CTX;
+typedef struct PICNIC_CTX { picnic_params_t params; } PICNIC_CTX;
 
 int OQS_SIG_picnic_get(OQS_SIG *s, enum OQS_SIG_algid algid) {
 	if (s == NULL) {
@@ -98,7 +93,8 @@ int OQS_SIG_picnic_get(OQS_SIG *s, enum OQS_SIG_algid algid) {
 	}
 	// set the ctx, sizes, and API functions
 	s->ctx = pctx;
-	s->priv_key_len = PRIV_KEY_LEN[pctx->params] + PUB_KEY_LEN[pctx->params]; // priv key also contains pub key
+	s->priv_key_len = PRIV_KEY_LEN[pctx->params] +
+	                  PUB_KEY_LEN[pctx->params]; // priv key also contains pub key
 	s->pub_key_len = PUB_KEY_LEN[pctx->params];
 	s->max_sig_len = SIG_LEN[pctx->params];
 	s->keygen = &OQS_SIG_picnic_keygen;
@@ -135,8 +131,11 @@ int OQS_SIG_picnic_keygen(const OQS_SIG *s, uint8_t *priv, uint8_t *pub) {
 	return OQS_SUCCESS;
 }
 
-int OQS_SIG_picnic_sign(const OQS_SIG *s, const uint8_t *priv, const uint8_t *msg, const size_t msg_len, uint8_t *sig, size_t *sig_len) {
-	if (s == NULL || priv == NULL || msg == NULL || sig == NULL || sig_len == NULL) {
+int OQS_SIG_picnic_sign(const OQS_SIG *s, const uint8_t *priv,
+                        const uint8_t *msg, const size_t msg_len, uint8_t *sig,
+                        size_t *sig_len) {
+	if (s == NULL || priv == NULL || msg == NULL || sig == NULL ||
+	    sig_len == NULL) {
 		return OQS_ERROR;
 	}
 	picnic_privatekey_t sk;
@@ -151,7 +150,9 @@ int OQS_SIG_picnic_sign(const OQS_SIG *s, const uint8_t *priv, const uint8_t *ms
 	return OQS_SUCCESS;
 }
 
-int OQS_SIG_picnic_verify(UNUSED const OQS_SIG *s, const uint8_t *pub, const uint8_t *msg, const size_t msg_len, const uint8_t *sig, const size_t sig_len) {
+int OQS_SIG_picnic_verify(UNUSED const OQS_SIG *s, const uint8_t *pub,
+                          const uint8_t *msg, const size_t msg_len,
+                          const uint8_t *sig, const size_t sig_len) {
 	if (pub == NULL || msg == NULL || sig == NULL) {
 		return OQS_ERROR;
 	}

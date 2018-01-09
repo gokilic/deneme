@@ -23,8 +23,12 @@ OQS_KEX *OQS_KEX_mlwe_kyber_new(OQS_RAND *rand) {
 		return NULL;
 	}
 	k->method_name = strdup("MLWE Kyber");
-	k->estimated_classical_security = 178; // using https://github.com/pq-crystals/kyber/blob/master/scripts/Kyber.py
-	k->estimated_quantum_security = 161;   // using https://github.com/pq-crystals/kyber/blob/master/scripts/Kyber.py
+	k->estimated_classical_security =
+	    178; // using
+	         // https://github.com/pq-crystals/kyber/blob/master/scripts/Kyber.py
+	k->estimated_quantum_security =
+	    161; // using
+	         // https://github.com/pq-crystals/kyber/blob/master/scripts/Kyber.py
 	k->seed = NULL;
 	k->seed_len = 0;
 	k->named_parameters = 0;
@@ -38,7 +42,8 @@ OQS_KEX *OQS_KEX_mlwe_kyber_new(OQS_RAND *rand) {
 	return k;
 }
 
-int OQS_KEX_mlwe_kyber_alice_0(UNUSED OQS_KEX *k, void **alice_priv, uint8_t **alice_msg, size_t *alice_msg_len) {
+int OQS_KEX_mlwe_kyber_alice_0(UNUSED OQS_KEX *k, void **alice_priv,
+                               uint8_t **alice_msg, size_t *alice_msg_len) {
 
 	int ret;
 
@@ -74,7 +79,10 @@ cleanup:
 	return ret;
 }
 
-int OQS_KEX_mlwe_kyber_bob(UNUSED OQS_KEX *k, const uint8_t *alice_msg, const size_t alice_msg_len, uint8_t **bob_msg, size_t *bob_msg_len, uint8_t **key, size_t *key_len) {
+int OQS_KEX_mlwe_kyber_bob(UNUSED OQS_KEX *k, const uint8_t *alice_msg,
+                           const size_t alice_msg_len, uint8_t **bob_msg,
+                           size_t *bob_msg_len, uint8_t **key,
+                           size_t *key_len) {
 
 	int ret;
 
@@ -115,7 +123,9 @@ cleanup:
 	return ret;
 }
 
-int OQS_KEX_mlwe_kyber_alice_1(UNUSED OQS_KEX *k, const void *alice_priv, const uint8_t *bob_msg, const size_t bob_msg_len, uint8_t **key, size_t *key_len) {
+int OQS_KEX_mlwe_kyber_alice_1(UNUSED OQS_KEX *k, const void *alice_priv,
+                               const uint8_t *bob_msg, const size_t bob_msg_len,
+                               uint8_t **key, size_t *key_len) {
 
 	int ret;
 

@@ -14,7 +14,7 @@
  * You can copy, modify, distribute and perform the work, even for commercial
  * purposes, all without asking permission. You should have received a copy of
  * the creative commons license (CC0 1.0 universal) along with this program.
- * See the license file for more information. 
+ * See the license file for more information.
  *
  *
  *********************************************************************************/
@@ -163,8 +163,7 @@ ntru_crypto_drbg_external_instantiate(
  */
 
 NTRUCALL
-ntru_crypto_drbg_uninstantiate(
-    DRBG_HANDLE handle); /* in - drbg handle */
+ntru_crypto_drbg_uninstantiate(DRBG_HANDLE handle); /* in - drbg handle */
 
 /* ntru_crypto_drbg_reseed
  *
@@ -177,8 +176,7 @@ ntru_crypto_drbg_uninstantiate(
  */
 
 NTRUCALL
-ntru_crypto_drbg_reseed(
-    DRBG_HANDLE handle); /* in - drbg handle */
+ntru_crypto_drbg_reseed(DRBG_HANDLE handle); /* in - drbg handle */
 
 /* ntru_crypto_drbg_generate
  *

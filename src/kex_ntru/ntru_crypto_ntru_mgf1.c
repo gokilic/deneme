@@ -14,7 +14,7 @@
  * You can copy, modify, distribute and perform the work, even for commercial
  * purposes, all without asking permission. You should have received a copy of
  * the creative commons license (CC0 1.0 universal) along with this program.
- * See the license file for more information. 
+ * See the license file for more information.
  *
  *
  *********************************************************************************/
@@ -45,14 +45,13 @@
  */
 
 uint32_t
-ntru_mgf1(
-    uint8_t *state,               /* in/out - pointer to the state */
-    NTRU_CRYPTO_HASH_ALGID algid, /*     in - hash algorithm ID */
-    uint8_t md_len,               /*     in - no. of octets in digest */
-    uint8_t num_calls,            /*     in - no. of hash calls */
-    uint16_t seed_len,            /*     in - no. of octets in seed */
-    uint8_t const *seed,          /*     in - pointer to seed */
-    uint8_t *out)                 /*    out - address for output */
+ntru_mgf1(uint8_t *state,               /* in/out - pointer to the state */
+          NTRU_CRYPTO_HASH_ALGID algid, /*     in - hash algorithm ID */
+          uint8_t md_len,               /*     in - no. of octets in digest */
+          uint8_t num_calls,            /*     in - no. of hash calls */
+          uint16_t seed_len,            /*     in - no. of octets in seed */
+          uint8_t const *seed,          /*     in - pointer to seed */
+          uint8_t *out)                 /*    out - address for output */
 {
 	uint8_t *ctr = state + md_len;
 	uint32_t retcode;
@@ -71,8 +70,8 @@ ntru_mgf1(
 	/* generate output */
 
 	while (num_calls-- > 0) {
-		if ((retcode = ntru_crypto_hash_digest(algid, state, md_len + 4,
-		                                       out)) != NTRU_CRYPTO_HASH_OK) {
+		if ((retcode = ntru_crypto_hash_digest(algid, state, md_len + 4, out)) !=
+		    NTRU_CRYPTO_HASH_OK) {
 			return retcode;
 		}
 
@@ -107,19 +106,18 @@ ntru_mgf1(
  */
 
 uint32_t
-ntru_mgftp1(
-    NTRU_CRYPTO_HASH_ALGID hash_algid, /*  in - hash alg ID for
-                                                       MGF-TP-1 */
-    uint8_t md_len,                    /*  in - no. of octets in
-                                                       digest */
-    uint8_t min_calls,                 /*  in - minimum no. of hash
-                                                       calls */
-    uint16_t seed_len,                 /*  in - no. of octets in seed */
-    uint8_t *seed,                     /*  in - pointer to seed */
-    uint8_t *buf,                      /*  in - pointer to working
-                                                       buffer */
-    uint16_t num_trits_needed,         /*  in - no. of trits in mask */
-    uint8_t *mask)                     /* out - address for mask trits */
+ntru_mgftp1(NTRU_CRYPTO_HASH_ALGID hash_algid, /*  in - hash alg ID for
+                                                               MGF-TP-1 */
+            uint8_t md_len,                    /*  in - no. of octets in
+                                                               digest */
+            uint8_t min_calls,                 /*  in - minimum no. of hash
+                                                               calls */
+            uint16_t seed_len,                 /*  in - no. of octets in seed */
+            uint8_t *seed,                     /*  in - pointer to seed */
+            uint8_t *buf,                      /*  in - pointer to working
+                                                               buffer */
+            uint16_t num_trits_needed,         /*  in - no. of trits in mask */
+            uint8_t *mask)                     /* out - address for mask trits */
 {
 	uint8_t *mgf_out;
 	uint8_t *octets;
@@ -129,8 +127,8 @@ ntru_mgftp1(
 	/* generate minimum MGF1 output */
 
 	mgf_out = buf + md_len + 4;
-	if ((retcode = ntru_mgf1(buf, hash_algid, md_len, min_calls,
-	                         seed_len, seed, mgf_out)) != NTRU_OK) {
+	if ((retcode = ntru_mgf1(buf, hash_algid, md_len, min_calls, seed_len, seed,
+	                         mgf_out)) != NTRU_OK) {
 		return retcode;
 	}
 
@@ -143,8 +141,8 @@ ntru_mgftp1(
 		/* get another octet and convert it to 5 trits */
 
 		if (octets_available == 0) {
-			if ((retcode = ntru_mgf1(buf, hash_algid, md_len, 1,
-			                         0, NULL, mgf_out)) != NTRU_OK) {
+			if ((retcode = ntru_mgf1(buf, hash_algid, md_len, 1, 0, NULL, mgf_out)) !=
+			    NTRU_OK) {
 				return retcode;
 			}
 
@@ -170,8 +168,8 @@ ntru_mgftp1(
 		/* get another octet and convert it to remaining trits */
 
 		if (octets_available == 0) {
-			if ((retcode = ntru_mgf1(buf, hash_algid, md_len, 1,
-			                         0, NULL, mgf_out)) != NTRU_OK) {
+			if ((retcode = ntru_mgf1(buf, hash_algid, md_len, 1, 0, NULL, mgf_out)) !=
+			    NTRU_OK) {
 				return retcode;
 			}
 

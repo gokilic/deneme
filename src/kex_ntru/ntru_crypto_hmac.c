@@ -14,7 +14,7 @@
  * You can copy, modify, distribute and perform the work, even for commercial
  * purposes, all without asking permission. You should have received a copy of
  * the creative commons license (CC0 1.0 universal) along with this program.
- * See the license file for more information. 
+ * See the license file for more information.
  *
  *
  *********************************************************************************/
@@ -51,8 +51,7 @@ struct _NTRU_CRYPTO_HMAC_CTX {
  * Returns NTRU_CRYPTO_HMAC_OUT_OF_MEMORY if memory cannot be allocated.
  */
 
-uint32_t
-ntru_crypto_hmac_create_ctx(
+uint32_t ntru_crypto_hmac_create_ctx(
     NTRU_CRYPTO_HASH_ALGID algid, /*  in - the hash algorithm to be used */
     uint8_t const *key,           /*  in - pointer to the HMAC key */
     uint32_t key_len,             /*  in - number of bytes in HMAC key */
@@ -71,7 +70,8 @@ ntru_crypto_hmac_create_ctx(
 	*c = NULL;
 
 	/* allocate memory for an HMAC context */
-	if (NULL == (ctx = (NTRU_CRYPTO_HMAC_CTX *) MALLOC(sizeof(NTRU_CRYPTO_HMAC_CTX)))) {
+	if (NULL ==
+	    (ctx = (NTRU_CRYPTO_HMAC_CTX *) MALLOC(sizeof(NTRU_CRYPTO_HMAC_CTX)))) {
 		HMAC_RET(NTRU_CRYPTO_HMAC_OUT_OF_MEMORY);
 	}
 
@@ -84,10 +84,8 @@ ntru_crypto_hmac_create_ctx(
 
 	/* set block length and digest length */
 
-	if ((result = ntru_crypto_hash_block_length(&ctx->hash_ctx,
-	                                            &ctx->blk_len)) ||
-	    (result = ntru_crypto_hash_digest_length(&ctx->hash_ctx,
-	                                             &ctx->md_len))) {
+	if ((result = ntru_crypto_hash_block_length(&ctx->hash_ctx, &ctx->blk_len)) ||
+	    (result = ntru_crypto_hash_digest_length(&ctx->hash_ctx, &ctx->md_len))) {
 		FREE(ctx);
 		return result;
 	}
@@ -130,8 +128,7 @@ ntru_crypto_hmac_create_ctx(
  * passed.
  */
 
-uint32_t
-ntru_crypto_hmac_destroy_ctx(
+uint32_t ntru_crypto_hmac_destroy_ctx(
     NTRU_CRYPTO_HMAC_CTX *c) /* in/out - pointer to HMAC context */
 {
 	if (!c || !c->k0) {
@@ -156,8 +153,7 @@ ntru_crypto_hmac_destroy_ctx(
  * passed.
  */
 
-uint32_t
-ntru_crypto_hmac_get_md_len(
+uint32_t ntru_crypto_hmac_get_md_len(
     NTRU_CRYPTO_HMAC_CTX const *c, /*  in - pointer to HMAC context */
     uint16_t *md_len)              /* out - address for digest length */
 {
@@ -182,8 +178,7 @@ ntru_crypto_hmac_get_md_len(
  * passed.
  */
 
-uint32_t
-ntru_crypto_hmac_set_key(
+uint32_t ntru_crypto_hmac_set_key(
     NTRU_CRYPTO_HMAC_CTX *c, /*  in - pointer to HMAC context */
     uint8_t const *key)      /*  in - pointer to new HMAC key */
 {
@@ -209,8 +204,7 @@ ntru_crypto_hmac_set_key(
  * passed.
  */
 
-uint32_t
-ntru_crypto_hmac_init(
+uint32_t ntru_crypto_hmac_init(
     NTRU_CRYPTO_HMAC_CTX *c) /* in/out - pointer to HMAC context */
 {
 	uint32_t result;
@@ -248,8 +242,7 @@ ntru_crypto_hmac_init(
  *         underlying hash algorithm can handle.
  */
 
-uint32_t
-ntru_crypto_hmac_update(
+uint32_t ntru_crypto_hmac_update(
     NTRU_CRYPTO_HMAC_CTX *c, /* in/out - pointer to HMAC context */
     const uint8_t *data,     /*     in - pointer to input data */
     uint32_t data_len)       /*     in - no. of bytes of input data */
@@ -280,8 +273,7 @@ ntru_crypto_hmac_update(
  * passed.
  */
 
-uint32_t
-ntru_crypto_hmac_final(
+uint32_t ntru_crypto_hmac_final(
     NTRU_CRYPTO_HMAC_CTX *c, /* in/out - pointer to HMAC context */
     uint8_t *md)             /*   out - address for message digest */
 {
@@ -295,10 +287,10 @@ ntru_crypto_hmac_final(
 	}
 
 	/* form K0 ^ opad
-     * complete md = H((K0 ^ ipad) || data)
-     * compute  md = H((K0 ^ opad) || md)
-     * re-form K0
-     */
+*complete md = H((K0 ^ ipad) || data)
+*compute  md = H((K0 ^ opad) || md)
+*re-form K0
+*/
 
 	for (i = 0; i < c->blk_len; i++) {
 		c->k0[i] ^= (0x36 ^ 0x5c);

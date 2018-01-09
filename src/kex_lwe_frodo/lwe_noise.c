@@ -21,11 +21,13 @@
 #define IS_WINDOWS(windows, nix) (nix)
 #endif
 
-static void lwe_sample_n_inverse_8(uint16_t *s, const size_t n, const uint8_t *cdf_table, const size_t cdf_table_len, OQS_RAND *rand) {
+static void lwe_sample_n_inverse_8(uint16_t *s, const size_t n,
+                                   const uint8_t *cdf_table,
+                                   const size_t cdf_table_len, OQS_RAND *rand) {
 	/* Fills vector s with n samples from the noise distribution which requires
-	 * 8 bits to sample. The distribution is specified by its CDF. Super-constant
-	 * timing: the CDF table is ingested for every sample.
-	 */
+   * 8 bits to sample. The distribution is specified by its CDF. Super-constant
+   * timing: the CDF table is ingested for every sample.
+   */
 
 	uint8_t rndvec[IS_WINDOWS(RECOMMENDED_N_ARRAY_SIZE, n)];
 	OQS_RAND_n(rand, rndvec, sizeof(rndvec));
@@ -47,20 +49,26 @@ static void lwe_sample_n_inverse_8(uint16_t *s, const size_t n, const uint8_t *c
 	OQS_MEM_cleanse(rndvec, sizeof(rndvec));
 }
 
-static void lwe_sample_n_inverse_12(uint16_t *s, const size_t n, const uint16_t *cdf_table, const size_t cdf_table_len, OQS_RAND *rand) {
+static void lwe_sample_n_inverse_12(uint16_t *s, const size_t n,
+                                    const uint16_t *cdf_table,
+                                    const size_t cdf_table_len,
+                                    OQS_RAND *rand) {
 	/* Fills vector s with n samples from the noise distribution which requires
-	 * 12 bits to sample. The distribution is specified by its CDF. Super-constant
-	 * timing: the CDF table is ingested for every sample.
-	 */
+   * 12 bits to sample. The distribution is specified by its CDF. Super-constant
+   * timing: the CDF table is ingested for every sample.
+   */
 
-	uint8_t rnd[3 * ((IS_WINDOWS(RECOMMENDED_N_ARRAY_SIZE, n) + 1) / 2)]; // 12 bits of unif randomness per output element
+	uint8_t rnd[3 * ((IS_WINDOWS(RECOMMENDED_N_ARRAY_SIZE, n) + 1) /
+	                 2)]; // 12 bits of unif randomness per output element
 	OQS_RAND_n(rand, rnd, sizeof(rnd));
 
 	for (size_t i = 0; i < n; i += 2) { // two output elements at a time
 		uint8_t *pRnd = (rnd + 3 * i / 2);
 
-		uint16_t rnd1 = (((pRnd[0] << 8) + pRnd[1]) & 0xFFE0) >> 5; // first 11 bits (0..10)
-		uint16_t rnd2 = (((pRnd[1] << 8) + pRnd[2]) & 0x1FFC) >> 2; // next 11 bits (11..21)
+		uint16_t rnd1 =
+		    (((pRnd[0] << 8) + pRnd[1]) & 0xFFE0) >> 5; // first 11 bits (0..10)
+		uint16_t rnd2 =
+		    (((pRnd[1] << 8) + pRnd[2]) & 0x1FFC) >> 2; // next 11 bits (11..21)
 
 		uint8_t sample1 = 0;
 		uint8_t sample2 = 0;
@@ -86,11 +94,14 @@ static void lwe_sample_n_inverse_12(uint16_t *s, const size_t n, const uint16_t 
 	OQS_MEM_cleanse(rnd, sizeof(rnd));
 }
 
-static void lwe_sample_n_inverse_16(uint16_t *s, const size_t n, const uint16_t *cdf_table, const size_t cdf_table_len, OQS_RAND *rand) {
+static void lwe_sample_n_inverse_16(uint16_t *s, const size_t n,
+                                    const uint16_t *cdf_table,
+                                    const size_t cdf_table_len,
+                                    OQS_RAND *rand) {
 	/* Fills vector s with n samples from the noise distribution which requires
-	 * 16 bits to sample. The distribution is specified by its CDF. Super-constant
-	 * timing: the CDF table is ingested for every sample.
-	 */
+   * 16 bits to sample. The distribution is specified by its CDF. Super-constant
+   * timing: the CDF table is ingested for every sample.
+   */
 
 	uint16_t rndvec[IS_WINDOWS(RECOMMENDED_N_ARRAY_SIZE, n)];
 	OQS_RAND_n(rand, (uint8_t *) rndvec, sizeof(rndvec));
@@ -112,11 +123,15 @@ static void lwe_sample_n_inverse_16(uint16_t *s, const size_t n, const uint16_t 
 	OQS_MEM_cleanse(rndvec, sizeof(rndvec));
 }
 
-void oqs_kex_lwe_frodo_sample_n(uint16_t *s, const size_t n, struct oqs_kex_lwe_frodo_params *params, OQS_RAND *rand) {
+void oqs_kex_lwe_frodo_sample_n(uint16_t *s, const size_t n,
+                                struct oqs_kex_lwe_frodo_params *params,
+                                OQS_RAND *rand) {
 	switch (params->sampler_num) {
 	case 8: {
 		// have to copy cdf_table from uint16_t to uint8_t
-		uint8_t cdf_table_8[IS_WINDOWS(RECOMMENDED_CDF_TABLE_LEN, params->cdf_table_len) * sizeof(uint8_t)];
+		uint8_t cdf_table_8[IS_WINDOWS(RECOMMENDED_CDF_TABLE_LEN,
+		                               params->cdf_table_len) *
+		                    sizeof(uint8_t)];
 
 		for (size_t i = 0; i < params->cdf_table_len; i++) {
 			cdf_table_8[i] = (uint8_t) params->cdf_table[i];
@@ -124,13 +139,15 @@ void oqs_kex_lwe_frodo_sample_n(uint16_t *s, const size_t n, struct oqs_kex_lwe_
 		lwe_sample_n_inverse_8(s, n, cdf_table_8, params->cdf_table_len, rand);
 	} break;
 	case 12:
-		lwe_sample_n_inverse_12(s, n, params->cdf_table, params->cdf_table_len, rand);
+		lwe_sample_n_inverse_12(s, n, params->cdf_table, params->cdf_table_len,
+		                        rand);
 		break;
 	case 16:
-		lwe_sample_n_inverse_16(s, n, params->cdf_table, params->cdf_table_len, rand);
+		lwe_sample_n_inverse_16(s, n, params->cdf_table, params->cdf_table_len,
+		                        rand);
 		break;
 	default:
-		assert(0); //ERROR
+		assert(0); // ERROR
 		break;
 	}
 }

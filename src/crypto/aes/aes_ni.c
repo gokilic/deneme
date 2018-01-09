@@ -5,16 +5,19 @@
 
 #ifndef AES_ENABLE_NI
 #include <assert.h>
-void oqs_aes128_load_schedule_ni(UNUSED const uint8_t *key, UNUSED void **_schedule) {
+void oqs_aes128_load_schedule_ni(UNUSED const uint8_t *key,
+                                 UNUSED void **_schedule) {
 	assert(0);
 }
-void oqs_aes128_free_schedule_ni(UNUSED void *_schedule) {
+void oqs_aes128_free_schedule_ni(UNUSED void *_schedule) { assert(0); }
+void oqs_aes128_enc_ni(UNUSED const uint8_t *plaintext,
+                       UNUSED const void *_schedule,
+                       UNUSED uint8_t *ciphertext) {
 	assert(0);
 }
-void oqs_aes128_enc_ni(UNUSED const uint8_t *plaintext, UNUSED const void *_schedule, UNUSED uint8_t *ciphertext) {
-	assert(0);
-}
-void oqs_aes128_dec_ni(UNUSED const uint8_t *ciphertext, UNUSED const void *_schedule, UNUSED uint8_t *plaintext) {
+void oqs_aes128_dec_ni(UNUSED const uint8_t *ciphertext,
+                       UNUSED const void *_schedule,
+                       UNUSED uint8_t *plaintext) {
 	assert(0);
 }
 #else
@@ -31,8 +34,8 @@ static __m128i key_expand(__m128i key, __m128i keygened) {
 	return _mm_xor_si128(key, keygened);
 }
 
-//This is needed since the rcon argument to _mm_aeskeygenassist_si128
-//must be a compile time constaint
+// This is needed since the rcon argument to _mm_aeskeygenassist_si128
+// must be a compile time constaint
 
 #define key_exp(k, rcon) key_expand(k, _mm_aeskeygenassist_si128(k, rcon))
 
@@ -65,7 +68,8 @@ void oqs_aes128_free_schedule_ni(void *schedule) {
 	}
 }
 
-void oqs_aes128_enc_ni(const uint8_t *plaintext, const void *_schedule, uint8_t *ciphertext) {
+void oqs_aes128_enc_ni(const uint8_t *plaintext, const void *_schedule,
+                       uint8_t *ciphertext) {
 	__m128i *schedule = (__m128i *) _schedule;
 	__m128i m = _mm_loadu_si128((__m128i *) plaintext);
 
@@ -78,7 +82,8 @@ void oqs_aes128_enc_ni(const uint8_t *plaintext, const void *_schedule, uint8_t 
 	_mm_storeu_si128((__m128i *) ciphertext, m);
 }
 
-void oqs_aes128_dec_ni(const uint8_t *ciphertext, const void *_schedule, uint8_t *plaintext) {
+void oqs_aes128_dec_ni(const uint8_t *ciphertext, const void *_schedule,
+                       uint8_t *plaintext) {
 	__m128i *schedule = (__m128i *) _schedule;
 	__m128i m = _mm_loadu_si128((__m128i *) ciphertext);
 

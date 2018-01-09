@@ -49,12 +49,9 @@ void oqs_sidh_iqc_ref_private_key_generate(private_key_t private_key,
  * @param le
  * @param E
  */
-void oqs_sidh_iqc_ref_private_key_compute_kernel_gen(point_t gen,
-                                                     const private_key_t private_key,
-                                                     const point_t P,
-                                                     const point_t Q,
-                                                     const mpz_t le,
-                                                     const elliptic_curve_t E);
+void oqs_sidh_iqc_ref_private_key_compute_kernel_gen(
+    point_t gen, const private_key_t private_key, const point_t P,
+    const point_t Q, const mpz_t le, const elliptic_curve_t E);
 
 /**
  * Converts a private-key to an array of bytes.

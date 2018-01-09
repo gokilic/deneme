@@ -2,7 +2,9 @@
 #define strdup _strdup // for strdup deprecation warning
 #endif
 
-OQS_KEX *MACRIFY(OQS_KEX_lwe_frodo_new)(OQS_RAND *rand, const uint8_t *seed, const size_t seed_len, const char *named_parameters) {
+OQS_KEX *MACRIFY(OQS_KEX_lwe_frodo_new)(OQS_RAND *rand, const uint8_t *seed,
+                                        const size_t seed_len,
+                                        const char *named_parameters) {
 
 	OQS_KEX *k;
 	struct oqs_kex_lwe_frodo_params *params;
@@ -85,11 +87,14 @@ err:
 	return NULL;
 }
 
-int MACRIFY(OQS_KEX_lwe_frodo_alice_0)(OQS_KEX *k, void **alice_priv, uint8_t **alice_msg, size_t *alice_msg_len) {
+int MACRIFY(OQS_KEX_lwe_frodo_alice_0)(OQS_KEX *k, void **alice_priv,
+                                       uint8_t **alice_msg,
+                                       size_t *alice_msg_len) {
 
 	int ret;
 
-	struct oqs_kex_lwe_frodo_params *params = (struct oqs_kex_lwe_frodo_params *) k->params;
+	struct oqs_kex_lwe_frodo_params *params =
+	    (struct oqs_kex_lwe_frodo_params *) k->params;
 
 	*alice_priv = NULL;
 	*alice_msg = NULL;
@@ -109,14 +114,16 @@ int MACRIFY(OQS_KEX_lwe_frodo_alice_0)(OQS_KEX *k, void **alice_priv, uint8_t **
 	}
 
 	/* generate S and E */
-	oqs_kex_lwe_frodo_sample_n(*alice_priv, PARAMS_N * PARAMS_NBAR, params, k->rand);
+	oqs_kex_lwe_frodo_sample_n(*alice_priv, PARAMS_N * PARAMS_NBAR, params,
+	                           k->rand);
 	oqs_kex_lwe_frodo_sample_n(e, PARAMS_N * PARAMS_NBAR, params, k->rand);
 
 	/* compute B = AS + E */
 	MACRIFY(oqs_kex_lwe_frodo_mul_add_as_plus_e_on_the_fly)
 	(b, *alice_priv, e, params);
 
-	oqs_kex_lwe_frodo_pack(*alice_msg, PARAMS_REC_PUB_LENGTH, b, PARAMS_N * PARAMS_NBAR, PARAMS_LOG2Q);
+	oqs_kex_lwe_frodo_pack(*alice_msg, PARAMS_REC_PUB_LENGTH, b,
+	                       PARAMS_N * PARAMS_NBAR, PARAMS_LOG2Q);
 
 	ret = 1;
 	goto cleanup;
@@ -133,11 +140,15 @@ cleanup:
 	return ret;
 }
 
-int MACRIFY(OQS_KEX_lwe_frodo_bob)(OQS_KEX *k, const uint8_t *alice_msg, const size_t alice_msg_len, uint8_t **bob_msg, size_t *bob_msg_len, uint8_t **key, size_t *key_len) {
+int MACRIFY(OQS_KEX_lwe_frodo_bob)(OQS_KEX *k, const uint8_t *alice_msg,
+                                   const size_t alice_msg_len,
+                                   uint8_t **bob_msg, size_t *bob_msg_len,
+                                   uint8_t **key, size_t *key_len) {
 
 	int ret;
 
-	struct oqs_kex_lwe_frodo_params *params = (struct oqs_kex_lwe_frodo_params *) k->params;
+	struct oqs_kex_lwe_frodo_params *params =
+	    (struct oqs_kex_lwe_frodo_params *) k->params;
 
 	uint8_t *bob_rec = NULL;
 	*bob_msg = NULL;
@@ -173,13 +184,16 @@ int MACRIFY(OQS_KEX_lwe_frodo_bob)(OQS_KEX *k, const uint8_t *alice_msg, const s
 	MACRIFY(oqs_kex_lwe_frodo_mul_add_sa_plus_e_on_the_fly)
 	(bprime, bob_priv, eprime, params);
 
-	oqs_kex_lwe_frodo_pack(*bob_msg, PARAMS_REC_PUB_LENGTH, bprime, PARAMS_N * PARAMS_NBAR, PARAMS_LOG2Q);
+	oqs_kex_lwe_frodo_pack(*bob_msg, PARAMS_REC_PUB_LENGTH, bprime,
+	                       PARAMS_N * PARAMS_NBAR, PARAMS_LOG2Q);
 
 	/* generate E'' */
-	oqs_kex_lwe_frodo_sample_n(eprimeprime, PARAMS_NBAR * PARAMS_NBAR, params, k->rand);
+	oqs_kex_lwe_frodo_sample_n(eprimeprime, PARAMS_NBAR * PARAMS_NBAR, params,
+	                           k->rand);
 
 	/* unpack B */
-	oqs_kex_lwe_frodo_unpack(b, PARAMS_N * PARAMS_NBAR, alice_msg, alice_msg_len, PARAMS_LOG2Q);
+	oqs_kex_lwe_frodo_unpack(b, PARAMS_N * PARAMS_NBAR, alice_msg, alice_msg_len,
+	                         PARAMS_LOG2Q);
 
 	/* compute V = S'B + E'' */
 	MACRIFY(oqs_kex_lwe_frodo_mul_add_sb_plus_e)
@@ -214,7 +228,11 @@ cleanup:
 	return ret;
 }
 
-int MACRIFY(OQS_KEX_lwe_frodo_alice_1)(UNUSED OQS_KEX *k, const void *alice_priv, const uint8_t *bob_msg, const size_t bob_msg_len, uint8_t **key, size_t *key_len) {
+int MACRIFY(OQS_KEX_lwe_frodo_alice_1)(UNUSED OQS_KEX *k,
+                                       const void *alice_priv,
+                                       const uint8_t *bob_msg,
+                                       const size_t bob_msg_len, uint8_t **key,
+                                       size_t *key_len) {
 
 	int ret;
 	*key = NULL;
@@ -234,7 +252,8 @@ int MACRIFY(OQS_KEX_lwe_frodo_alice_1)(UNUSED OQS_KEX *k, const void *alice_priv
 	}
 
 	/* unpack B' */
-	oqs_kex_lwe_frodo_unpack(bprime, PARAMS_N * PARAMS_NBAR, bob_msg, PARAMS_REC_PUB_LENGTH, PARAMS_LOG2Q);
+	oqs_kex_lwe_frodo_unpack(bprime, PARAMS_N * PARAMS_NBAR, bob_msg,
+	                         PARAMS_REC_PUB_LENGTH, PARAMS_LOG2Q);
 
 	/* compute W = B'S */
 	MACRIFY(oqs_kex_lwe_frodo_mul_bs)

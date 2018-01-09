@@ -45,7 +45,8 @@ static void gen_e(unsigned char *e, OQS_RAND *r) {
 
 #define C ((PK_NCOLS + 63) / 64)
 
-static void syndrome(unsigned char *s, const unsigned char *pk, const unsigned char *e) {
+static void syndrome(unsigned char *s, const unsigned char *pk,
+                     const unsigned char *e) {
 	int i, j, t;
 
 	const unsigned char *e_ptr = e + SYND_BYTES;
@@ -92,7 +93,8 @@ static void syndrome(unsigned char *s, const unsigned char *pk, const unsigned c
 	}
 }
 
-static void encrypt(unsigned char *s, unsigned char *e, const unsigned char *pk, OQS_RAND *r) {
+static void encrypt(unsigned char *s, unsigned char *e, const unsigned char *pk,
+                    OQS_RAND *r) {
 	gen_e(e, r);
 	syndrome(s, pk, e);
 }

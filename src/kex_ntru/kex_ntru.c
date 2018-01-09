@@ -27,7 +27,9 @@ OQS_KEX *OQS_KEX_ntru_new(OQS_RAND *rand) {
 	if (k == NULL)
 		return NULL;
 	k->method_name = strdup("ntru " NTRU_PARAMETER_SELECTION_NAME);
-	k->estimated_classical_security = 256; // http://eprint.iacr.org/2015/708.pdf Table 3 N=743 product form search cost
+	k->estimated_classical_security = 256; // http://eprint.iacr.org/2015/708.pdf
+	                                       // Table 3 N=743 product form search
+	                                       // cost
 	k->estimated_quantum_security = 128;   // need justification
 	k->rand = rand;
 	k->params = NULL;
@@ -65,7 +67,8 @@ typedef struct OQS_KEX_ntru_alice_priv {
 	uint8_t *priv_key;
 } OQS_KEX_ntru_alice_priv;
 
-int OQS_KEX_ntru_alice_0(UNUSED OQS_KEX *k, void **alice_priv, uint8_t **alice_msg, size_t *alice_msg_len) {
+int OQS_KEX_ntru_alice_0(UNUSED OQS_KEX *k, void **alice_priv,
+                         uint8_t **alice_msg, size_t *alice_msg_len) {
 
 	int ret = 0;
 	uint32_t rc;
@@ -76,7 +79,9 @@ int OQS_KEX_ntru_alice_0(UNUSED OQS_KEX *k, void **alice_priv, uint8_t **alice_m
 	*alice_msg = NULL;
 
 	/* initialize NTRU DRBG */
-	rc = ntru_crypto_drbg_instantiate(256, (uint8_t *) "OQS Alice", strlen("OQS Alice"), (ENTROPY_FN) &get_entropy_from_dev_urandom, &drbg);
+	rc = ntru_crypto_drbg_instantiate(
+	    256, (uint8_t *) "OQS Alice", strlen("OQS Alice"),
+	    (ENTROPY_FN) &get_entropy_from_dev_urandom, &drbg);
 	if (rc != DRBG_OK)
 		return 0;
 
@@ -89,7 +94,9 @@ int OQS_KEX_ntru_alice_0(UNUSED OQS_KEX *k, void **alice_priv, uint8_t **alice_m
 
 	/* calculate length of public/private keys */
 	uint16_t ntru_alice_msg_len;
-	rc = ntru_crypto_ntru_encrypt_keygen(drbg, NTRU_PARAMETER_SELECTION, &ntru_alice_msg_len, NULL, &(ntru_alice_priv->priv_key_len), NULL);
+	rc = ntru_crypto_ntru_encrypt_keygen(drbg, NTRU_PARAMETER_SELECTION,
+	                                     &ntru_alice_msg_len, NULL,
+	                                     &(ntru_alice_priv->priv_key_len), NULL);
 	if (rc != NTRU_OK)
 		goto err;
 	*alice_msg_len = (size_t) ntru_alice_msg_len;
@@ -104,7 +111,9 @@ int OQS_KEX_ntru_alice_0(UNUSED OQS_KEX *k, void **alice_priv, uint8_t **alice_m
 		goto err;
 
 	/* generate public/private key pair */
-	rc = ntru_crypto_ntru_encrypt_keygen(drbg, NTRU_PARAMETER_SELECTION, &ntru_alice_msg_len, *alice_msg, &(ntru_alice_priv->priv_key_len), ntru_alice_priv->priv_key);
+	rc = ntru_crypto_ntru_encrypt_keygen(
+	    drbg, NTRU_PARAMETER_SELECTION, &ntru_alice_msg_len, *alice_msg,
+	    &(ntru_alice_priv->priv_key_len), ntru_alice_priv->priv_key);
 	if (rc != NTRU_OK)
 		goto err;
 	*alice_msg_len = (size_t) ntru_alice_msg_len;
@@ -126,7 +135,9 @@ cleanup:
 	return ret;
 }
 
-int OQS_KEX_ntru_bob(OQS_KEX *k, const uint8_t *alice_msg, const size_t alice_msg_len, uint8_t **bob_msg, size_t *bob_msg_len, uint8_t **key, size_t *key_len) {
+int OQS_KEX_ntru_bob(OQS_KEX *k, const uint8_t *alice_msg,
+                     const size_t alice_msg_len, uint8_t **bob_msg,
+                     size_t *bob_msg_len, uint8_t **key, size_t *key_len) {
 
 	int ret;
 	uint32_t rc;
@@ -136,7 +147,9 @@ int OQS_KEX_ntru_bob(OQS_KEX *k, const uint8_t *alice_msg, const size_t alice_ms
 	*key = NULL;
 
 	/* initialize NTRU DRBG */
-	rc = ntru_crypto_drbg_instantiate(256, (uint8_t *) "OQS Bob", strlen("OQS Bob"), (ENTROPY_FN) &get_entropy_from_dev_urandom, &drbg);
+	rc = ntru_crypto_drbg_instantiate(
+	    256, (uint8_t *) "OQS Bob", strlen("OQS Bob"),
+	    (ENTROPY_FN) &get_entropy_from_dev_urandom, &drbg);
 	if (rc != DRBG_OK)
 		return 0;
 
@@ -149,7 +162,8 @@ int OQS_KEX_ntru_bob(OQS_KEX *k, const uint8_t *alice_msg, const size_t alice_ms
 
 	/* calculate length of ciphertext */
 	uint16_t ntru_bob_msg_len;
-	rc = ntru_crypto_ntru_encrypt(drbg, alice_msg_len, alice_msg, *key_len, *key, &ntru_bob_msg_len, NULL);
+	rc = ntru_crypto_ntru_encrypt(drbg, alice_msg_len, alice_msg, *key_len, *key,
+	                              &ntru_bob_msg_len, NULL);
 	if (rc != NTRU_OK)
 		goto err;
 	*bob_msg_len = (size_t) ntru_bob_msg_len;
@@ -160,7 +174,8 @@ int OQS_KEX_ntru_bob(OQS_KEX *k, const uint8_t *alice_msg, const size_t alice_ms
 		goto err;
 
 	/* encrypt session key */
-	rc = ntru_crypto_ntru_encrypt(drbg, alice_msg_len, alice_msg, *key_len, *key, &ntru_bob_msg_len, *bob_msg);
+	rc = ntru_crypto_ntru_encrypt(drbg, alice_msg_len, alice_msg, *key_len, *key,
+	                              &ntru_bob_msg_len, *bob_msg);
 	if (rc != NTRU_OK)
 		goto err;
 	*bob_msg_len = (size_t) ntru_bob_msg_len;
@@ -180,18 +195,23 @@ cleanup:
 	return ret;
 }
 
-int OQS_KEX_ntru_alice_1(UNUSED OQS_KEX *k, const void *alice_priv, const uint8_t *bob_msg, const size_t bob_msg_len, uint8_t **key, size_t *key_len) {
+int OQS_KEX_ntru_alice_1(UNUSED OQS_KEX *k, const void *alice_priv,
+                         const uint8_t *bob_msg, const size_t bob_msg_len,
+                         uint8_t **key, size_t *key_len) {
 
 	int ret;
 	uint32_t rc;
 
 	*key = NULL;
 
-	OQS_KEX_ntru_alice_priv *ntru_alice_priv = (OQS_KEX_ntru_alice_priv *) alice_priv;
+	OQS_KEX_ntru_alice_priv *ntru_alice_priv =
+	    (OQS_KEX_ntru_alice_priv *) alice_priv;
 
 	/* calculate session key length */
 	uint16_t ntru_key_len;
-	rc = ntru_crypto_ntru_decrypt(ntru_alice_priv->priv_key_len, ntru_alice_priv->priv_key, bob_msg_len, bob_msg, &ntru_key_len, NULL);
+	rc = ntru_crypto_ntru_decrypt(ntru_alice_priv->priv_key_len,
+	                              ntru_alice_priv->priv_key, bob_msg_len, bob_msg,
+	                              &ntru_key_len, NULL);
 	if (rc != NTRU_OK)
 		goto err;
 	*key_len = (size_t) ntru_key_len;
@@ -202,7 +222,9 @@ int OQS_KEX_ntru_alice_1(UNUSED OQS_KEX *k, const void *alice_priv, const uint8_
 		goto err;
 
 	/* decrypt session key */
-	rc = ntru_crypto_ntru_decrypt(ntru_alice_priv->priv_key_len, ntru_alice_priv->priv_key, bob_msg_len, bob_msg, &ntru_key_len, *key);
+	rc = ntru_crypto_ntru_decrypt(ntru_alice_priv->priv_key_len,
+	                              ntru_alice_priv->priv_key, bob_msg_len, bob_msg,
+	                              &ntru_key_len, *key);
 	if (rc != NTRU_OK)
 		goto err;
 	*key_len = (size_t) ntru_key_len;
@@ -221,7 +243,8 @@ cleanup:
 
 void OQS_KEX_ntru_alice_priv_free(UNUSED OQS_KEX *k, void *alice_priv) {
 	if (alice_priv) {
-		OQS_KEX_ntru_alice_priv *ntru_alice_priv = (OQS_KEX_ntru_alice_priv *) alice_priv;
+		OQS_KEX_ntru_alice_priv *ntru_alice_priv =
+		    (OQS_KEX_ntru_alice_priv *) alice_priv;
 		free(ntru_alice_priv->priv_key);
 	}
 	free(alice_priv);

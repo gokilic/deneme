@@ -38,30 +38,18 @@ static void store64(uint8_t *x, uint64_t u) {
 }
 
 static const uint64_t KeccakF_RoundConstants[NROUNDS] = {
-    (uint64_t) 0x0000000000000001ULL,
-    (uint64_t) 0x0000000000008082ULL,
-    (uint64_t) 0x800000000000808aULL,
-    (uint64_t) 0x8000000080008000ULL,
-    (uint64_t) 0x000000000000808bULL,
-    (uint64_t) 0x0000000080000001ULL,
-    (uint64_t) 0x8000000080008081ULL,
-    (uint64_t) 0x8000000000008009ULL,
-    (uint64_t) 0x000000000000008aULL,
-    (uint64_t) 0x0000000000000088ULL,
-    (uint64_t) 0x0000000080008009ULL,
-    (uint64_t) 0x000000008000000aULL,
-    (uint64_t) 0x000000008000808bULL,
-    (uint64_t) 0x800000000000008bULL,
-    (uint64_t) 0x8000000000008089ULL,
-    (uint64_t) 0x8000000000008003ULL,
-    (uint64_t) 0x8000000000008002ULL,
-    (uint64_t) 0x8000000000000080ULL,
-    (uint64_t) 0x000000000000800aULL,
-    (uint64_t) 0x800000008000000aULL,
-    (uint64_t) 0x8000000080008081ULL,
-    (uint64_t) 0x8000000000008080ULL,
-    (uint64_t) 0x0000000080000001ULL,
-    (uint64_t) 0x8000000080008008ULL};
+    (uint64_t) 0x0000000000000001ULL, (uint64_t) 0x0000000000008082ULL,
+    (uint64_t) 0x800000000000808aULL, (uint64_t) 0x8000000080008000ULL,
+    (uint64_t) 0x000000000000808bULL, (uint64_t) 0x0000000080000001ULL,
+    (uint64_t) 0x8000000080008081ULL, (uint64_t) 0x8000000000008009ULL,
+    (uint64_t) 0x000000000000008aULL, (uint64_t) 0x0000000000000088ULL,
+    (uint64_t) 0x0000000080008009ULL, (uint64_t) 0x000000008000000aULL,
+    (uint64_t) 0x000000008000808bULL, (uint64_t) 0x800000000000008bULL,
+    (uint64_t) 0x8000000000008089ULL, (uint64_t) 0x8000000000008003ULL,
+    (uint64_t) 0x8000000000008002ULL, (uint64_t) 0x8000000000000080ULL,
+    (uint64_t) 0x000000000000800aULL, (uint64_t) 0x800000008000000aULL,
+    (uint64_t) 0x8000000080008081ULL, (uint64_t) 0x8000000000008080ULL,
+    (uint64_t) 0x0000000080000001ULL, (uint64_t) 0x8000000080008008ULL};
 
 static void KeccakF1600_StatePermute(uint64_t *state) {
 	int round;
@@ -79,7 +67,7 @@ static void KeccakF1600_StatePermute(uint64_t *state) {
 	uint64_t Ema, Eme, Emi, Emo, Emu;
 	uint64_t Esa, Ese, Esi, Eso, Esu;
 
-	//copyFromState(A, state)
+	// copyFromState(A, state)
 	Aba = state[0];
 	Abe = state[1];
 	Abi = state[2];
@@ -114,7 +102,7 @@ static void KeccakF1600_StatePermute(uint64_t *state) {
 		BCo = Abo ^ Ago ^ Ako ^ Amo ^ Aso;
 		BCu = Abu ^ Agu ^ Aku ^ Amu ^ Asu;
 
-		//thetaRhoPiChiIotaPrepareTheta(round  , A, E)
+		// thetaRhoPiChiIotaPrepareTheta(round  , A, E)
 		Da = BCu ^ ROL(BCe, 1);
 		De = BCa ^ ROL(BCi, 1);
 		Di = BCe ^ ROL(BCo, 1);
@@ -209,7 +197,7 @@ static void KeccakF1600_StatePermute(uint64_t *state) {
 		BCo = Ebo ^ Ego ^ Eko ^ Emo ^ Eso;
 		BCu = Ebu ^ Egu ^ Eku ^ Emu ^ Esu;
 
-		//thetaRhoPiChiIotaPrepareTheta(round+1, E, A)
+		// thetaRhoPiChiIotaPrepareTheta(round+1, E, A)
 		Da = BCu ^ ROL(BCe, 1);
 		De = BCa ^ ROL(BCi, 1);
 		Di = BCe ^ ROL(BCo, 1);
@@ -298,7 +286,7 @@ static void KeccakF1600_StatePermute(uint64_t *state) {
 		Asu = BCu ^ ((~BCa) & BCe);
 	}
 
-	//copyToState(state, A)
+	// copyToState(state, A)
 	state[0] = Aba;
 	state[1] = Abe;
 	state[2] = Abi;
@@ -331,10 +319,8 @@ static void KeccakF1600_StatePermute(uint64_t *state) {
 #include <string.h>
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
-static void keccak_absorb(uint64_t *s,
-                          unsigned int r,
-                          const unsigned char *m, unsigned long long int mlen,
-                          unsigned char p) {
+static void keccak_absorb(uint64_t *s, unsigned int r, const unsigned char *m,
+                          unsigned long long int mlen, unsigned char p) {
 	unsigned long long i;
 	unsigned char t[200];
 
@@ -360,8 +346,8 @@ static void keccak_absorb(uint64_t *s,
 		s[i] ^= load64(t + 8 * i);
 }
 
-void OQS_SHA3_keccak_squeezeblocks(unsigned char *h, unsigned long long int nblocks,
-                                   uint64_t *s,
+void OQS_SHA3_keccak_squeezeblocks(unsigned char *h,
+                                   unsigned long long int nblocks, uint64_t *s,
                                    unsigned int r) {
 	unsigned int i;
 	while (nblocks > 0) {
@@ -374,7 +360,8 @@ void OQS_SHA3_keccak_squeezeblocks(unsigned char *h, unsigned long long int nblo
 	}
 }
 
-void OQS_SHA3_sha3256(unsigned char *output, const unsigned char *input, unsigned int inputByteLen) {
+void OQS_SHA3_sha3256(unsigned char *output, const unsigned char *input,
+                      unsigned int inputByteLen) {
 	uint64_t s[25];
 	unsigned char t[SHA3_256_RATE];
 	int i;
@@ -385,22 +372,25 @@ void OQS_SHA3_sha3256(unsigned char *output, const unsigned char *input, unsigne
 		output[i] = t[i];
 }
 
-void OQS_SHA3_sha3512(unsigned char *output, const unsigned char *input, unsigned int inputByteLen) {
+void OQS_SHA3_sha3512(unsigned char *output, const unsigned char *input,
+                      unsigned int inputByteLen) {
 	uint64_t s[25];
 	unsigned char t[SHA3_512_RATE];
 	int i;
-	//TODO: not sure about 0x80
+	// TODO: not sure about 0x80
 	keccak_absorb(s, SHA3_512_RATE, input, inputByteLen, 0x80);
 	OQS_SHA3_keccak_squeezeblocks(t, 1, s, SHA3_512_RATE);
 	for (i = 0; i < 64; i++)
 		output[i] = t[i];
 }
 
-void OQS_SHA3_shake128_absorb(uint64_t *s, const unsigned char *input, unsigned int inputByteLen) {
+void OQS_SHA3_shake128_absorb(uint64_t *s, const unsigned char *input,
+                              unsigned int inputByteLen) {
 	keccak_absorb(s, SHAKE128_RATE, input, inputByteLen, 0x1F);
 }
 
-void OQS_SHA3_shake128_squeezeblocks(unsigned char *output, unsigned long long nblocks, uint64_t *s) {
+void OQS_SHA3_shake128_squeezeblocks(unsigned char *output,
+                                     unsigned long long nblocks, uint64_t *s) {
 	OQS_SHA3_keccak_squeezeblocks(output, nblocks, s, SHAKE128_RATE);
 }
 
@@ -432,7 +422,8 @@ void OQS_SHA3_shake128(unsigned char *output, unsigned long long outlen,
 
 void OQS_SHA3_cshake128_simple_absorb(uint64_t s[25],
                                       uint16_t cstm, // 2-byte domain separator
-                                      const unsigned char *in, unsigned long long inlen) {
+                                      const unsigned char *in,
+                                      unsigned long long inlen) {
 	unsigned char *sep = (unsigned char *) s;
 	unsigned int i;
 
@@ -455,13 +446,16 @@ void OQS_SHA3_cshake128_simple_absorb(uint64_t s[25],
 	keccak_absorb(s, SHAKE128_RATE, in, inlen, 0x04);
 }
 
-void OQS_SHA3_cshake128_simple_squeezeblocks(unsigned char *output, unsigned long long nblocks, uint64_t *s) {
+void OQS_SHA3_cshake128_simple_squeezeblocks(unsigned char *output,
+                                             unsigned long long nblocks,
+                                             uint64_t *s) {
 	OQS_SHA3_keccak_squeezeblocks(output, nblocks, s, SHAKE128_RATE);
 }
 
 void OQS_SHA3_cshake128_simple(unsigned char *output, unsigned long long outlen,
                                uint16_t cstm, // 2-byte domain separator
-                               const unsigned char *in, unsigned long long inlen) {
+                               const unsigned char *in,
+                               unsigned long long inlen) {
 	uint64_t s[25];
 	unsigned char t[SHAKE128_RATE];
 	unsigned int i;
@@ -469,7 +463,8 @@ void OQS_SHA3_cshake128_simple(unsigned char *output, unsigned long long outlen,
 	OQS_SHA3_cshake128_simple_absorb(s, cstm, in, inlen);
 
 	/* Squeeze output */
-	OQS_SHA3_keccak_squeezeblocks(output, outlen / SHAKE128_RATE, s, SHAKE128_RATE);
+	OQS_SHA3_keccak_squeezeblocks(output, outlen / SHAKE128_RATE, s,
+	                              SHAKE128_RATE);
 	output += (outlen / SHAKE128_RATE) * SHAKE128_RATE;
 
 	if (outlen % SHAKE128_RATE) {

@@ -14,7 +14,7 @@
  * You can copy, modify, distribute and perform the work, even for commercial
  * purposes, all without asking permission. You should have received a copy of
  * the creative commons license (CC0 1.0 universal) along with this program.
- * See the license file for more information. 
+ * See the license file for more information.
  *
  *
  *********************************************************************************/
@@ -38,9 +38,11 @@
  ***************/
 
 #define NTRU_CRYPTO_HMAC_OK ((uint32_t) NTRU_CRYPTO_HASH_OK)
-#define NTRU_CRYPTO_HMAC_BAD_PARAMETER ((uint32_t) NTRU_CRYPTO_HASH_BAD_PARAMETER)
+#define NTRU_CRYPTO_HMAC_BAD_PARAMETER \
+	((uint32_t) NTRU_CRYPTO_HASH_BAD_PARAMETER)
 #define NTRU_CRYPTO_HMAC_BAD_ALG ((uint32_t) NTRU_CRYPTO_HASH_BAD_ALG)
-#define NTRU_CRYPTO_HMAC_OUT_OF_MEMORY ((uint32_t) NTRU_CRYPTO_HASH_OUT_OF_MEMORY)
+#define NTRU_CRYPTO_HMAC_OUT_OF_MEMORY \
+	((uint32_t) NTRU_CRYPTO_HASH_OUT_OF_MEMORY)
 
 #define HMAC_RESULT(e) ((uint32_t)((e) ? HMAC_ERROR_BASE + (e) : (e)))
 #define HMAC_RET(e) return HMAC_RESULT(e)
@@ -69,8 +71,7 @@ typedef struct _NTRU_CRYPTO_HMAC_CTX NTRU_CRYPTO_HMAC_CTX;
  * Returns NTRU_CRYPTO_HASH_OUT_OF_MEMORY if memory cannot be allocated.
  */
 
-extern uint32_t
-ntru_crypto_hmac_create_ctx(
+extern uint32_t ntru_crypto_hmac_create_ctx(
     NTRU_CRYPTO_HASH_ALGID algid, /*  in - the hash algorithm to be used */
     uint8_t const *key,           /*  in - pointer to the HMAC key */
     uint32_t key_len,             /*  in - number of bytes in HMAC key */
@@ -86,8 +87,7 @@ ntru_crypto_hmac_create_ctx(
  * passed.
  */
 
-extern uint32_t
-ntru_crypto_hmac_destroy_ctx(
+extern uint32_t ntru_crypto_hmac_destroy_ctx(
     NTRU_CRYPTO_HMAC_CTX *c); /* in/out - pointer to HMAC context */
 
 /* ntru_crypto_hmac_get_md_len
@@ -99,8 +99,7 @@ ntru_crypto_hmac_destroy_ctx(
  * passed.
  */
 
-extern uint32_t
-ntru_crypto_hmac_get_md_len(
+extern uint32_t ntru_crypto_hmac_get_md_len(
     NTRU_CRYPTO_HMAC_CTX const *c, /*  in - pointer to HMAC context */
     uint16_t *md_len);             /* out - address for digest length */
 
@@ -113,8 +112,7 @@ ntru_crypto_hmac_get_md_len(
  * passed.
  */
 
-extern uint32_t
-ntru_crypto_hmac_set_key(
+extern uint32_t ntru_crypto_hmac_set_key(
     NTRU_CRYPTO_HMAC_CTX *c, /*  in - pointer to HMAC context */
     uint8_t const *key);     /*  in - pointer to new HMAC key */
 
@@ -128,8 +126,7 @@ ntru_crypto_hmac_set_key(
  * passed.
  */
 
-extern uint32_t
-ntru_crypto_hmac_init(
+extern uint32_t ntru_crypto_hmac_init(
     NTRU_CRYPTO_HMAC_CTX *c); /* in/out - pointer to HMAC context */
 
 /* ntru_crypto_hmac_update
@@ -140,12 +137,12 @@ ntru_crypto_hmac_init(
  * Returns NTRU_CRYPTO_HMAC_FAIL with corrupted context.
  * Returns NTRU_CRYPTO_HMAC_BAD_PARAMETER if inappropriate NULL pointers are
  * passed.
- * Returns NTRU_CRYPTO_HMAC_OVERFLOW if more than bytes are hashed than the underlying
+ * Returns NTRU_CRYPTO_HMAC_OVERFLOW if more than bytes are hashed than the
+ * underlying
  *         hash algorithm can handle.
  */
 
-extern uint32_t
-ntru_crypto_hmac_update(
+extern uint32_t ntru_crypto_hmac_update(
     NTRU_CRYPTO_HMAC_CTX *c, /* in/out - pointer to HMAC context */
     uint8_t const *data,     /*     in - pointer to input data */
     uint32_t data_len);      /*     in - no. of bytes of input data */
@@ -161,8 +158,7 @@ ntru_crypto_hmac_update(
  * passed.
  */
 
-extern uint32_t
-ntru_crypto_hmac_final(
+extern uint32_t ntru_crypto_hmac_final(
     NTRU_CRYPTO_HMAC_CTX *c, /* in/out - pointer to HMAC context */
     uint8_t *md);            /*    out - address for message digest */
 

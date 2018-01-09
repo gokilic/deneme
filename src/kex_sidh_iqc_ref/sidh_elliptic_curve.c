@@ -28,17 +28,14 @@ void oqs_sidh_iqc_ref_point_init(point_t P) {
 	oqs_sidh_iqc_ref_point_zero(P);
 }
 
-void oqs_sidh_iqc_ref_point_set_coordinates(point_t P,
-                                            const fp2_element_t x,
-                                            const fp2_element_t y,
-                                            int z) {
+void oqs_sidh_iqc_ref_point_set_coordinates(point_t P, const fp2_element_t x,
+                                            const fp2_element_t y, int z) {
 	oqs_sidh_iqc_ref_fp2_set(P->x, x);
 	oqs_sidh_iqc_ref_fp2_set(P->y, y);
 	P->z = z;
 }
 
-void oqs_sidh_iqc_ref_point_set(point_t P,
-                                const point_t Q) {
+void oqs_sidh_iqc_ref_point_set(point_t P, const point_t Q) {
 	oqs_sidh_iqc_ref_point_set_coordinates(P, Q->x, Q->y, Q->z);
 }
 
@@ -48,12 +45,9 @@ void oqs_sidh_iqc_ref_point_zero(point_t P) {
 	P->z = 0;
 }
 
-int oqs_sidh_iqc_ref_point_is_zero(const point_t P) {
-	return P->z == 0;
-}
+int oqs_sidh_iqc_ref_point_is_zero(const point_t P) { return P->z == 0; }
 
-void oqs_sidh_iqc_ref_point_negate(point_t P,
-                                   const point_t Q) {
+void oqs_sidh_iqc_ref_point_negate(point_t P, const point_t Q) {
 	oqs_sidh_iqc_ref_point_set(P, Q);
 	oqs_sidh_iqc_ref_fp2_negate(P->y, P->y);
 }
@@ -72,11 +66,9 @@ void oqs_sidh_iqc_ref_point_clear(point_t P) {
 	oqs_sidh_iqc_ref_fp2_clear(P->y);
 }
 
-int oqs_sidh_iqc_ref_point_equals(const point_t P,
-                                  const point_t Q) {
+int oqs_sidh_iqc_ref_point_equals(const point_t P, const point_t Q) {
 	return oqs_sidh_iqc_ref_fp2_equals(P->x, Q->x) &&
-	       oqs_sidh_iqc_ref_fp2_equals(P->y, Q->y) &&
-	       (P->z == Q->z);
+	       oqs_sidh_iqc_ref_fp2_equals(P->y, Q->y) && (P->z == Q->z);
 }
 
 char *oqs_sidh_iqc_ref_elliptic_curve_get_str(const elliptic_curve_t E) {
@@ -84,14 +76,16 @@ char *oqs_sidh_iqc_ref_elliptic_curve_get_str(const elliptic_curve_t E) {
 	result = oqs_sidh_iqc_ref_concat(result, "y^2 = x^3");
 	if (!oqs_sidh_iqc_ref_fp2_is_zero(E->a)) {
 		result = oqs_sidh_iqc_ref_concat(result, " + (");
-		result = oqs_sidh_iqc_ref_concat(result, oqs_sidh_iqc_ref_fp2_get_str(E->a));
+		result =
+		    oqs_sidh_iqc_ref_concat(result, oqs_sidh_iqc_ref_fp2_get_str(E->a));
 		result = oqs_sidh_iqc_ref_concat(result, ")");
 		result = oqs_sidh_iqc_ref_concat(result, " * x");
 	}
 
 	if (!oqs_sidh_iqc_ref_fp2_is_zero(E->b)) {
 		result = oqs_sidh_iqc_ref_concat(result, " + (");
-		result = oqs_sidh_iqc_ref_concat(result, oqs_sidh_iqc_ref_fp2_get_str(E->b));
+		result =
+		    oqs_sidh_iqc_ref_concat(result, oqs_sidh_iqc_ref_fp2_get_str(E->b));
 		result = oqs_sidh_iqc_ref_concat(result, ")");
 	}
 
@@ -111,8 +105,7 @@ char *oqs_sidh_iqc_ref_point_get_str(const point_t P) {
 	return result;
 }
 
-void oqs_sidh_iqc_ref_point_add_with_lambda(point_t R,
-                                            const point_t P,
+void oqs_sidh_iqc_ref_point_add_with_lambda(point_t R, const point_t P,
                                             const point_t Q,
                                             const fp2_element_t lambda) {
 	point_t result;
@@ -133,8 +126,7 @@ void oqs_sidh_iqc_ref_point_add_with_lambda(point_t R,
 	oqs_sidh_iqc_ref_point_clear(result);
 }
 
-void oqs_sidh_iqc_ref_point_double(point_t R,
-                                   const point_t P,
+void oqs_sidh_iqc_ref_point_double(point_t R, const point_t P,
                                    const elliptic_curve_t E) {
 	if (oqs_sidh_iqc_ref_point_is_zero(P)) {
 		oqs_sidh_iqc_ref_point_zero(R);
@@ -166,9 +158,7 @@ void oqs_sidh_iqc_ref_point_double(point_t R,
 	oqs_sidh_iqc_ref_fp2_clear(lambda);
 }
 
-void oqs_sidh_iqc_ref_point_add(point_t R,
-                                const point_t P,
-                                const point_t Q,
+void oqs_sidh_iqc_ref_point_add(point_t R, const point_t P, const point_t Q,
                                 const elliptic_curve_t E) {
 	if (oqs_sidh_iqc_ref_point_is_zero(P)) {
 		oqs_sidh_iqc_ref_point_set(R, Q);
@@ -207,9 +197,7 @@ void oqs_sidh_iqc_ref_point_add(point_t R,
 	oqs_sidh_iqc_ref_fp2_clear(lambda);
 }
 
-void oqs_sidh_iqc_ref_point_sub(point_t R,
-                                const point_t P,
-                                const point_t Q,
+void oqs_sidh_iqc_ref_point_sub(point_t R, const point_t P, const point_t Q,
                                 const elliptic_curve_t E) {
 	point_t temp;
 	oqs_sidh_iqc_ref_point_init(temp);
@@ -218,8 +206,7 @@ void oqs_sidh_iqc_ref_point_sub(point_t R,
 	oqs_sidh_iqc_ref_point_clear(temp);
 }
 
-void oqs_sidh_iqc_ref_point_mul_scaler(point_t R,
-                                       const point_t P,
+void oqs_sidh_iqc_ref_point_mul_scaler(point_t R, const point_t P,
                                        const mpz_t scaler,
                                        const elliptic_curve_t E) {
 	if (mpz_cmp_ui(scaler, 0) == 0) {
@@ -254,8 +241,7 @@ void oqs_sidh_iqc_ref_point_mul_scaler(point_t R,
 	oqs_sidh_iqc_ref_point_clear(R1);
 }
 
-void oqs_sidh_iqc_ref_point_mul_scaler_si(point_t R,
-                                          const point_t P,
+void oqs_sidh_iqc_ref_point_mul_scaler_si(point_t R, const point_t P,
                                           long scaler,
                                           const elliptic_curve_t E) {
 	mpz_t temp;

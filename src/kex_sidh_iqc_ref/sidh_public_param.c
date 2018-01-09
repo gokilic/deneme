@@ -20,31 +20,27 @@ int oqs_sidh_iqc_ref_public_params_read(public_params_t paramsA,
 	gmp_sscanf(input[0], "p : %Zd \n", paramsA->characteristic);
 	mpz_set(paramsB->characteristic, paramsA->characteristic);
 	gmp_sscanf(input[1],
-	           "E : y^2 = x^3 + (%Zd * i + %Zd) * x + (%Zd * i + %Zd) \n",
-	           a->a, a->b, b->a, b->b);
+	           "E : y^2 = x^3 + (%Zd * i + %Zd) * x + (%Zd * i + %Zd) \n", a->a,
+	           a->b, b->a, b->b);
 	oqs_sidh_iqc_ref_elliptic_curve_set_coeffs(paramsA->E, a, b);
 	oqs_sidh_iqc_ref_elliptic_curve_set(paramsB->E, paramsA->E);
 	gmp_sscanf(input[2], "lA: %ld \n", &paramsA->l);
 	gmp_sscanf(input[3], "eA: %ld \n", &paramsA->e);
 	mpz_ui_pow_ui(paramsA->le, paramsA->l, paramsA->e);
-	gmp_sscanf(input[4],
-	           "PA: (%Zd * i + %Zd, %Zd * i + %Zd) \n",
-	           a->a, a->b, b->a, b->b);
+	gmp_sscanf(input[4], "PA: (%Zd * i + %Zd, %Zd * i + %Zd) \n", a->a, a->b,
+	           b->a, b->b);
 	oqs_sidh_iqc_ref_point_set_coordinates(paramsA->P, a, b, 1);
-	gmp_sscanf(input[5],
-	           "QA: (%Zd * i + %Zd, %Zd * i + %Zd) \n",
-	           a->a, a->b, b->a, b->b);
+	gmp_sscanf(input[5], "QA: (%Zd * i + %Zd, %Zd * i + %Zd) \n", a->a, a->b,
+	           b->a, b->b);
 	oqs_sidh_iqc_ref_point_set_coordinates(paramsA->Q, a, b, 1);
 	gmp_sscanf(input[6], "lB: %ld \n", &paramsB->l);
 	gmp_sscanf(input[7], "eB: %ld \n", &paramsB->e);
 	mpz_ui_pow_ui(paramsB->le, paramsB->l, paramsB->e);
-	gmp_sscanf(input[8],
-	           "PB: (%Zd * i + %Zd, %Zd * i + %Zd) \n",
-	           a->a, a->b, b->a, b->b);
+	gmp_sscanf(input[8], "PB: (%Zd * i + %Zd, %Zd * i + %Zd) \n", a->a, a->b,
+	           b->a, b->b);
 	oqs_sidh_iqc_ref_point_set_coordinates(paramsB->P, a, b, 1);
-	gmp_sscanf(input[9],
-	           "QB: (%Zd * i + %Zd, %Zd * i + %Zd) \n",
-	           a->a, a->b, b->a, b->b);
+	gmp_sscanf(input[9], "QB: (%Zd * i + %Zd, %Zd * i + %Zd) \n", a->a, a->b,
+	           b->a, b->b);
 	oqs_sidh_iqc_ref_point_set_coordinates(paramsB->Q, a, b, 1);
 
 	oqs_sidh_iqc_ref_fp2_clear(a);

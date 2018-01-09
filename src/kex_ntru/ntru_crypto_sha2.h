@@ -14,7 +14,7 @@
  * You can copy, modify, distribute and perform the work, even for commercial
  * purposes, all without asking permission. You should have received a copy of
  * the creative commons license (CC0 1.0 universal) along with this program.
- * See the license file for more information. 
+ * See the license file for more information.
  *
  *
  *********************************************************************************/
@@ -75,8 +75,7 @@ typedef struct {
  * Returns SHA_OVERFLOW if more than 2^64 - 1 bytes are hashed.
  */
 
-extern uint32_t
-ntru_crypto_sha2(
+extern uint32_t ntru_crypto_sha2(
     NTRU_CRYPTO_HASH_ALGID algid, /*     in - hash algorithm ID */
     NTRU_CRYPTO_SHA2_CTX *c,      /* in/out - pointer to SHA-2 context */
     uint32_t const *init,         /*     in - pointer to alternate */

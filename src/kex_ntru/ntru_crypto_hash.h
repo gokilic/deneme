@@ -14,7 +14,7 @@
  * You can copy, modify, distribute and perform the work, even for commercial
  * purposes, all without asking permission. You should have received a copy of
  * the creative commons license (CC0 1.0 universal) along with this program.
- * See the license file for more information. 
+ * See the license file for more information.
  *
  *
  *********************************************************************************/
@@ -84,8 +84,7 @@ typedef struct {
  * Returns NTRU_CRYPTO_HASH_BAD_ALG if the specified algorithm is not supported.
  */
 
-extern uint32_t
-ntru_crypto_hash_set_alg(
+extern uint32_t ntru_crypto_hash_set_alg(
     NTRU_CRYPTO_HASH_ALGID algid, /*      in - hash algoirithm to be used */
     NTRU_CRYPTO_HASH_CTX *c);     /* in/out - pointer to the hash context */
 
@@ -102,8 +101,7 @@ ntru_crypto_hash_set_alg(
  * Returns NTRU_CRYPTO_HASH_BAD_ALG if the algorithm has not been set.
  */
 
-extern uint32_t
-ntru_crypto_hash_block_length(
+extern uint32_t ntru_crypto_hash_block_length(
     NTRU_CRYPTO_HASH_CTX *c, /*  in - pointer to the hash context */
     uint16_t *blk_len);      /* out - address for block length in bytes */
 
@@ -120,8 +118,7 @@ ntru_crypto_hash_block_length(
  * Returns NTRU_CRYPTO_HASH_BAD_ALG if the algorithm has not been set.
  */
 
-extern uint32_t
-ntru_crypto_hash_digest_length(
+extern uint32_t ntru_crypto_hash_digest_length(
     NTRU_CRYPTO_HASH_CTX const *c, /*  in - pointer to the hash context */
     uint16_t *md_len);             /*out - addr for digest length in bytes*/
 
@@ -136,8 +133,7 @@ ntru_crypto_hash_digest_length(
  * Returns NTRU_CRYPTO_HASH_BAD_ALG if the algorithm has not been set.
  */
 
-extern uint32_t
-ntru_crypto_hash_init(
+extern uint32_t ntru_crypto_hash_init(
     NTRU_CRYPTO_HASH_CTX *c); /* in/out - pointer to hash context */
 
 /* ntru_crypto_hash_update
@@ -154,8 +150,7 @@ ntru_crypto_hash_init(
  * Returns NTRU_CRYPTO_HASH_BAD_ALG if the algorithm has not been set.
  */
 
-extern uint32_t
-ntru_crypto_hash_update(
+extern uint32_t ntru_crypto_hash_update(
     NTRU_CRYPTO_HASH_CTX *c, /* in/out - pointer to hash context */
     uint8_t const *data,     /*     in - pointer to input data */
     uint32_t data_len);      /*     in - number of bytes of input data */
@@ -163,7 +158,7 @@ ntru_crypto_hash_update(
 /* ntru_crypto_hash_final
  *
  * This routine completes the hash calculation and returns the message digest.
- * 
+ *
  * Returns NTRU_CRYPTO_HASH_OK on success.
  * Returns NTRU_CRYPTO_HASH_FAIL with corrupted context.
  * Returns NTRU_CRYPTO_HASH_BAD_PARAMETER if inappropriate NULL pointers are
@@ -171,8 +166,7 @@ ntru_crypto_hash_update(
  * Returns NTRU_CRYPTO_HASH_BAD_ALG if the algorithm has not been set.
  */
 
-extern uint32_t
-ntru_crypto_hash_final(
+extern uint32_t ntru_crypto_hash_final(
     NTRU_CRYPTO_HASH_CTX *c, /* in/out - pointer to hash context */
     uint8_t *md);            /*   out  - address for message digest */
 
@@ -184,15 +178,15 @@ ntru_crypto_hash_final(
  *
  * Returns NTRU_CRYPTO_HASH_OK on success.
  * Returns NTRU_CRYPTO_HASH_FAIL with corrupted context.
- * Returns NTRU_CRYPTO_HASH_BAD_PARAMETER if inappropriate NULL pointers are passed.
+ * Returns NTRU_CRYPTO_HASH_BAD_PARAMETER if inappropriate NULL pointers are
+ * passed.
  * Returns NTRU_CRYPTO_HASH_OVERFLOW if too much text has been fed to the
  *         hash algorithm. The size limit is dependent on the hash algorithm,
  *         and not all algorithms have this limit.
  * Returns NTRU_CRYPTO_HASH_BAD_ALG if the specified algorithm is not supported.
  */
 
-extern uint32_t
-ntru_crypto_hash_digest(
+extern uint32_t ntru_crypto_hash_digest(
     NTRU_CRYPTO_HASH_ALGID algid, /*  in - the hash algorithm to use */
     uint8_t const *data,          /*  in - pointer to input data */
     uint32_t data_len,            /*  in - number of bytes of input data */

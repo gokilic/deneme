@@ -29,13 +29,8 @@ void oqs_sidh_iqc_ref_public_key_generate(public_key_t public_key,
 	oqs_sidh_iqc_ref_point_set(points[0], paramsB->P);
 	oqs_sidh_iqc_ref_point_set(points[1], paramsB->Q);
 
-	oqs_sidh_iqc_ref_isogeny_evaluate_strategy(public_key->E,
-	                                           points,
-	                                           2,
-	                                           kernel_gen,
-	                                           paramsA->l,
-	                                           paramsA->e,
-	                                           0.5);
+	oqs_sidh_iqc_ref_isogeny_evaluate_strategy(
+	    public_key->E, points, 2, kernel_gen, paramsA->l, paramsA->e, 0.5);
 
 	//        oqs_sidh_iqc_ref_isogeny_evaluate_naive(public_key->E,
 	//                               points,

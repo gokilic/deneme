@@ -52,7 +52,7 @@ void ntru_ring_mult_indices(
 	memset(t, 0, N * sizeof(uint16_t));
 	for (iB = bi_P1_len; iB < bi_P1_len + bi_M1_len; iB++) {
 		/* first half -- iT from bi[iB] to N
-                         iA from 0 to N - bi[iB] */
+             iA from 0 to N - bi[iB] */
 		iT = bi[iB];
 
 		for (iA = 0; iT < end; iA += 2, iT += 2) {
@@ -69,7 +69,7 @@ void ntru_ring_mult_indices(
 		}
 
 		/* second half -- iT from 0 to bi[iB]
-                          iA from bi[iB] to N  */
+              iA from bi[iB] to N  */
 
 		for (iT = 0; iA < end; iA += 2, iT += 2) {
 			memcpy(&tmp1, t + iT, sizeof tmp1);
@@ -102,7 +102,7 @@ void ntru_ring_mult_indices(
 
 	for (iB = 0; iB < bi_P1_len; iB++) {
 		/* first half -- iT from bi[iB] to N
-                         iA from 0 to N - bi[iB] */
+             iA from 0 to N - bi[iB] */
 		iT = bi[iB];
 
 		for (iA = 0; iT < end; iA += 2, iT += 2) {
@@ -119,7 +119,7 @@ void ntru_ring_mult_indices(
 		}
 
 		/* second half -- iT from 0 to bi[iB]
-                          iA from bi[iB] to N  */
+              iA from bi[iB] to N  */
 		for (iT = 0; iA < end; iA += 2, iT += 2) {
 			memcpy(&tmp1, t + iT, sizeof tmp1);
 			memcpy(&tmp2, a + iA, sizeof tmp2);

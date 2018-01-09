@@ -14,7 +14,7 @@
  * You can copy, modify, distribute and perform the work, even for commercial
  * purposes, all without asking permission. You should have received a copy of
  * the creative commons license (CC0 1.0 universal) along with this program.
- * See the license file for more information. 
+ * See the license file for more information.
  *
  *
  *********************************************************************************/
@@ -54,24 +54,23 @@
  */
 
 uint32_t
-ntru_gen_poly(
-    NTRU_CRYPTO_HASH_ALGID hash_algid, /*  in - hash algorithm ID for
-                                                      IGF-2 */
-    uint8_t md_len,                    /*  in - no. of octets in digest */
-    uint8_t min_calls,                 /*  in - minimum no. of hash
+ntru_gen_poly(NTRU_CRYPTO_HASH_ALGID hash_algid, /*  in - hash algorithm ID for
+                                                                IGF-2 */
+              uint8_t md_len,                    /*  in - no. of octets in digest */
+              uint8_t min_calls,                 /*  in - minimum no. of hash
                                                       calls */
-    uint16_t seed_len,                 /*  in - no. of octets in seed */
-    uint8_t *seed,                     /*  in - pointer to seed */
-    uint8_t *buf,                      /*  in - pointer to working
+              uint16_t seed_len,                 /*  in - no. of octets in seed */
+              uint8_t *seed,                     /*  in - pointer to seed */
+              uint8_t *buf,                      /*  in - pointer to working
                                                       buffer */
-    uint16_t N,                        /*  in - max index + 1 */
-    uint8_t c_bits,                    /*  in - no. bits for candidate */
-    uint16_t limit,                    /*  in - conversion to index
+              uint16_t N,                        /*  in - max index + 1 */
+              uint8_t c_bits,                    /*  in - no. bits for candidate */
+              uint16_t limit,                    /*  in - conversion to index
                                                       limit */
-    bool is_product_form,              /*  in - if generating multiple
+              bool is_product_form,              /*  in - if generating multiple
                                                       polys */
-    uint32_t indices_counts,           /*  in - nos. of indices needed */
-    uint16_t *indices)                 /* out - address for indices */
+              uint32_t indices_counts,           /*  in - nos. of indices needed */
+              uint16_t *indices)                 /* out - address for indices */
 {
 	uint8_t *mgf_out;
 	uint8_t *octets;
@@ -87,8 +86,8 @@ ntru_gen_poly(
 	/* generate minimum MGF1 output */
 
 	mgf_out = buf + md_len + 4;
-	if ((retcode = ntru_mgf1(buf, hash_algid, md_len, min_calls,
-	                         seed_len, seed, mgf_out)) != NTRU_OK) {
+	if ((retcode = ntru_mgf1(buf, hash_algid, md_len, min_calls, seed_len, seed,
+	                         mgf_out)) != NTRU_OK) {
 		return retcode;
 	}
 
@@ -99,8 +98,8 @@ ntru_gen_poly(
 
 	if (is_product_form) {
 		/* number of indices for poly1 is in low byte of indices_counts,
-         * number of indices for poly2 and poly3 are in next higher bytes
-         */
+* number of indices for poly2 and poly3 are in next higher bytes
+*/
 
 		num_polys = 3;
 		num_indices = (uint16_t)(indices_counts & 0xff);
@@ -146,8 +145,8 @@ ntru_gen_poly(
 					/* get another octet */
 
 					if (octets_available == 0) {
-						if ((retcode = ntru_mgf1(buf, hash_algid, md_len, 1,
-						                         0, NULL, mgf_out)) != NTRU_OK) {
+						if ((retcode = ntru_mgf1(buf, hash_algid, md_len, 1, 0, NULL,
+						                         mgf_out)) != NTRU_OK) {
 							return retcode;
 						}
 
@@ -167,8 +166,8 @@ ntru_gen_poly(
 
 					} else {
 						/* another octet will be needed after using this
-                         * whole octet
-                         */
+* whole octet
+*/
 
 						index |= ((uint16_t) left) << (num_needed - 8);
 						num_needed -= 8;
@@ -192,8 +191,7 @@ ntru_gen_poly(
 
 		if (num_polys > 0) {
 			memset(used, 0, N);
-			num_indices = num_indices +
-			              (uint16_t)(indices_counts & 0xff);
+			num_indices = num_indices + (uint16_t)(indices_counts & 0xff);
 			indices_counts >>= 8;
 		}
 	}
@@ -280,13 +278,13 @@ void ntru_ring_mult_product_indices(
 
 	/* t2 = (a * b1) * b2 */
 
-	ntru_ring_mult_indices(t2, b2i_len, b2i_len, bi + (b1i_len << 1), N, q,
-	                       t, t2);
+	ntru_ring_mult_indices(t2, b2i_len, b2i_len, bi + (b1i_len << 1), N, q, t,
+	                       t2);
 
 	/* t = a * b3 */
 
-	ntru_ring_mult_indices(a, b3i_len, b3i_len,
-	                       bi + ((b1i_len + b2i_len) << 1), N, q, t, t);
+	ntru_ring_mult_indices(a, b3i_len, b3i_len, bi + ((b1i_len + b2i_len) << 1),
+	                       N, q, t, t);
 
 	/* c = (a * b1 * b2) + (a * b3) */
 
@@ -305,16 +303,15 @@ void ntru_ring_mult_product_indices(
  * Finds the inverse of a polynomial, a, in (Z/2Z)[X]/(X^N - 1).
   */
 
-bool ntru_ring_inv(
-    uint16_t *a,     /*  in - pointer to polynomial a */
-    uint16_t N,      /*  in - no. of coefficients in a */
-    uint16_t *t,     /*  in - temp buffer of 2N elements */
-    uint16_t *a_inv) /* out - address for polynomial a^-1 */
+bool ntru_ring_inv(uint16_t *a,     /*  in - pointer to polynomial a */
+                   uint16_t N,      /*  in - no. of coefficients in a */
+                   uint16_t *t,     /*  in - temp buffer of 2N elements */
+                   uint16_t *a_inv) /* out - address for polynomial a^-1 */
 {
 	uint8_t *b = (uint8_t *) t; /* b cannot be in a_inv since it must be
-                                       rotated and copied there as a^-1 mod 2 */
+                                rotated and copied there as a^-1 mod 2 */
 	uint8_t *c = b + N;         /* c cannot be in a_inv since it exchanges
-                                       with b, and b cannot be in a_inv */
+                                with b, and b cannot be in a_inv */
 	uint8_t *f = c + N;
 	uint8_t *g = (uint8_t *) a_inv; /* g needs N + 1 bytes */
 	uint16_t deg_b;
@@ -410,8 +407,8 @@ bool ntru_ring_inv(
 		}
 
 		/* f(X) += g(X)
-         * might change degree of f if deg_g >= deg_f
-         */
+* might change degree of f if deg_g >= deg_f
+*/
 		for (i = 0; i <= deg_g; i++) {
 			f[i] ^= g[i];
 		}
@@ -469,16 +466,11 @@ bool ntru_ring_inv(
  * Requires scratch space for ntru_ring_mult_coefficients + one extra
  * polynomial with the same padding.
  */
-uint32_t
-ntru_ring_lift_inv_pow2_product(
-    uint16_t *inv,
-    uint16_t const dF1,
-    uint16_t const dF2,
-    uint16_t const dF3,
-    uint16_t const *F_buf,
-    uint16_t const N,
-    uint16_t const q,
-    uint16_t *t) {
+uint32_t ntru_ring_lift_inv_pow2_product(uint16_t *inv, uint16_t const dF1,
+                                         uint16_t const dF2, uint16_t const dF3,
+                                         uint16_t const *F_buf,
+                                         uint16_t const N, uint16_t const q,
+                                         uint16_t *t) {
 	uint16_t i;
 	uint16_t j;
 	uint16_t mod_q_mask = q - 1;
@@ -488,10 +480,8 @@ ntru_ring_lift_inv_pow2_product(
 	for (j = 0; j < 4; ++j) /* assumes 256 < q <= 65536 */
 	{
 		/* f^-1 = f^-1 * (2 - f * f^-1) mod q */
-		ntru_ring_mult_product_indices(inv, (uint16_t) dF1,
-		                               (uint16_t) dF2, (uint16_t) dF3,
-		                               F_buf, N, q,
-		                               t, t);
+		ntru_ring_mult_product_indices(inv, (uint16_t) dF1, (uint16_t) dF2,
+		                               (uint16_t) dF3, F_buf, N, q, t, t);
 		for (i = 0; i < N; ++i) {
 			t[i] = -((inv[i] + 3 * t[i]) & mod_q_mask);
 		}
@@ -519,13 +509,9 @@ ntru_ring_lift_inv_pow2_product(
  * Requires scratch space for ntru_ring_mult_coefficients + one extra
  * polynomial with the same padding.
  */
-uint32_t
-ntru_ring_lift_inv_pow2_standard(
-    uint16_t *inv,
-    uint16_t const *f,
-    uint16_t const N,
-    uint16_t const q,
-    uint16_t *t) {
+uint32_t ntru_ring_lift_inv_pow2_standard(uint16_t *inv, uint16_t const *f,
+                                          uint16_t const N, uint16_t const q,
+                                          uint16_t *t) {
 	uint16_t i;
 	uint16_t j;
 	uint16_t padN;

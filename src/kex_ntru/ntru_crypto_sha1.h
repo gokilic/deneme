@@ -14,7 +14,7 @@
  * You can copy, modify, distribute and perform the work, even for commercial
  * purposes, all without asking permission. You should have received a copy of
  * the creative commons license (CC0 1.0 universal) along with this program.
- * See the license file for more information. 
+ * See the license file for more information.
  *
  *
  *********************************************************************************/
@@ -34,7 +34,7 @@
 #include "ntru_crypto_sha.h"
 
 /******************************************
- * macros needed for generic hash objects * 
+ * macros needed for generic hash objects *
  ******************************************/
 
 #define SHA_1_CTX_LEN sizeof(SHA1_CTX)           /* no. bytes in SHA-1 ctx */
@@ -87,8 +87,7 @@ typedef struct {
  * Returns SHA_OVERFLOW if more than 2^64 - 1 bytes are hashed.
  */
 
-extern uint32_t
-ntru_crypto_sha1(
+extern uint32_t ntru_crypto_sha1(
     NTRU_CRYPTO_SHA1_CTX *c, /* in/out - pointer to SHA-1 context */
     uint32_t const *init,    /*     in - pointer to alternate */
                              /*          initialization - may be NULL */
@@ -108,8 +107,7 @@ ntru_crypto_sha1(
  * Returns SHA_BAD_PARAMETER if inappropriate NULL pointers are passed.
  */
 
-extern uint32_t
-ntru_crypto_sha1_init(
+extern uint32_t ntru_crypto_sha1_init(
     NTRU_CRYPTO_SHA1_CTX *c); /* in/out - pointer to SHA-1 context */
 
 /* ntru_crypto_sha1_update
@@ -122,8 +120,7 @@ ntru_crypto_sha1_init(
  * Returns SHA_OVERFLOW if more than 2^64 - 1 bytes are hashed.
  */
 
-extern uint32_t
-ntru_crypto_sha1_update(
+extern uint32_t ntru_crypto_sha1_update(
     NTRU_CRYPTO_SHA1_CTX *c, /* in/out - pointer to SHA-1 context */
     uint8_t const *data,     /*    in - pointer to input data */
     uint32_t data_len);      /*    in - number of bytes of input data */
@@ -139,8 +136,7 @@ ntru_crypto_sha1_update(
  * Returns SHA_OVERFLOW if more than 2^64 - 1 bytes are hashed.
  */
 
-extern uint32_t
-ntru_crypto_sha1_final(
+extern uint32_t ntru_crypto_sha1_final(
     NTRU_CRYPTO_SHA1_CTX *c, /* in/out - pointer to SHA-1 context */
     uint8_t *md);            /*   out - address for message digest */
 
@@ -154,8 +150,7 @@ ntru_crypto_sha1_final(
  * Returns SHA_OVERFLOW if more than 2^64 - 1 bytes are hashed.
  */
 
-uint32_t
-ntru_crypto_sha1_digest(
+uint32_t ntru_crypto_sha1_digest(
     uint8_t const *data, /*  in - pointer to input data */
     uint32_t data_len,   /*  in - number of bytes of input data */
     uint8_t *md);        /* out - address for message digest */

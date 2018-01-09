@@ -15,13 +15,14 @@ struct rand_testcase {
 
 /* Add new testcases here */
 struct rand_testcase rand_testcases[] = {
-    {OQS_RAND_alg_urandom_chacha20},
-    {OQS_RAND_alg_urandom_aesctr},
+    {OQS_RAND_alg_urandom_chacha20}, {OQS_RAND_alg_urandom_aesctr},
 };
 
 #define RAND_TEST_ITERATIONS 10000000L
 
-static void rand_test_distribution_8(OQS_RAND *rand, unsigned long occurrences[256], int iterations) {
+static void rand_test_distribution_8(OQS_RAND *rand,
+                                     unsigned long occurrences[256],
+                                     int iterations) {
 	uint8_t b;
 	for (int i = 0; i < iterations; i++) {
 		b = OQS_RAND_8(rand);
@@ -29,7 +30,9 @@ static void rand_test_distribution_8(OQS_RAND *rand, unsigned long occurrences[2
 	}
 }
 
-static void rand_test_distribution_32(OQS_RAND *rand, unsigned long occurrences[256], int iterations) {
+static void rand_test_distribution_32(OQS_RAND *rand,
+                                      unsigned long occurrences[256],
+                                      int iterations) {
 	uint32_t x;
 	for (int i = 0; i < iterations; i++) {
 		x = OQS_RAND_32(rand);
@@ -41,7 +44,9 @@ static void rand_test_distribution_32(OQS_RAND *rand, unsigned long occurrences[
 	}
 }
 
-static void rand_test_distribution_64(OQS_RAND *rand, unsigned long occurrences[256], int iterations) {
+static void rand_test_distribution_64(OQS_RAND *rand,
+                                      unsigned long occurrences[256],
+                                      int iterations) {
 	uint64_t x;
 	for (int i = 0; i < iterations; i++) {
 		x = OQS_RAND_64(rand);
@@ -53,7 +58,8 @@ static void rand_test_distribution_64(OQS_RAND *rand, unsigned long occurrences[
 	}
 }
 
-static int rand_test_distribution_n(OQS_RAND *rand, unsigned long occurrences[256], int len) {
+static int rand_test_distribution_n(OQS_RAND *rand,
+                                    unsigned long occurrences[256], int len) {
 	uint8_t *x = malloc(len);
 	if (x == NULL) {
 		return 0;
@@ -75,7 +81,8 @@ static int rand_test_distribution_n(OQS_RAND *rand, unsigned long occurrences[25
 		printf("\n");                                            \
 	}
 
-static int rand_test_distribution_wrapper(enum OQS_RAND_alg_name alg_name, int iterations, bool quiet) {
+static int rand_test_distribution_wrapper(enum OQS_RAND_alg_name alg_name,
+                                          int iterations, bool quiet) {
 
 	OQS_RAND *rand = OQS_RAND_new(alg_name);
 	if (rand == NULL) {
@@ -84,9 +91,11 @@ static int rand_test_distribution_wrapper(enum OQS_RAND_alg_name alg_name, int i
 	}
 
 	if (!quiet) {
-		printf("================================================================================\n");
+		printf("==================================================================="
+		       "=============\n");
 		printf("Sample outputs of PRNG %s\n", rand->method_name);
-		printf("================================================================================\n");
+		printf("==================================================================="
+		       "=============\n");
 
 		uint8_t x[256];
 		OQS_RAND_n(rand, x, 256);
@@ -111,9 +120,11 @@ static int rand_test_distribution_wrapper(enum OQS_RAND_alg_name alg_name, int i
 		PRINT_HEX_STRING("OQS_RAND_n, n = 256", x, 256)
 	}
 
-	printf("================================================================================\n");
+	printf("====================================================================="
+	       "===========\n");
 	printf("Testing distribution of PRNG %s\n", rand->method_name);
-	printf("================================================================================\n");
+	printf("====================================================================="
+	       "===========\n");
 
 	unsigned long occurrences[256];
 	for (int i = 0; i < 256; i++) {
@@ -167,7 +178,8 @@ int main(int argc, char **argv) {
 				printf("\nOptions:\n");
 				printf("  --quiet, -q\n");
 				printf("    Less verbose output\n");
-				if ((strcmp(argv[i], "-h") == 0) || (strcmp(argv[i], "-help") == 0) || (strcmp(argv[i], "--help") == 0)) {
+				if ((strcmp(argv[i], "-h") == 0) || (strcmp(argv[i], "-help") == 0) ||
+				    (strcmp(argv[i], "--help") == 0)) {
 					return EXIT_SUCCESS;
 				} else {
 					return EXIT_FAILURE;
@@ -176,9 +188,11 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	size_t rand_testcases_len = sizeof(rand_testcases) / sizeof(struct rand_testcase);
+	size_t rand_testcases_len =
+	    sizeof(rand_testcases) / sizeof(struct rand_testcase);
 	for (size_t i = 0; i < rand_testcases_len; i++) {
-		success = rand_test_distribution_wrapper(rand_testcases[i].alg_name, RAND_TEST_ITERATIONS, quiet);
+		success = rand_test_distribution_wrapper(rand_testcases[i].alg_name,
+		                                         RAND_TEST_ITERATIONS, quiet);
 		if (success != 1) {
 			goto err;
 		}

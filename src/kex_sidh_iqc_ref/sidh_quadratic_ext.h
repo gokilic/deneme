@@ -56,9 +56,7 @@ void oqs_sidh_iqc_ref_fp_set(mpz_t x, const mpz_t a);
  * @param a
  * @param b
  */
-void oqs_sidh_iqc_ref_fp_add(mpz_t x,
-                             const mpz_t a,
-                             const mpz_t b);
+void oqs_sidh_iqc_ref_fp_add(mpz_t x, const mpz_t a, const mpz_t b);
 
 /**
  * {@link oqs_sidh_iqc_ref_fp_add}.
@@ -66,9 +64,7 @@ void oqs_sidh_iqc_ref_fp_add(mpz_t x,
  * @param a
  * @param b
  */
-void oqs_sidh_iqc_ref_fp_add_ui(mpz_t x,
-                                const mpz_t a,
-                                unsigned long b);
+void oqs_sidh_iqc_ref_fp_add_ui(mpz_t x, const mpz_t a, unsigned long b);
 
 /**
  * Sets {@code x = a - b}.
@@ -76,9 +72,7 @@ void oqs_sidh_iqc_ref_fp_add_ui(mpz_t x,
  * @param a
  * @param b
  */
-void oqs_sidh_iqc_ref_fp_sub(mpz_t x,
-                             const mpz_t a,
-                             const mpz_t b);
+void oqs_sidh_iqc_ref_fp_sub(mpz_t x, const mpz_t a, const mpz_t b);
 
 /**
  * {@link oqs_sidh_iqc_ref_fp_sub}
@@ -86,9 +80,7 @@ void oqs_sidh_iqc_ref_fp_sub(mpz_t x,
  * @param a
  * @param b
  */
-void oqs_sidh_iqc_ref_fp_sub_ui(mpz_t x,
-                                const mpz_t a,
-                                unsigned long b);
+void oqs_sidh_iqc_ref_fp_sub_ui(mpz_t x, const mpz_t a, unsigned long b);
 
 /**
  * Sets {@code x = a * b}.
@@ -96,9 +88,7 @@ void oqs_sidh_iqc_ref_fp_sub_ui(mpz_t x,
  * @param a
  * @param b
  */
-void oqs_sidh_iqc_ref_fp_mul(mpz_t x,
-                             const mpz_t a,
-                             const mpz_t b);
+void oqs_sidh_iqc_ref_fp_mul(mpz_t x, const mpz_t a, const mpz_t b);
 
 /**
  * {@link oqs_sidh_iqc_ref_fp_mul}
@@ -106,9 +96,7 @@ void oqs_sidh_iqc_ref_fp_mul(mpz_t x,
  * @param a
  * @param b
  */
-void oqs_sidh_iqc_ref_fp_mul_si(mpz_t x,
-                                const mpz_t a,
-                                long b);
+void oqs_sidh_iqc_ref_fp_mul_si(mpz_t x, const mpz_t a, long b);
 
 /**
  * Sets {@code x = 1 / a}. This is possible only if {@code a} is
@@ -116,8 +104,7 @@ void oqs_sidh_iqc_ref_fp_mul_si(mpz_t x,
  * @param x
  * @param a
  */
-void oqs_sidh_iqc_ref_fp_inv(mpz_t x,
-                             const mpz_t a);
+void oqs_sidh_iqc_ref_fp_inv(mpz_t x, const mpz_t a);
 
 /**
  * Sets {x = a / b}. @see fp_inv.
@@ -125,17 +112,14 @@ void oqs_sidh_iqc_ref_fp_inv(mpz_t x,
  * @param a
  * @param b
  */
-void oqs_sidh_iqc_ref_fp_div(mpz_t x,
-                             const mpz_t a,
-                             const mpz_t b);
+void oqs_sidh_iqc_ref_fp_div(mpz_t x, const mpz_t a, const mpz_t b);
 
 /**
  * Sets {@code x = -a}.
  * @param x
  * @param a
  */
-void oqs_sidh_iqc_ref_fp_neg(mpz_t x,
-                             const mpz_t a);
+void oqs_sidh_iqc_ref_fp_neg(mpz_t x, const mpz_t a);
 
 /**
  * Computes the square root of {@code a}.
@@ -143,8 +127,7 @@ void oqs_sidh_iqc_ref_fp_neg(mpz_t x,
  * @param x the square root
  * @param a
  */
-void oqs_sidh_iqc_ref_fp_sqrt(mpz_t x,
-                              const mpz_t a);
+void oqs_sidh_iqc_ref_fp_sqrt(mpz_t x, const mpz_t a);
 
 //////////////// fp2 methods //////////////////////////
 
@@ -160,9 +143,7 @@ void oqs_sidh_iqc_ref_fp2_init(fp2_element_t x);
  * @param a
  * @param b
  */
-void oqs_sidh_iqc_ref_fp2_init_set_si(fp2_element_t x,
-                                      long a,
-                                      long b);
+void oqs_sidh_iqc_ref_fp2_init_set_si(fp2_element_t x, long a, long b);
 
 /**
  * {@link oqs_sidh_iqc_ref_fp2_init_set_si}.
@@ -170,8 +151,7 @@ void oqs_sidh_iqc_ref_fp2_init_set_si(fp2_element_t x,
  * @param a
  * @param b
  */
-void oqs_sidh_iqc_ref_fp2_init_set_str(fp2_element_t x,
-                                       const char *a,
+void oqs_sidh_iqc_ref_fp2_init_set_str(fp2_element_t x, const char *a,
                                        const char *b);
 
 /**
@@ -179,8 +159,7 @@ void oqs_sidh_iqc_ref_fp2_init_set_str(fp2_element_t x,
  * @param x
  * @param a
  */
-void oqs_sidh_iqc_ref_fp2_init_set(fp2_element_t x,
-                                   const fp2_element_t a);
+void oqs_sidh_iqc_ref_fp2_init_set(fp2_element_t x, const fp2_element_t a);
 
 /**
  * Frees the memory allocated to {@code x}.
@@ -193,8 +172,7 @@ void oqs_sidh_iqc_ref_fp2_clear(fp2_element_t x);
  * @param x
  * @param b
  */
-void oqs_sidh_iqc_ref_fp2_set(fp2_element_t x,
-                              const fp2_element_t b);
+void oqs_sidh_iqc_ref_fp2_set(fp2_element_t x, const fp2_element_t b);
 
 /**
  * Sets {@code a = 0}
@@ -220,8 +198,7 @@ char *oqs_sidh_iqc_ref_fp2_get_str(const fp2_element_t a);
  * @param a
  * @param b
  */
-void oqs_sidh_iqc_ref_fp2_add(fp2_element_t x,
-                              const fp2_element_t a,
+void oqs_sidh_iqc_ref_fp2_add(fp2_element_t x, const fp2_element_t a,
                               const fp2_element_t b);
 
 /**
@@ -230,8 +207,7 @@ void oqs_sidh_iqc_ref_fp2_add(fp2_element_t x,
  * @param a
  * @param b
  */
-void oqs_sidh_iqc_ref_fp2_add_ui(fp2_element_t x,
-                                 const fp2_element_t a,
+void oqs_sidh_iqc_ref_fp2_add_ui(fp2_element_t x, const fp2_element_t a,
                                  unsigned long b);
 
 /**
@@ -240,8 +216,7 @@ void oqs_sidh_iqc_ref_fp2_add_ui(fp2_element_t x,
  * @param a
  * @param b
  */
-void oqs_sidh_iqc_ref_fp2_sub(fp2_element_t x,
-                              const fp2_element_t a,
+void oqs_sidh_iqc_ref_fp2_sub(fp2_element_t x, const fp2_element_t a,
                               const fp2_element_t b);
 
 /**
@@ -250,8 +225,7 @@ void oqs_sidh_iqc_ref_fp2_sub(fp2_element_t x,
  * @param a
  * @param b
  */
-void oqs_sidh_iqc_ref_fp2_sub_ui(fp2_element_t x,
-                                 const fp2_element_t a,
+void oqs_sidh_iqc_ref_fp2_sub_ui(fp2_element_t x, const fp2_element_t a,
                                  unsigned long b);
 
 /**
@@ -260,8 +234,7 @@ void oqs_sidh_iqc_ref_fp2_sub_ui(fp2_element_t x,
  * @param a
  * @param b
  */
-void oqs_sidh_iqc_ref_fp2_mul(fp2_element_t x,
-                              const fp2_element_t a,
+void oqs_sidh_iqc_ref_fp2_mul(fp2_element_t x, const fp2_element_t a,
                               const fp2_element_t b);
 
 /**
@@ -269,14 +242,12 @@ void oqs_sidh_iqc_ref_fp2_mul(fp2_element_t x,
  * @param x
  * @param a
  */
-void oqs_sidh_iqc_ref_fp2_square(fp2_element_t x,
-                                 const fp2_element_t a);
+void oqs_sidh_iqc_ref_fp2_square(fp2_element_t x, const fp2_element_t a);
 
 /**
  * {@link oqs_sidh_iqc_ref_fp2_pow}
  */
-void oqs_sidh_iqc_ref_fp2_pow_ui(fp2_element_t x,
-                                 const fp2_element_t a,
+void oqs_sidh_iqc_ref_fp2_pow_ui(fp2_element_t x, const fp2_element_t a,
                                  unsigned long n);
 
 /**
@@ -285,8 +256,7 @@ void oqs_sidh_iqc_ref_fp2_pow_ui(fp2_element_t x,
  * @param a
  * @param n
  */
-void oqs_sidh_iqc_ref_fp2_pow(fp2_element_t x,
-                              const fp2_element_t a,
+void oqs_sidh_iqc_ref_fp2_pow(fp2_element_t x, const fp2_element_t a,
                               const mpz_t n);
 
 /**
@@ -294,8 +264,7 @@ void oqs_sidh_iqc_ref_fp2_pow(fp2_element_t x,
  * @param x
  * @param a
  */
-void oqs_sidh_iqc_ref_fp2_inv(fp2_element_t x,
-                              const fp2_element_t a);
+void oqs_sidh_iqc_ref_fp2_inv(fp2_element_t x, const fp2_element_t a);
 
 /**
  * Sets {@code x = a / b}.
@@ -303,8 +272,7 @@ void oqs_sidh_iqc_ref_fp2_inv(fp2_element_t x,
  * @param a
  * @param b
  */
-void oqs_sidh_iqc_ref_fp2_div(fp2_element_t x,
-                              const fp2_element_t a,
+void oqs_sidh_iqc_ref_fp2_div(fp2_element_t x, const fp2_element_t a,
                               const fp2_element_t b);
 
 /**
@@ -312,16 +280,14 @@ void oqs_sidh_iqc_ref_fp2_div(fp2_element_t x,
  * @param x
  * @param a
  */
-void oqs_sidh_iqc_ref_fp2_conjugate(fp2_element_t x,
-                                    const fp2_element_t a);
+void oqs_sidh_iqc_ref_fp2_conjugate(fp2_element_t x, const fp2_element_t a);
 
 /**
  * Sets {@code x = -a}.
  * @param x
  * @param a
  */
-void oqs_sidh_iqc_ref_fp2_negate(fp2_element_t x,
-                                 const fp2_element_t a);
+void oqs_sidh_iqc_ref_fp2_negate(fp2_element_t x, const fp2_element_t a);
 
 /**
  * Sets {@code x = a * scaler}.
@@ -329,8 +295,7 @@ void oqs_sidh_iqc_ref_fp2_negate(fp2_element_t x,
  * @param a
  * @param scaler
  */
-void oqs_sidh_iqc_ref_fp2_mul_scaler(fp2_element_t x,
-                                     const fp2_element_t a,
+void oqs_sidh_iqc_ref_fp2_mul_scaler(fp2_element_t x, const fp2_element_t a,
                                      const mpz_t scaler);
 
 /**
@@ -339,8 +304,7 @@ void oqs_sidh_iqc_ref_fp2_mul_scaler(fp2_element_t x,
  * @param a
  * @param scaler
  */
-void oqs_sidh_iqc_ref_fp2_mul_scaler_si(fp2_element_t x,
-                                        const fp2_element_t a,
+void oqs_sidh_iqc_ref_fp2_mul_scaler_si(fp2_element_t x, const fp2_element_t a,
                                         long scaler);
 
 /**
@@ -363,28 +327,26 @@ int oqs_sidh_iqc_ref_fp2_is_one(const fp2_element_t a);
  * @param b
  * @return 1 if {@code a == b}, and 0 otherwise.
  */
-int oqs_sidh_iqc_ref_fp2_equals(const fp2_element_t a,
-                                const fp2_element_t b);
+int oqs_sidh_iqc_ref_fp2_equals(const fp2_element_t a, const fp2_element_t b);
 
 /**
  * Generates a random element in the quadratic extension.
  * @param x the generated random element
  * @param randstate
  */
-void oqs_sidh_iqc_ref_fp2_random(fp2_element_t x,
-                                 gmp_randstate_t randstate);
+void oqs_sidh_iqc_ref_fp2_random(fp2_element_t x, gmp_randstate_t randstate);
 
 /**
  * Computes the square root of {@code a}.
  * The algorithm is based on
  * Doliskani & Schost, Taking Roots over High Extensions of Finite Fields, 2011.
- * It works for any characteristic, but since it uses {@link oqs_sidh_iqc_ref_fp_sqrt} for
+ * It works for any characteristic, but since it uses {@link
+ * oqs_sidh_iqc_ref_fp_sqrt} for
  * base-case square root, it is limited to p = 3 mod 4.
  * @param x the square root
  * @param a
  */
-void oqs_sidh_iqc_ref_fp2_sqrt(fp2_element_t x,
-                               const fp2_element_t a);
+void oqs_sidh_iqc_ref_fp2_sqrt(fp2_element_t x, const fp2_element_t a);
 
 /**
  * Checks if {@code a} is a square.
@@ -398,8 +360,7 @@ int oqs_sidh_iqc_ref_fp2_is_square(const fp2_element_t a);
  * @param x the computed norm
  * @param a
  */
-void oqs_sidh_iqc_ref_fp2_norm(mpz_t x,
-                               const fp2_element_t a);
+void oqs_sidh_iqc_ref_fp2_norm(mpz_t x, const fp2_element_t a);
 
 /**
  * Converts bytes an fp2 element to a byte array.
@@ -407,8 +368,7 @@ void oqs_sidh_iqc_ref_fp2_norm(mpz_t x,
  * @param a
  * @param prime_size
  */
-void oqs_sidh_iqc_ref_fp2_to_bytes(uint8_t *bytes,
-                                   const fp2_element_t a,
+void oqs_sidh_iqc_ref_fp2_to_bytes(uint8_t *bytes, const fp2_element_t a,
                                    long prime_size);
 
 /**
@@ -417,8 +377,7 @@ void oqs_sidh_iqc_ref_fp2_to_bytes(uint8_t *bytes,
  * @param bytes
  * @param prime_size
  */
-void oqs_sidh_iqc_ref_bytes_to_fp2(fp2_element_t a,
-                                   const uint8_t *bytes,
+void oqs_sidh_iqc_ref_bytes_to_fp2(fp2_element_t a, const uint8_t *bytes,
                                    long prime_size);
 
 #ifdef __cplusplus

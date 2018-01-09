@@ -2,14 +2,16 @@
 #include <oqs/rand.h>
 #include <oqs/sha3.h>
 
-static void pack_pk(unsigned char *r, const polyvec *pk, const unsigned char *seed) {
+static void pack_pk(unsigned char *r, const polyvec *pk,
+                    const unsigned char *seed) {
 	int i;
 	polyvec_compress(r, pk);
 	for (i = 0; i < KYBER_SEEDBYTES; i++)
 		r[i + KYBER_POLYVECCOMPRESSEDBYTES] = seed[i];
 }
 
-static void unpack_pk(polyvec *pk, unsigned char *seed, const unsigned char *packedpk) {
+static void unpack_pk(polyvec *pk, unsigned char *seed,
+                      const unsigned char *packedpk) {
 	int i;
 	polyvec_decompress(pk, packedpk);
 
@@ -39,12 +41,14 @@ static void unpack_sk(polyvec *sk, const unsigned char *packedsk) {
 #define gen_at(A, B) gen_matrix(A, B, 1)
 
 /* Generate entry a_{i,j} of matrix A as Parse(SHAKE128(seed|i|j)) */
-static void gen_matrix(polyvec *a, const unsigned char *seed, int transposed) //XXX: Not static for benchmarking
+static void gen_matrix(polyvec *a, const unsigned char *seed,
+                       int transposed) // XXX: Not static for benchmarking
 {
 	unsigned int pos = 0, ctr;
 	uint16_t val;
 	unsigned int nblocks = 4;
-	uint8_t buf[OQS_SHA3_SHAKE128_RATE * 4]; // was * nblocks, but VS doesn't like this buf init
+	uint8_t buf[OQS_SHA3_SHAKE128_RATE *
+	            4]; // was * nblocks, but VS doesn't like this buf init
 	int i, j;
 	uint16_t dsep;
 	uint64_t state[25]; // CSHAKE state
@@ -77,8 +81,8 @@ static void gen_matrix(polyvec *a, const unsigned char *seed, int transposed) //
 	}
 }
 
-static void indcpa_keypair(unsigned char *pk,
-                           unsigned char *sk, OQS_RAND *rand) {
+static void indcpa_keypair(unsigned char *pk, unsigned char *sk,
+                           OQS_RAND *rand) {
 	polyvec a[KYBER_D], e, pkpv, skpv;
 	unsigned char seed[KYBER_SEEDBYTES];
 	unsigned char noiseseed[KYBER_COINBYTES];
@@ -86,7 +90,8 @@ static void indcpa_keypair(unsigned char *pk,
 	unsigned char nonce = 0;
 
 	rand->rand_n(rand, seed, KYBER_SEEDBYTES);
-	OQS_SHA3_shake128(seed, KYBER_SEEDBYTES, seed, KYBER_SEEDBYTES); /* Don't send output of system RNG */
+	OQS_SHA3_shake128(seed, KYBER_SEEDBYTES, seed,
+	                  KYBER_SEEDBYTES); /* Don't send output of system RNG */
 	rand->rand_n(rand, noiseseed, KYBER_COINBYTES);
 
 	gen_a(a, seed);
@@ -110,10 +115,8 @@ static void indcpa_keypair(unsigned char *pk,
 	pack_pk(pk, &pkpv, seed);
 }
 
-static void indcpa_enc(unsigned char *c,
-                       const unsigned char *m,
-                       const unsigned char *pk,
-                       const unsigned char *coins) {
+static void indcpa_enc(unsigned char *c, const unsigned char *m,
+                       const unsigned char *pk, const unsigned char *coins) {
 	polyvec sp, pkpv, ep, at[KYBER_D], bp;
 	poly v, k, epp;
 	unsigned char seed[KYBER_SEEDBYTES];
@@ -156,8 +159,7 @@ static void indcpa_enc(unsigned char *c,
 	pack_ciphertext(c, &bp, &v);
 }
 
-static void indcpa_dec(unsigned char *m,
-                       const unsigned char *c,
+static void indcpa_dec(unsigned char *m, const unsigned char *c,
                        const unsigned char *sk) {
 	polyvec bp, skpv;
 	poly v, mp;

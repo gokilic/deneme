@@ -14,7 +14,7 @@
  * You can copy, modify, distribute and perform the work, even for commercial
  * purposes, all without asking permission. You should have received a copy of
  * the creative commons license (CC0 1.0 universal) along with this program.
- * See the license file for more information. 
+ * See the license file for more information.
  *
  *
  *********************************************************************************/
@@ -110,8 +110,8 @@ void ntru_bits_2_trits(
 	shift = 21;
 	while (num_trits) {
 		/* for each 3 bits in the three octets, output up to 2 trits
-         * until all trits needed are produced
-         */
+* until all trits needed are produced
+*/
 
 		bits3 = (bits24 >> shift) & 0x7;
 		shift -= 3;
@@ -300,9 +300,8 @@ void ntru_coeffs_mod4_2_octets(
  * Packs 5 trits in an octet, where a trit is 0, 1, or 2 (-1).
  */
 
-void ntru_trits_2_octet(
-    uint8_t const *trits, /*  in - pointer to trits */
-    uint8_t *octet)       /* out - address for octet */
+void ntru_trits_2_octet(uint8_t const *trits, /*  in - pointer to trits */
+                        uint8_t *octet)       /* out - address for octet */
 {
 	int i;
 
@@ -319,9 +318,8 @@ void ntru_trits_2_octet(
  * Unpacks an octet to 5 trits, where a trit is 0, 1, or 2 (-1).
  */
 
-void ntru_octet_2_trits(
-    uint8_t octet,  /*  in - octet to be unpacked */
-    uint8_t *trits) /* out - address for trits */
+void ntru_octet_2_trits(uint8_t octet,  /*  in - octet to be unpacked */
+                        uint8_t *trits) /* out - address for trits */
 {
 	int i;
 
@@ -357,7 +355,7 @@ void ntru_indices_2_trits(
 
 /* ntru_packed_trits_2_indices
  *
- * Unpacks an array of N trits and creates a list of array indices 
+ * Unpacks an array of N trits and creates a list of array indices
  * corresponding to trits = +1, and list of array indices corresponding to
  * trits = -1.
  */
@@ -486,8 +484,8 @@ void ntru_elements_2_octets(
 		} else {
 			shift = 8 - shift;
 			/* put remaining bits of input word in temp as partial octet,
-             * and increment index to next input word
-             */
+* and increment index to next input word
+*/
 			temp = in[i] << shift;
 			shift = n_bits - shift;
 
@@ -537,8 +535,8 @@ void ntru_octets_2_elements(
 			temp |= ((uint16_t) in[i]) << shift;
 		} else {
 			/* add bits from the current octet to fill the current element and
-             * output the element
-             */
+* output the element
+*/
 
 			shift = 8 - shift;
 

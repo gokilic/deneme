@@ -24,7 +24,7 @@ OQS_KEX *OQS_KEX_code_mcbits_new(OQS_RAND *rand) {
 		return NULL;
 	}
 	k->method_name = strdup("Code Mcbits");
-	k->estimated_classical_security = 0; //TODO : Add these
+	k->estimated_classical_security = 0; // TODO : Add these
 	k->estimated_quantum_security = 0;
 	k->seed = NULL;
 	k->seed_len = 0;
@@ -39,7 +39,8 @@ OQS_KEX *OQS_KEX_code_mcbits_new(OQS_RAND *rand) {
 	return k;
 }
 
-int OQS_KEX_code_mcbits_alice_0(UNUSED OQS_KEX *k, void **alice_priv, uint8_t **alice_msg, size_t *alice_msg_len) {
+int OQS_KEX_code_mcbits_alice_0(UNUSED OQS_KEX *k, void **alice_priv,
+                                uint8_t **alice_msg, size_t *alice_msg_len) {
 
 	int ret;
 
@@ -76,7 +77,10 @@ cleanup:
 	return ret;
 }
 
-int OQS_KEX_code_mcbits_bob(UNUSED OQS_KEX *k, const uint8_t *alice_msg, const size_t alice_msg_len, uint8_t **bob_msg, size_t *bob_msg_len, uint8_t **key, size_t *key_len) {
+int OQS_KEX_code_mcbits_bob(UNUSED OQS_KEX *k, const uint8_t *alice_msg,
+                            const size_t alice_msg_len, uint8_t **bob_msg,
+                            size_t *bob_msg_len, uint8_t **key,
+                            size_t *key_len) {
 
 	int ret;
 
@@ -113,7 +117,10 @@ cleanup:
 	return ret;
 }
 
-int OQS_KEX_code_mcbits_alice_1(UNUSED OQS_KEX *k, const void *alice_priv, const uint8_t *bob_msg, const size_t bob_msg_len, uint8_t **key, size_t *key_len) {
+int OQS_KEX_code_mcbits_alice_1(UNUSED OQS_KEX *k, const void *alice_priv,
+                                const uint8_t *bob_msg,
+                                const size_t bob_msg_len, uint8_t **key,
+                                size_t *key_len) {
 
 	int ret;
 

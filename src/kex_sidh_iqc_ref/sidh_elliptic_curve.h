@@ -66,18 +66,15 @@ void oqs_sidh_iqc_ref_point_init(point_t P);
  * @param y
  * @param z
  */
-void oqs_sidh_iqc_ref_point_set_coordinates(point_t P,
-                                            const fp2_element_t x,
-                                            const fp2_element_t y,
-                                            int z);
+void oqs_sidh_iqc_ref_point_set_coordinates(point_t P, const fp2_element_t x,
+                                            const fp2_element_t y, int z);
 
 /**
  * Copies {@code Q} into {@code P}
  * @param P
  * @param Q
  */
-void oqs_sidh_iqc_ref_point_set(point_t P,
-                                const point_t Q);
+void oqs_sidh_iqc_ref_point_set(point_t P, const point_t Q);
 
 /**
  * Sets the given point to zero.
@@ -97,8 +94,7 @@ int oqs_sidh_iqc_ref_point_is_zero(const point_t P);
  * @param P
  * @param Q
  */
-void oqs_sidh_iqc_ref_point_negate(point_t P,
-                                   const point_t Q);
+void oqs_sidh_iqc_ref_point_negate(point_t P, const point_t Q);
 
 /**
  * Checks if 2 * {@code P} = 0.
@@ -125,8 +121,7 @@ void oqs_sidh_iqc_ref_point_clear(point_t P);
  * @param Q
  * @return 1 if the points are equal, 0 otherwise
  */
-int oqs_sidh_iqc_ref_point_equals(const point_t P,
-                                  const point_t Q);
+int oqs_sidh_iqc_ref_point_equals(const point_t P, const point_t Q);
 
 /**
  * @param E
@@ -147,9 +142,7 @@ char *oqs_sidh_iqc_ref_point_get_str(const point_t P);
  * @param Q
  * @param E
  */
-void oqs_sidh_iqc_ref_point_add(point_t R,
-                                const point_t P,
-                                const point_t Q,
+void oqs_sidh_iqc_ref_point_add(point_t R, const point_t P, const point_t Q,
                                 const elliptic_curve_t E);
 
 /**
@@ -159,9 +152,7 @@ void oqs_sidh_iqc_ref_point_add(point_t R,
  * @param Q
  * @param E
  */
-void oqs_sidh_iqc_ref_point_sub(point_t R,
-                                const point_t P,
-                                const point_t Q,
+void oqs_sidh_iqc_ref_point_sub(point_t R, const point_t P, const point_t Q,
                                 const elliptic_curve_t E);
 
 /**
@@ -171,8 +162,7 @@ void oqs_sidh_iqc_ref_point_sub(point_t R,
  * @param Q
  * @param lambda The slope of the line passing through {@code P, Q}
  */
-void oqs_sidh_iqc_ref_point_add_with_lambda(point_t R,
-                                            const point_t P,
+void oqs_sidh_iqc_ref_point_add_with_lambda(point_t R, const point_t P,
                                             const point_t Q,
                                             const fp2_element_t lambda);
 
@@ -182,8 +172,7 @@ void oqs_sidh_iqc_ref_point_add_with_lambda(point_t R,
  * @param P
  * @param E
  */
-void oqs_sidh_iqc_ref_point_double(point_t R,
-                                   const point_t P,
+void oqs_sidh_iqc_ref_point_double(point_t R, const point_t P,
                                    const elliptic_curve_t E);
 
 /**
@@ -193,8 +182,7 @@ void oqs_sidh_iqc_ref_point_double(point_t R,
  * @param scaler
  * @param E
  */
-void oqs_sidh_iqc_ref_point_mul_scaler(point_t R,
-                                       const point_t P,
+void oqs_sidh_iqc_ref_point_mul_scaler(point_t R, const point_t P,
                                        const mpz_t scaler,
                                        const elliptic_curve_t E);
 
@@ -205,8 +193,7 @@ void oqs_sidh_iqc_ref_point_mul_scaler(point_t R,
  * @param scaler
  * @param E
  */
-void oqs_sidh_iqc_ref_point_mul_scaler_si(point_t R,
-                                          const point_t P,
+void oqs_sidh_iqc_ref_point_mul_scaler_si(point_t R, const point_t P,
                                           long scaler,
                                           const elliptic_curve_t E);
 

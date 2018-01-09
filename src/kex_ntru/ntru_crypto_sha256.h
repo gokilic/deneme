@@ -14,7 +14,7 @@
  * You can copy, modify, distribute and perform the work, even for commercial
  * purposes, all without asking permission. You should have received a copy of
  * the creative commons license (CC0 1.0 universal) along with this program.
- * See the license file for more information. 
+ * See the license file for more information.
  *
  *
  *********************************************************************************/
@@ -34,7 +34,7 @@
 #include "ntru_crypto_sha2.h"
 
 /******************************************
- * macros needed for generic hash objects * 
+ * macros needed for generic hash objects *
  ******************************************/
 
 #define SHA_256_CTX_LEN sizeof(NTRU_CRYPTO_SHA2_CTX)
@@ -59,8 +59,7 @@
  * Returns SHA_BAD_PARAMETER if inappropriate NULL pointers are passed.
  */
 
-extern uint32_t
-ntru_crypto_sha256_init(
+extern uint32_t ntru_crypto_sha256_init(
     NTRU_CRYPTO_SHA2_CTX *c); /* in/out - pointer to SHA-2 context */
 
 /* ntru_crypto_sha256_update
@@ -73,8 +72,7 @@ ntru_crypto_sha256_init(
  * Returns SHA_OVERFLOW if more than 2^64 - 1 bytes are hashed.
  */
 
-extern uint32_t
-ntru_crypto_sha256_update(
+extern uint32_t ntru_crypto_sha256_update(
     NTRU_CRYPTO_SHA2_CTX *c, /* in/out - pointer to SHA-2 context */
     uint8_t const *data,     /*     in - pointer to input data */
     uint32_t data_len);      /*     in - no. of bytes of input data */
@@ -83,15 +81,14 @@ ntru_crypto_sha256_update(
  *
  * This routine completes the SHA-256 hash calculation and returns the
  * message digest.
- * 
+ *
  * Returns SHA_OK on success.
  * Returns SHA_FAIL with corrupted context.
  * Returns SHA_BAD_PARAMETER if inappropriate NULL pointers are passed.
  * Returns SHA_OVERFLOW if more than 2^64 - 1 bytes are hashed.
  */
 
-extern uint32_t
-ntru_crypto_sha256_final(
+extern uint32_t ntru_crypto_sha256_final(
     NTRU_CRYPTO_SHA2_CTX *c, /* in/out - pointer to SHA-2 context */
     uint8_t *md);            /*    out - address for message digest */
 
@@ -105,8 +102,7 @@ ntru_crypto_sha256_final(
  * Returns SHA_OVERFLOW if more than 2^64 - 1 bytes are hashed.
  */
 
-extern uint32_t
-ntru_crypto_sha256_digest(
+extern uint32_t ntru_crypto_sha256_digest(
     uint8_t const *data, /*  in - pointer to input data */
     uint32_t data_len,   /*  in - number of bytes of input data */
     uint8_t *md);        /* out - address for message digest */

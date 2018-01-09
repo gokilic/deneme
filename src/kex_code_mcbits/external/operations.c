@@ -1,4 +1,5 @@
-#ifdef ENABLE_CODE_MCBITS // don't want this file in Visual Studio if libsodium is not present
+#ifdef ENABLE_CODE_MCBITS // don't want this file in Visual Studio if libsodium
+                          // is not present
 #include <assert.h>
 #include <stdint.h>
 #include <string.h>
@@ -27,11 +28,9 @@
 #include "decrypt.c"
 // clang-format on
 
-int oqs_kex_mcbits_encrypt(
-    unsigned char *c, size_t *clen,
-    const unsigned char *m, unsigned long long mlen,
-    const unsigned char *pk,
-    OQS_RAND *r) {
+int oqs_kex_mcbits_encrypt(unsigned char *c, size_t *clen,
+                           const unsigned char *m, unsigned long long mlen,
+                           const unsigned char *pk, OQS_RAND *r) {
 	unsigned char e[1 << (GFBITS - 3)];
 	unsigned char key[64];
 	unsigned char nonce[8] = {0};
@@ -43,7 +42,8 @@ int oqs_kex_mcbits_encrypt(
 
 	encrypt(c, e, pk, r);
 
-	//crypto_hash_keccakc1024(key, e, sizeof(e)); TODO is this ok to replace with the below?
+	// crypto_hash_keccakc1024(key, e, sizeof(e)); TODO is this ok to replace with
+	// the below?
 	OQS_SHA3_sha3512(key, e, sizeof(e));
 
 	crypto_stream_salsa20_xor(ct, m, mlen, nonce, key);
@@ -57,10 +57,9 @@ int oqs_kex_mcbits_encrypt(
 	return 0;
 }
 
-int oqs_kex_mcbits_decrypt(
-    unsigned char *m, size_t *mlen,
-    const unsigned char *c, unsigned long long clen,
-    const unsigned char *sk) {
+int oqs_kex_mcbits_decrypt(unsigned char *m, size_t *mlen,
+                           const unsigned char *c, unsigned long long clen,
+                           const unsigned char *sk) {
 	int ret;
 	int ret_verify;
 	int ret_decrypt;
@@ -81,7 +80,8 @@ int oqs_kex_mcbits_decrypt(
 
 	ret_decrypt = decrypt(e, sk, c);
 
-	//crypto_hash_keccakc1024(key, e, sizeof(e)); TODO is this ok to replace with the below?
+	// crypto_hash_keccakc1024(key, e, sizeof(e)); TODO is this ok to replace with
+	// the below?
 	OQS_SHA3_sha3512(key, e, sizeof(e));
 
 	ret_verify = crypto_onetimeauth_poly1305_verify(tag, ct, *mlen, key + 32);
@@ -95,12 +95,9 @@ int oqs_kex_mcbits_decrypt(
 	return ret;
 }
 
-int oqs_kex_mcbits_gen_keypair(
-    unsigned char *pk,
-    unsigned char *sk,
-    OQS_RAND *r
+int oqs_kex_mcbits_gen_keypair(unsigned char *pk, unsigned char *sk, OQS_RAND *r
 
-    ) {
+                               ) {
 	while (1) {
 		sk_gen(sk, r);
 

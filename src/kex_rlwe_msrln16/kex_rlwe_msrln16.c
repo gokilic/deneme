@@ -42,7 +42,8 @@ OQS_KEX *OQS_KEX_rlwe_msrln16_new(OQS_RAND *rand) {
 	return k;
 }
 
-int OQS_KEX_rlwe_msrln16_alice_0(OQS_KEX *k, void **alice_priv, uint8_t **alice_msg, size_t *alice_msg_len) {
+int OQS_KEX_rlwe_msrln16_alice_0(OQS_KEX *k, void **alice_priv,
+                                 uint8_t **alice_msg, size_t *alice_msg_len) {
 
 	int ret;
 
@@ -59,7 +60,9 @@ int OQS_KEX_rlwe_msrln16_alice_0(OQS_KEX *k, void **alice_priv, uint8_t **alice_
 		goto err;
 	}
 
-	if (oqs_rlwe_msrln16_KeyGeneration_A((int32_t *) *alice_priv, (unsigned char *) *alice_msg, k->rand) != CRYPTO_SUCCESS) {
+	if (oqs_rlwe_msrln16_KeyGeneration_A((int32_t *) *alice_priv,
+	                                     (unsigned char *) *alice_msg,
+	                                     k->rand) != CRYPTO_SUCCESS) {
 		goto err;
 	}
 	*alice_msg_len = OQS_RLWE_MSRLN16_PKA_BYTES;
@@ -78,7 +81,10 @@ cleanup:
 	return ret;
 }
 
-int OQS_KEX_rlwe_msrln16_bob(OQS_KEX *k, const uint8_t *alice_msg, const size_t alice_msg_len, uint8_t **bob_msg, size_t *bob_msg_len, uint8_t **key, size_t *key_len) {
+int OQS_KEX_rlwe_msrln16_bob(OQS_KEX *k, const uint8_t *alice_msg,
+                             const size_t alice_msg_len, uint8_t **bob_msg,
+                             size_t *bob_msg_len, uint8_t **key,
+                             size_t *key_len) {
 
 	int ret;
 
@@ -97,7 +103,9 @@ int OQS_KEX_rlwe_msrln16_bob(OQS_KEX *k, const uint8_t *alice_msg, const size_t 
 		goto err;
 	}
 
-	if (oqs_rlwe_msrln16_SecretAgreement_B((unsigned char *) alice_msg, (unsigned char *) *key, (unsigned char *) *bob_msg, k->rand) != CRYPTO_SUCCESS) {
+	if (oqs_rlwe_msrln16_SecretAgreement_B(
+	        (unsigned char *) alice_msg, (unsigned char *) *key,
+	        (unsigned char *) *bob_msg, k->rand) != CRYPTO_SUCCESS) {
 		goto err;
 	}
 
@@ -119,7 +127,10 @@ cleanup:
 	return ret;
 }
 
-int OQS_KEX_rlwe_msrln16_alice_1(UNUSED OQS_KEX *k, const void *alice_priv, const uint8_t *bob_msg, const size_t bob_msg_len, uint8_t **key, size_t *key_len) {
+int OQS_KEX_rlwe_msrln16_alice_1(UNUSED OQS_KEX *k, const void *alice_priv,
+                                 const uint8_t *bob_msg,
+                                 const size_t bob_msg_len, uint8_t **key,
+                                 size_t *key_len) {
 
 	int ret;
 
@@ -134,7 +145,9 @@ int OQS_KEX_rlwe_msrln16_alice_1(UNUSED OQS_KEX *k, const void *alice_priv, cons
 		goto err;
 	}
 
-	if (oqs_rlwe_msrln16_SecretAgreement_A((unsigned char *) bob_msg, (int32_t *) alice_priv, (unsigned char *) *key) != CRYPTO_SUCCESS) {
+	if (oqs_rlwe_msrln16_SecretAgreement_A(
+	        (unsigned char *) bob_msg, (int32_t *) alice_priv,
+	        (unsigned char *) *key) != CRYPTO_SUCCESS) {
 		goto err;
 	}
 

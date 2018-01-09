@@ -14,7 +14,7 @@
  * You can copy, modify, distribute and perform the work, even for commercial
  * purposes, all without asking permission. You should have received a copy of
  * the creative commons license (CC0 1.0 universal) along with this program.
- * See the license file for more information. 
+ * See the license file for more information.
  *
  *
  *********************************************************************************/
@@ -74,7 +74,7 @@
 typedef struct {
 	uint32_t sec_strength;          /* security strength in bits */
 	uint32_t requests_left;         /* generation requests remaining
-                                            before reseeding */
+                                      before reseeding */
 	ENTROPY_FN entropy_fn;          /* pointer to entropy function */
 	NTRU_CRYPTO_HMAC_CTX *hmac_ctx; /* pointer to HMAC context */
 	uint8_t V[33];                  /* md_len size internal state + 1 */
@@ -82,9 +82,7 @@ typedef struct {
 
 /* External DRBG state structure */
 
-typedef struct {
-	RANDOM_BYTES_FN randombytesfn;
-} EXTERNAL_DRBG_STATE;
+typedef struct { RANDOM_BYTES_FN randombytesfn; } EXTERNAL_DRBG_STATE;
 
 /* DRBG state structure */
 
@@ -126,15 +124,13 @@ static DRBG_STATE drbg_state[DRBG_MAX_INSTANTIATIONS];
  * Returns HMAC errors if they occur.
  */
 
-static uint32_t
-sha256_hmac_drbg_update(
-    SHA256_HMAC_DRBG_STATE *s,
-    uint8_t *key, /* md_len size array */
-    uint32_t md_len,
-    uint8_t const *provided_data1,
-    uint32_t provided_data1_bytes,
-    uint8_t const *provided_data2,
-    uint32_t provided_data2_bytes) {
+static uint32_t sha256_hmac_drbg_update(SHA256_HMAC_DRBG_STATE *s,
+                                        uint8_t *key, /* md_len size array */
+                                        uint32_t md_len,
+                                        uint8_t const *provided_data1,
+                                        uint32_t provided_data1_bytes,
+                                        uint8_t const *provided_data2,
+                                        uint32_t provided_data2_bytes) {
 	uint32_t result;
 
 	/* new key = HMAC(K, V || 0x00 [|| provided data1 [|| provided data2]] */
@@ -152,13 +148,15 @@ sha256_hmac_drbg_update(
 
 	if (provided_data1) {
 		if ((result = ntru_crypto_hmac_update(s->hmac_ctx, provided_data1,
-		                                      provided_data1_bytes)) != NTRU_CRYPTO_HMAC_OK) {
+		                                      provided_data1_bytes)) !=
+		    NTRU_CRYPTO_HMAC_OK) {
 			return result;
 		}
 
 		if (provided_data2) {
 			if ((result = ntru_crypto_hmac_update(s->hmac_ctx, provided_data2,
-			                                      provided_data2_bytes)) != NTRU_CRYPTO_HMAC_OK) {
+			                                      provided_data2_bytes)) !=
+			    NTRU_CRYPTO_HMAC_OK) {
 				return result;
 			}
 		}
@@ -195,8 +193,7 @@ sha256_hmac_drbg_update(
 	if (provided_data1) {
 		/* new key = HMAC(K, V || 0x01 || provided data1 [|| provided data2] */
 
-		if ((result = ntru_crypto_hmac_init(s->hmac_ctx)) !=
-		    NTRU_CRYPTO_HMAC_OK) {
+		if ((result = ntru_crypto_hmac_init(s->hmac_ctx)) != NTRU_CRYPTO_HMAC_OK) {
 			return result;
 		}
 
@@ -208,13 +205,15 @@ sha256_hmac_drbg_update(
 		}
 
 		if ((result = ntru_crypto_hmac_update(s->hmac_ctx, provided_data1,
-		                                      provided_data1_bytes)) != NTRU_CRYPTO_HMAC_OK) {
+		                                      provided_data1_bytes)) !=
+		    NTRU_CRYPTO_HMAC_OK) {
 			return result;
 		}
 
 		if (provided_data2) {
 			if ((result = ntru_crypto_hmac_update(s->hmac_ctx, provided_data2,
-			                                      provided_data2_bytes)) != NTRU_CRYPTO_HMAC_OK) {
+			                                      provided_data2_bytes)) !=
+			    NTRU_CRYPTO_HMAC_OK) {
 				return result;
 			}
 		}
@@ -231,8 +230,7 @@ sha256_hmac_drbg_update(
 
 		/* new V = HMAC(K, V) */
 
-		if ((result = ntru_crypto_hmac_init(s->hmac_ctx)) !=
-		    NTRU_CRYPTO_HMAC_OK) {
+		if ((result = ntru_crypto_hmac_init(s->hmac_ctx)) != NTRU_CRYPTO_HMAC_OK) {
 			return result;
 		}
 
@@ -253,7 +251,7 @@ sha256_hmac_drbg_update(
 
 /* sha256_hmac_drbg_instantiate
  *
- * This routine allocates and initializes a SHA-256 HMAC_DRBG internal state. 
+ * This routine allocates and initializes a SHA-256 HMAC_DRBG internal state.
  *
  * Returns DRBG_OK if successful.
  * Returns DRBG_BAD_LENGTH if the personalization string is too long.
@@ -261,12 +259,9 @@ sha256_hmac_drbg_update(
  * Returns errors from HASH or SHA256 if those errors occur.
  */
 
-static uint32_t
-sha256_hmac_drbg_instantiate(
+static uint32_t sha256_hmac_drbg_instantiate(
     uint32_t sec_strength_bits, /* strength to instantiate */
-    uint8_t const *pers_str,
-    uint32_t pers_str_bytes,
-    ENTROPY_FN entropy_fn,
+    uint8_t const *pers_str, uint32_t pers_str_bytes, ENTROPY_FN entropy_fn,
     SHA256_HMAC_DRBG_STATE **state) {
 	uint8_t entropy_nonce[HMAC_DRBG_MAX_ENTROPY_NONCE_BYTES];
 	uint32_t entropy_nonce_bytes;
@@ -284,8 +279,8 @@ sha256_hmac_drbg_instantiate(
 	}
 
 	/* calculate number of bytes needed for the entropy input and nonce
-     * for a SHA256_HMAC_DRBG, and get them from the entropy source
-     */
+*for a SHA256_HMAC_DRBG, and get them from the entropy source
+*/
 
 	if (entropy_fn(GET_NUM_BYTES_PER_BYTE_OF_ENTROPY,
 	               &num_bytes_per_byte_of_entropy) == 0) {
@@ -293,8 +288,7 @@ sha256_hmac_drbg_instantiate(
 	}
 
 	if ((num_bytes_per_byte_of_entropy == 0) ||
-	    (num_bytes_per_byte_of_entropy >
-	     DRBG_MAX_BYTES_PER_BYTE_OF_ENTROPY)) {
+	    (num_bytes_per_byte_of_entropy > DRBG_MAX_BYTES_PER_BYTE_OF_ENTROPY)) {
 		DRBG_RET(DRBG_ENTROPY_FAIL);
 	}
 
@@ -316,8 +310,9 @@ sha256_hmac_drbg_instantiate(
 	/* allocate HMAC context */
 
 	memset(key, 0, sizeof(key));
-	if ((result = ntru_crypto_hmac_create_ctx(NTRU_CRYPTO_HASH_ALGID_SHA256,
-	                                          key, sizeof(key), &s->hmac_ctx)) != NTRU_CRYPTO_HMAC_OK) {
+	if ((result = ntru_crypto_hmac_create_ctx(NTRU_CRYPTO_HASH_ALGID_SHA256, key,
+	                                          sizeof(key), &s->hmac_ctx)) !=
+	    NTRU_CRYPTO_HMAC_OK) {
 		FREE(s);
 		return result;
 	}
@@ -325,9 +320,9 @@ sha256_hmac_drbg_instantiate(
 	/* init and update internal state */
 
 	memset(s->V, 0x01, sizeof(s->V));
-	if ((result = sha256_hmac_drbg_update(s, key, sizeof(key),
-	                                      entropy_nonce, entropy_nonce_bytes,
-	                                      pers_str, pers_str_bytes)) != DRBG_OK) {
+	if ((result = sha256_hmac_drbg_update(s, key, sizeof(key), entropy_nonce,
+	                                      entropy_nonce_bytes, pers_str,
+	                                      pers_str_bytes)) != DRBG_OK) {
 		(void) ntru_crypto_hmac_destroy_ctx(s->hmac_ctx);
 		memset(s->V, 0, sizeof(s->V));
 		FREE(s);
@@ -355,9 +350,7 @@ sha256_hmac_drbg_instantiate(
  * Returns DRBG_BAD_PARAMETER if inappropriate NULL pointers are passed.
  */
 
-static void
-sha256_hmac_drbg_free(
-    SHA256_HMAC_DRBG_STATE *s) {
+static void sha256_hmac_drbg_free(SHA256_HMAC_DRBG_STATE *s) {
 	if (s->hmac_ctx) {
 		(void) ntru_crypto_hmac_destroy_ctx(s->hmac_ctx);
 	}
@@ -377,9 +370,7 @@ sha256_hmac_drbg_free(
  * Returns HMAC errors if they occur.
  */
 
-static uint32_t
-sha256_hmac_drbg_reseed(
-    SHA256_HMAC_DRBG_STATE *s) {
+static uint32_t sha256_hmac_drbg_reseed(SHA256_HMAC_DRBG_STATE *s) {
 	uint8_t entropy[HMAC_DRBG_MAX_ENTROPY_NONCE_BYTES];
 	uint32_t entropy_bytes;
 	uint32_t min_bytes_of_entropy;
@@ -389,8 +380,8 @@ sha256_hmac_drbg_reseed(
 	uint32_t i;
 
 	/* calculate number of bytes needed for the entropy input
-     * for a SHA256_HMAC_DRBG, and get them from the entropy source
-     */
+*for a SHA256_HMAC_DRBG, and get them from the entropy source
+*/
 
 	if (s->entropy_fn(GET_NUM_BYTES_PER_BYTE_OF_ENTROPY,
 	                  &num_bytes_per_byte_of_entropy) == 0) {
@@ -398,13 +389,12 @@ sha256_hmac_drbg_reseed(
 	}
 
 	if ((num_bytes_per_byte_of_entropy == 0) ||
-	    (num_bytes_per_byte_of_entropy >
-	     DRBG_MAX_BYTES_PER_BYTE_OF_ENTROPY)) {
+	    (num_bytes_per_byte_of_entropy > DRBG_MAX_BYTES_PER_BYTE_OF_ENTROPY)) {
 		DRBG_RET(DRBG_ENTROPY_FAIL);
 	}
 
 	/* note: factor of 2 here is probably unnecessary, but ensures quantum
-     * resistance even if internal state is leaked prior to reseed */
+*resistance even if internal state is leaked prior to reseed */
 	min_bytes_of_entropy = (2 * s->sec_strength) / 8;
 	entropy_bytes = min_bytes_of_entropy * num_bytes_per_byte_of_entropy;
 
@@ -416,8 +406,8 @@ sha256_hmac_drbg_reseed(
 
 	/* update internal state */
 
-	if ((result = sha256_hmac_drbg_update(s, key, sizeof(key),
-	                                      entropy, entropy_bytes, NULL, 0)) != DRBG_OK) {
+	if ((result = sha256_hmac_drbg_update(s, key, sizeof(key), entropy,
+	                                      entropy_bytes, NULL, 0)) != DRBG_OK) {
 		return result;
 	}
 
@@ -437,12 +427,9 @@ sha256_hmac_drbg_reseed(
  * Returns HMAC errors if they occur.
  */
 
-static uint32_t
-sha256_hmac_drbg_generate(
-    SHA256_HMAC_DRBG_STATE *s,
-    uint32_t sec_strength_bits,
-    uint32_t num_bytes,
-    uint8_t *out) {
+static uint32_t sha256_hmac_drbg_generate(SHA256_HMAC_DRBG_STATE *s,
+                                          uint32_t sec_strength_bits,
+                                          uint32_t num_bytes, uint8_t *out) {
 	uint8_t key[32]; /* array of md_len size for sha256_hmac_drbg_update() */
 	uint32_t result;
 
@@ -471,13 +458,12 @@ sha256_hmac_drbg_generate(
 	while (num_bytes > 0) {
 		/* generate md_len bytes = V = HMAC(K, V) */
 
-		if ((result = ntru_crypto_hmac_init(s->hmac_ctx)) !=
-		    NTRU_CRYPTO_HMAC_OK) {
+		if ((result = ntru_crypto_hmac_init(s->hmac_ctx)) != NTRU_CRYPTO_HMAC_OK) {
 			return result;
 		}
 
-		if ((result = ntru_crypto_hmac_update(s->hmac_ctx, s->V,
-		                                      sizeof(key))) != NTRU_CRYPTO_HMAC_OK) {
+		if ((result = ntru_crypto_hmac_update(s->hmac_ctx, s->V, sizeof(key))) !=
+		    NTRU_CRYPTO_HMAC_OK) {
 			return result;
 		}
 
@@ -500,8 +486,8 @@ sha256_hmac_drbg_generate(
 
 	/* update internal state */
 
-	if ((result = sha256_hmac_drbg_update(s, key, sizeof(key),
-	                                      NULL, 0, NULL, 0)) != DRBG_OK) {
+	if ((result = sha256_hmac_drbg_update(s, key, sizeof(key), NULL, 0, NULL,
+	                                      0)) != DRBG_OK) {
 		return result;
 	}
 
@@ -522,8 +508,7 @@ sha256_hmac_drbg_generate(
  * Returns NULL if all drbg states are instantiated.
  */
 
-static DRBG_STATE *
-drbg_get_new_drbg() {
+static DRBG_STATE *drbg_get_new_drbg() {
 	int i;
 
 	for (i = 0; i < DRBG_MAX_INSTANTIATIONS; i++) {
@@ -544,9 +529,7 @@ drbg_get_new_drbg() {
  * Returns NULL if the drbg state is not found.
  */
 
-static DRBG_STATE *
-drbg_get_drbg(
-    DRBG_HANDLE handle) /* in/out - drbg handle */
+static DRBG_STATE *drbg_get_drbg(DRBG_HANDLE handle) /* in/out - drbg handle */
 {
 	int i;
 
@@ -566,13 +549,12 @@ drbg_get_drbg(
  * Returns the new DRBG handle.
  */
 
-static DRBG_HANDLE
-drbg_get_new_handle(void) {
+static DRBG_HANDLE drbg_get_new_handle(void) {
 	DRBG_HANDLE h = 0;
 
 	/* ensure the new handle is unique:
-     *  if it already exists, increment it
-     */
+* if it already exists, increment it
+*/
 
 	while (drbg_get_drbg(h) != NULL) {
 		++h;
@@ -601,8 +583,7 @@ drbg_get_new_handle(void) {
  *  allocated from the heap.
  */
 
-uint32_t
-ntru_crypto_drbg_instantiate(
+uint32_t ntru_crypto_drbg_instantiate(
     uint32_t sec_strength_bits, /*  in - requested sec strength in bits */
     uint8_t const *pers_str,    /*  in - ptr to personalization string */
     uint32_t pers_str_bytes,    /*  in - no. personalization str bytes */
@@ -653,9 +634,8 @@ ntru_crypto_drbg_instantiate(
 
 	/* instantiate a SHA-256 HMAC_DRBG */
 
-	if ((result = sha256_hmac_drbg_instantiate(sec_strength_bits,
-	                                           pers_str, pers_str_bytes,
-	                                           entropy_fn,
+	if ((result = sha256_hmac_drbg_instantiate(sec_strength_bits, pers_str,
+	                                           pers_str_bytes, entropy_fn,
 	                                           &state)) != DRBG_OK) {
 		return result;
 	}
@@ -686,8 +666,7 @@ ntru_crypto_drbg_instantiate(
  *  allocated from the heap.
  */
 
-uint32_t
-ntru_crypto_drbg_external_instantiate(
+uint32_t ntru_crypto_drbg_external_instantiate(
     RANDOM_BYTES_FN randombytesfn, /*  in - pointer to random bytes function */
     DRBG_HANDLE *handle)           /* out - address for drbg handle */
 {
@@ -735,8 +714,7 @@ ntru_crypto_drbg_external_instantiate(
  */
 
 uint32_t
-ntru_crypto_drbg_uninstantiate(
-    DRBG_HANDLE handle) /* in - drbg handle */
+ntru_crypto_drbg_uninstantiate(DRBG_HANDLE handle) /* in - drbg handle */
 {
 	DRBG_STATE *drbg = NULL;
 
@@ -774,9 +752,7 @@ ntru_crypto_drbg_uninstantiate(
  * Returns HMAC errors if they occur.
  */
 
-uint32_t
-ntru_crypto_drbg_reseed(
-    DRBG_HANDLE handle) /* in - drbg handle */
+uint32_t ntru_crypto_drbg_reseed(DRBG_HANDLE handle) /* in - drbg handle */
 {
 	DRBG_STATE *drbg = NULL;
 
@@ -809,8 +785,7 @@ ntru_crypto_drbg_reseed(
  * Returns HMAC errors if they occur.
  */
 
-uint32_t
-ntru_crypto_drbg_generate(
+uint32_t ntru_crypto_drbg_generate(
     DRBG_HANDLE handle,         /*  in - drbg handle */
     uint32_t sec_strength_bits, /*  in - requested sec strength in bits */
     uint32_t num_bytes,         /*  in - number of octets to generate */
@@ -840,9 +815,8 @@ ntru_crypto_drbg_generate(
 	case EXTERNAL_DRBG:
 		return ((EXTERNAL_DRBG_STATE *) drbg->state)->randombytesfn(out, num_bytes);
 	case SHA256_HMAC_DRBG:
-		return sha256_hmac_drbg_generate(
-		    (SHA256_HMAC_DRBG_STATE *) drbg->state,
-		    sec_strength_bits, num_bytes, out);
+		return sha256_hmac_drbg_generate((SHA256_HMAC_DRBG_STATE *) drbg->state,
+		                                 sec_strength_bits, num_bytes, out);
 	default:
 		DRBG_RET(DRBG_BAD_PARAMETER);
 	}

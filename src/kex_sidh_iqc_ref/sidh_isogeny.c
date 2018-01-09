@@ -3,8 +3,7 @@
 #include "sidh_isogeny.h"
 #include <math.h>
 
-void oqs_sidh_iqc_ref_isogeny_init(isogeny_t isogeny,
-                                   long kernel_size) {
+void oqs_sidh_iqc_ref_isogeny_init(isogeny_t isogeny, long kernel_size) {
 	isogeny->kernel_size = 0;
 	isogeny->partition_size = 0;
 	oqs_sidh_iqc_ref_isogeny_set_kernel_size(isogeny, kernel_size);
@@ -48,22 +47,22 @@ void oqs_sidh_iqc_ref_isogeny_clear(isogeny_t isogeny) {
 
 void oqs_sidh_iqc_ref_isogeny_compute(isogeny_t isogeny,
                                       const point_t kernel_gen) {
-	oqs_sidh_iqc_ref_isogeny_partition_kernel(isogeny->partition,
-	                                          isogeny->partition_size,
-	                                          kernel_gen,
-	                                          isogeny->domain);
+	oqs_sidh_iqc_ref_isogeny_partition_kernel(
+	    isogeny->partition, isogeny->partition_size, kernel_gen, isogeny->domain);
 	long size = isogeny->partition_size;
 
 	// compute gx_P = 3 * x_P^2 + a
 	for (long i = 0; i < size; i++) {
 		oqs_sidh_iqc_ref_fp2_square(isogeny->gx[i], isogeny->partition[i]->x);
 		oqs_sidh_iqc_ref_fp2_mul_scaler_si(isogeny->gx[i], isogeny->gx[i], 3);
-		oqs_sidh_iqc_ref_fp2_add(isogeny->gx[i], isogeny->gx[i], isogeny->domain->a);
+		oqs_sidh_iqc_ref_fp2_add(isogeny->gx[i], isogeny->gx[i],
+		                         isogeny->domain->a);
 	}
 
 	// compute gy_P = -2y_P
 	for (long i = 0; i < size; i++) {
-		oqs_sidh_iqc_ref_fp2_mul_scaler_si(isogeny->gy[i], isogeny->partition[i]->y, -2);
+		oqs_sidh_iqc_ref_fp2_mul_scaler_si(isogeny->gy[i], isogeny->partition[i]->y,
+		                                   -2);
 	}
 
 	// compute v_P = gx_P or 2gx_P
@@ -139,8 +138,7 @@ void oqs_sidh_iqc_ref_isogeny_set_kernel_size(isogeny_t isogeny,
 	}
 }
 
-void oqs_sidh_iqc_ref_isogeny_evaluate_velu(point_t Q,
-                                            const isogeny_t isogeny,
+void oqs_sidh_iqc_ref_isogeny_evaluate_velu(point_t Q, const isogeny_t isogeny,
                                             const point_t P) {
 
 	if (oqs_sidh_iqc_ref_point_is_zero(P)) {
@@ -204,8 +202,7 @@ void oqs_sidh_iqc_ref_isogeny_evaluate_velu(point_t Q,
 	oqs_sidh_iqc_ref_fp2_clear(temp3);
 }
 
-void oqs_sidh_iqc_ref_isogeny_evaluate_kohel(point_t Q,
-                                             const isogeny_t isogeny,
+void oqs_sidh_iqc_ref_isogeny_evaluate_kohel(point_t Q, const isogeny_t isogeny,
                                              const point_t P) {
 	fp2_element_t ix1;
 	fp2_element_t ix2;
@@ -313,12 +310,9 @@ void oqs_sidh_iqc_ref_isogeny_evaluate_kohel(point_t Q,
 }
 
 void oqs_sidh_iqc_ref_isogeny_evaluate_naive(elliptic_curve_t E,
-                                             point_t *points,
-                                             long num_points,
-                                             const point_t kernel_gen,
-                                             long l,
-                                             long e,
-                                             long isogeny_jump) {
+                                             point_t *points, long num_points,
+                                             const point_t kernel_gen, long l,
+                                             long e, long isogeny_jump) {
 
 	point_t temp_gen;
 	oqs_sidh_iqc_ref_point_init(temp_gen);
@@ -341,12 +335,8 @@ void oqs_sidh_iqc_ref_isogeny_evaluate_naive(elliptic_curve_t E,
 	long i = 0;
 	while (i < e) {
 		mpz_divexact_ui(le, le, kernel_size);
-		oqs_sidh_iqc_ref_isogeny_evaluate_naive_helper(isogeny,
-		                                               E,
-		                                               points,
-		                                               num_points,
-		                                               temp_gen,
-		                                               le);
+		oqs_sidh_iqc_ref_isogeny_evaluate_naive_helper(isogeny, E, points,
+		                                               num_points, temp_gen, le);
 		i += isogeny_jump;
 
 		if ((e - i > 0) && (e - i) < isogeny_jump) {
@@ -362,18 +352,15 @@ void oqs_sidh_iqc_ref_isogeny_evaluate_naive(elliptic_curve_t E,
 
 void oqs_sidh_iqc_ref_isogeny_evaluate_naive_curve(elliptic_curve_t E,
                                                    const point_t kernel_gen,
-                                                   long l,
-                                                   long e,
+                                                   long l, long e,
                                                    long isogeny_jump) {
-	oqs_sidh_iqc_ref_isogeny_evaluate_naive(E, NULL, 0, kernel_gen, l, e, isogeny_jump);
+	oqs_sidh_iqc_ref_isogeny_evaluate_naive(E, NULL, 0, kernel_gen, l, e,
+	                                        isogeny_jump);
 }
 
-void oqs_sidh_iqc_ref_isogeny_evaluate_naive_helper(isogeny_t isogeny,
-                                                    elliptic_curve_t E,
-                                                    point_t *points,
-                                                    long num_points,
-                                                    point_t kernel_gen,
-                                                    const mpz_t le) {
+void oqs_sidh_iqc_ref_isogeny_evaluate_naive_helper(
+    isogeny_t isogeny, elliptic_curve_t E, point_t *points, long num_points,
+    point_t kernel_gen, const mpz_t le) {
 	point_t K;
 	oqs_sidh_iqc_ref_point_init(K);
 
@@ -391,14 +378,9 @@ void oqs_sidh_iqc_ref_isogeny_evaluate_naive_helper(isogeny_t isogeny,
 	oqs_sidh_iqc_ref_point_clear(K);
 }
 
-void oqs_sidh_iqc_ref_isogeny_evaluate_strategy_rec(elliptic_curve_t E,
-                                                    point_t *points,
-                                                    long num_points,
-                                                    point_t *kernel_gens,
-                                                    long num_gens,
-                                                    long l,
-                                                    long e,
-                                                    float ratio) {
+void oqs_sidh_iqc_ref_isogeny_evaluate_strategy_rec(
+    elliptic_curve_t E, point_t *points, long num_points, point_t *kernel_gens,
+    long num_gens, long l, long e, float ratio) {
 
 	if (e == 1) {
 		isogeny_t isogeny;
@@ -414,8 +396,7 @@ void oqs_sidh_iqc_ref_isogeny_evaluate_strategy_rec(elliptic_curve_t E,
 		}
 
 		for (long i = 0; i < num_gens - 1; i++) {
-			oqs_sidh_iqc_ref_isogeny_evaluate_velu(kernel_gens[i],
-			                                       isogeny,
+			oqs_sidh_iqc_ref_isogeny_evaluate_velu(kernel_gens[i], isogeny,
 			                                       kernel_gens[i]);
 		}
 
@@ -430,13 +411,12 @@ void oqs_sidh_iqc_ref_isogeny_evaluate_strategy_rec(elliptic_curve_t E,
 	mpz_ui_pow_ui(exponent, l, r);
 
 	oqs_sidh_iqc_ref_point_mul_scaler(kernel_gens[num_gens],
-	                                  kernel_gens[num_gens - 1],
-	                                  exponent, E);
+	                                  kernel_gens[num_gens - 1], exponent, E);
 
-	oqs_sidh_iqc_ref_isogeny_evaluate_strategy_rec(E, points, num_points, kernel_gens,
-	                                               num_gens + 1, l, e - r, ratio);
-	oqs_sidh_iqc_ref_isogeny_evaluate_strategy_rec(E, points, num_points, kernel_gens,
-	                                               num_gens, l, r, ratio);
+	oqs_sidh_iqc_ref_isogeny_evaluate_strategy_rec(
+	    E, points, num_points, kernel_gens, num_gens + 1, l, e - r, ratio);
+	oqs_sidh_iqc_ref_isogeny_evaluate_strategy_rec(
+	    E, points, num_points, kernel_gens, num_gens, l, r, ratio);
 	mpz_clear(exponent);
 }
 
@@ -444,9 +424,7 @@ void oqs_sidh_iqc_ref_isogeny_evaluate_strategy(elliptic_curve_t E,
                                                 point_t *points,
                                                 long num_points,
                                                 const point_t kernel_gen,
-                                                long l,
-                                                long e,
-                                                float ratio) {
+                                                long l, long e, float ratio) {
 
 	point_t *kernel_gens = (point_t *) malloc(e * sizeof(point_t));
 	for (long i = 0; i < e; i++)
@@ -463,8 +441,8 @@ void oqs_sidh_iqc_ref_isogeny_evaluate_strategy(elliptic_curve_t E,
 
 void oqs_sidh_iqc_ref_isogeny_evaluate_strategy_curve(elliptic_curve_t E,
                                                       const point_t kernel_gen,
-                                                      long l,
-                                                      long e,
+                                                      long l, long e,
                                                       float ratio) {
-	oqs_sidh_iqc_ref_isogeny_evaluate_strategy(E, NULL, 0, kernel_gen, l, e, ratio);
+	oqs_sidh_iqc_ref_isogeny_evaluate_strategy(E, NULL, 0, kernel_gen, l, e,
+	                                           ratio);
 }
