@@ -14,6 +14,7 @@
 
 #include <assert.h>
 #include <oqs/aes.h>
+#include <oqs/common.h>
 #include <oqs/rand.h>
 #include <oqs/rand_urandom_aesctr.h>
 

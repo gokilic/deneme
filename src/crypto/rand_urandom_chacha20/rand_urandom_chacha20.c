@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <oqs/common.h>
 #include <oqs/rand.h>
 #include <oqs/rand_urandom_chacha20.h>
 
