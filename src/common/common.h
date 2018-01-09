@@ -3,8 +3,8 @@
 
 #include <stdlib.h>
 
-#define OQS_SUCCESS 1
-#define OQS_ERROR 0
+#define OQS_SUCCESS 0
+#define OQS_ERROR -1
 
 typedef int OQS_STATUS;
 
