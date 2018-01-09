@@ -59,6 +59,7 @@ endif
 
 installheaderdir=$(includedir)/oqs
 installheader_HEADERS=config.h \
+	src/common/oqs.h \
 	src/common/common.h \
 	src/crypto/aes/aes.h \
 	src/crypto/rand/rand.h \
@@ -96,8 +97,7 @@ if USE_SIDH_IQC
 	cp src/kex_sidh_iqc_ref/kex_sidh_iqc_ref.h $(includedir)/oqs
 endif
 
-
-noinst_bin_PROGRAMS = test_rand test_kex test_aes
+#noinst_bin_PROGRAMS = test_rand test_kex test_aes
 
 libmerge_external.la:
 if USE_SIG_PICNIC
@@ -162,6 +162,7 @@ test: clean-tests
 
 links:
 	$(MKDIR_P) include/oqs
+	cp -f src/common/oqs.h include/oqs
 	cp -f config.h include/oqs
 	cp -f src/common/common.h include/oqs
 	cp -f src/crypto/aes/aes.h include/oqs

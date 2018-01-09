@@ -56,6 +56,10 @@ VisualStudio/**/x64/
 VisualStudio/include/
 VisualStudio/**/*.user
 
+# CLion files
+.idea
+cmake-build-*
+
 # External sources
 external
 src/sig_picnic/external/build/**
