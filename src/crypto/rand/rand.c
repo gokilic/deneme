@@ -151,8 +151,8 @@ void OQS_RAND_report_statistics(const unsigned long occurrences[256],
 	return;
 }
 
-int OQS_RAND_get_system_entropy(uint8_t *buf, size_t n) {
-	int result = 0;
+OQS_STATUS OQS_RAND_get_system_entropy(uint8_t *buf, size_t n) {
+	OQS_STATUS result = OQS_ERROR;
 
 #if !defined(WINDOWS)
 	int fd = 0;
@@ -179,7 +179,7 @@ int OQS_RAND_get_system_entropy(uint8_t *buf, size_t n) {
 		goto err;
 	}
 #endif
-	result = 1;
+	result = OQS_SUCCESS;
 
 err:
 #if !defined(WINDOWS)

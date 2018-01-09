@@ -67,10 +67,10 @@ typedef struct OQS_KEX_ntru_alice_priv {
 	uint8_t *priv_key;
 } OQS_KEX_ntru_alice_priv;
 
-int OQS_KEX_ntru_alice_0(UNUSED OQS_KEX *k, void **alice_priv,
-                         uint8_t **alice_msg, size_t *alice_msg_len) {
+OQS_STATUS OQS_KEX_ntru_alice_0(UNUSED OQS_KEX *k, void **alice_priv,
+                                uint8_t **alice_msg, size_t *alice_msg_len) {
 
-	int ret = 0;
+	OQS_STATUS ret = OQS_ERROR;
 	uint32_t rc;
 	DRBG_HANDLE drbg;
 	OQS_KEX_ntru_alice_priv *ntru_alice_priv = NULL;
@@ -83,7 +83,7 @@ int OQS_KEX_ntru_alice_0(UNUSED OQS_KEX *k, void **alice_priv,
 	    256, (uint8_t *) "OQS Alice", strlen("OQS Alice"),
 	    (ENTROPY_FN) &get_entropy_from_dev_urandom, &drbg);
 	if (rc != DRBG_OK)
-		return 0;
+		return OQS_ERROR;
 
 	/* allocate private key */
 	ntru_alice_priv = malloc(sizeof(OQS_KEX_ntru_alice_priv));
@@ -118,11 +118,11 @@ int OQS_KEX_ntru_alice_0(UNUSED OQS_KEX *k, void **alice_priv,
 		goto err;
 	*alice_msg_len = (size_t) ntru_alice_msg_len;
 
-	ret = 1;
+	ret = OQS_SUCCESS;
 	goto cleanup;
 
 err:
-	ret = 0;
+	ret = OQS_ERROR;
 	if (ntru_alice_priv != NULL)
 		free(ntru_alice_priv->priv_key);
 	free(ntru_alice_priv);
@@ -135,11 +135,10 @@ cleanup:
 	return ret;
 }
 
-int OQS_KEX_ntru_bob(OQS_KEX *k, const uint8_t *alice_msg,
-                     const size_t alice_msg_len, uint8_t **bob_msg,
-                     size_t *bob_msg_len, uint8_t **key, size_t *key_len) {
-
-	int ret;
+OQS_STATUS OQS_KEX_ntru_bob(OQS_KEX *k, const uint8_t *alice_msg,
+                            const size_t alice_msg_len, uint8_t **bob_msg,
+                            size_t *bob_msg_len, uint8_t **key, size_t *key_len) {
+	OQS_STATUS ret;
 	uint32_t rc;
 	DRBG_HANDLE drbg;
 
@@ -151,7 +150,7 @@ int OQS_KEX_ntru_bob(OQS_KEX *k, const uint8_t *alice_msg,
 	    256, (uint8_t *) "OQS Bob", strlen("OQS Bob"),
 	    (ENTROPY_FN) &get_entropy_from_dev_urandom, &drbg);
 	if (rc != DRBG_OK)
-		return 0;
+		return OQS_ERROR;
 
 	/* generate random session key */
 	*key_len = 256 / 8;
@@ -180,11 +179,11 @@ int OQS_KEX_ntru_bob(OQS_KEX *k, const uint8_t *alice_msg,
 		goto err;
 	*bob_msg_len = (size_t) ntru_bob_msg_len;
 
-	ret = 1;
+	ret = OQS_SUCCESS;
 	goto cleanup;
 
 err:
-	ret = 0;
+	ret = OQS_ERROR;
 	free(*bob_msg);
 	*bob_msg = NULL;
 	free(*key);
@@ -195,11 +194,10 @@ cleanup:
 	return ret;
 }
 
-int OQS_KEX_ntru_alice_1(UNUSED OQS_KEX *k, const void *alice_priv,
-                         const uint8_t *bob_msg, const size_t bob_msg_len,
-                         uint8_t **key, size_t *key_len) {
-
-	int ret;
+OQS_STATUS OQS_KEX_ntru_alice_1(UNUSED OQS_KEX *k, const void *alice_priv,
+                                const uint8_t *bob_msg, const size_t bob_msg_len,
+                                uint8_t **key, size_t *key_len) {
+	OQS_STATUS ret;
 	uint32_t rc;
 
 	*key = NULL;
@@ -229,11 +227,11 @@ int OQS_KEX_ntru_alice_1(UNUSED OQS_KEX *k, const void *alice_priv,
 		goto err;
 	*key_len = (size_t) ntru_key_len;
 
-	ret = 1;
+	ret = OQS_SUCCESS;
 	goto cleanup;
 
 err:
-	ret = 0;
+	ret = OQS_ERROR;
 	free(*key);
 	*key = NULL;
 cleanup:

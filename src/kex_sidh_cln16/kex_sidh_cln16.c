@@ -78,15 +78,14 @@ OQS_KEX *OQS_KEX_sidh_cln16_new(OQS_RAND *rand, const char *named_parameters) {
 	return k;
 }
 
-int OQS_KEX_sidh_cln16_alice_0(OQS_KEX *k, void **alice_priv,
-                               uint8_t **alice_msg, size_t *alice_msg_len) {
-
-	int ret;
+OQS_STATUS OQS_KEX_sidh_cln16_alice_0(OQS_KEX *k, void **alice_priv,
+                                      uint8_t **alice_msg, size_t *alice_msg_len) {
+	OQS_STATUS ret;
 	// non-compressed public key
 	uint8_t *alice_tmp_pub = NULL;
 
 	if (!k || !alice_priv || !alice_msg || !alice_msg_len) {
-		return 0;
+		return OQS_ERROR;
 	}
 
 	int compressed = isCompressed(k->named_parameters);
@@ -129,11 +128,11 @@ int OQS_KEX_sidh_cln16_alice_0(OQS_KEX *k, void **alice_priv,
 		alice_tmp_pub = NULL; // we don't want to double-free it
 	}
 
-	ret = 1;
+	ret = OQS_SUCCESS;
 	goto cleanup;
 
 err:
-	ret = 0;
+	ret = OQS_ERROR;
 	free(*alice_msg);
 	*alice_msg = NULL;
 	free(*alice_priv);
@@ -145,12 +144,11 @@ cleanup:
 	return ret;
 }
 
-int OQS_KEX_sidh_cln16_bob(OQS_KEX *k, const uint8_t *alice_msg,
-                           const size_t alice_msg_len, uint8_t **bob_msg,
-                           size_t *bob_msg_len, uint8_t **key,
-                           size_t *key_len) {
-
-	int ret;
+OQS_STATUS OQS_KEX_sidh_cln16_bob(OQS_KEX *k, const uint8_t *alice_msg,
+                                  const size_t alice_msg_len, uint8_t **bob_msg,
+                                  size_t *bob_msg_len, uint8_t **key,
+                                  size_t *key_len) {
+	OQS_STATUS ret;
 	uint8_t *bob_priv = NULL;
 	// non-compressed public key
 	uint8_t *bob_tmp_pub = NULL;
@@ -158,7 +156,7 @@ int OQS_KEX_sidh_cln16_bob(OQS_KEX *k, const uint8_t *alice_msg,
 	unsigned char *R = NULL, *A = NULL;
 
 	if (!k || !alice_msg || !bob_msg || !bob_msg_len || !key || !key_len) {
-		return 0;
+		return OQS_ERROR;
 	}
 
 	*bob_msg = NULL;
@@ -238,11 +236,11 @@ int OQS_KEX_sidh_cln16_bob(OQS_KEX *k, const uint8_t *alice_msg,
 
 	*key_len = SIDH_SHAREDKEY_LEN;
 
-	ret = 1;
+	ret = OQS_SUCCESS;
 	goto cleanup;
 
 err:
-	ret = 0;
+	ret = OQS_ERROR;
 	free(*bob_msg);
 	*bob_msg = NULL;
 	free(*key);
@@ -257,11 +255,10 @@ cleanup:
 	return ret;
 }
 
-int OQS_KEX_sidh_cln16_alice_1(OQS_KEX *k, const void *alice_priv,
-                               const uint8_t *bob_msg, const size_t bob_msg_len,
-                               uint8_t **key, size_t *key_len) {
-
-	int ret;
+OQS_STATUS OQS_KEX_sidh_cln16_alice_1(OQS_KEX *k, const void *alice_priv,
+                                      const uint8_t *bob_msg, const size_t bob_msg_len,
+                                      uint8_t **key, size_t *key_len) {
+	OQS_STATUS ret;
 	// decompression values
 	unsigned char *R = NULL, *A = NULL;
 
@@ -310,11 +307,11 @@ int OQS_KEX_sidh_cln16_alice_1(OQS_KEX *k, const void *alice_priv,
 		}
 	}
 
-	ret = 1;
+	ret = OQS_SUCCESS;
 	goto cleanup;
 
 err:
-	ret = 0;
+	ret = OQS_ERROR;
 	free(*key);
 	*key = NULL;
 

@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <oqs/rand.h>
+#include <oqs/oqs.h>
 
 #include "../../ds_benchmark.h"
 #include "../../common/common.h"

@@ -9,6 +9,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <oqs/common.h>
+
 enum OQS_RAND_alg_name {
 	OQS_RAND_alg_default,
 	OQS_RAND_alg_urandom_chacha20,

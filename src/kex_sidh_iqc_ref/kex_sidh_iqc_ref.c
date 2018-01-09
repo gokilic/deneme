@@ -13,7 +13,6 @@
 
 OQS_KEX *OQS_KEX_sidh_iqc_ref_new(OQS_RAND *rand,
                                   const char *named_parameters) {
-
 	if (named_parameters == NULL) {
 		named_parameters = "params771";
 	}
@@ -70,9 +69,8 @@ err:
 	return NULL;
 }
 
-int OQS_KEX_sidh_iqc_ref_alice_0(OQS_KEX *k, void **alice_priv,
-                                 uint8_t **alice_msg, size_t *alice_msg_len) {
-
+OQS_STATUS OQS_KEX_sidh_iqc_ref_alice_0(OQS_KEX *k, void **alice_priv,
+                                        uint8_t **alice_msg, size_t *alice_msg_len) {
 	public_params_t *params = (public_params_t *) k->params;
 	private_key_t Alice_private_key;
 	oqs_sidh_iqc_ref_private_key_init(Alice_private_key);
@@ -108,14 +106,13 @@ int OQS_KEX_sidh_iqc_ref_alice_0(OQS_KEX *k, void **alice_priv,
 	oqs_sidh_iqc_ref_public_key_clear(Alice_public_key);
 	oqs_sidh_iqc_ref_point_clear(kernel_gen);
 
-	return 1;
+	return OQS_SUCCESS;
 }
 
-int OQS_KEX_sidh_iqc_ref_bob(OQS_KEX *k, const uint8_t *alice_msg,
-                             UNUSED const size_t alice_msg_len,
-                             uint8_t **bob_msg, size_t *bob_msg_len,
-                             uint8_t **key, size_t *key_len) {
-
+OQS_STATUS OQS_KEX_sidh_iqc_ref_bob(OQS_KEX *k, const uint8_t *alice_msg,
+                                    UNUSED const size_t alice_msg_len,
+                                    uint8_t **bob_msg, size_t *bob_msg_len,
+                                    uint8_t **key, size_t *key_len) {
 	public_params_t *params = (public_params_t *) k->params;
 
 	private_key_t Bob_private_key;
@@ -164,13 +161,13 @@ int OQS_KEX_sidh_iqc_ref_bob(OQS_KEX *k, const uint8_t *alice_msg,
 	oqs_sidh_iqc_ref_point_clear(kernel_gen);
 	oqs_sidh_iqc_ref_fp2_clear(Bob_shared_key);
 
-	return 1;
+	return OQS_SUCCESS;
 }
 
-int OQS_KEX_sidh_iqc_ref_alice_1(OQS_KEX *k, const void *alice_priv,
-                                 const uint8_t *bob_msg,
-                                 UNUSED const size_t bob_msg_len, uint8_t **key,
-                                 size_t *key_len) {
+OQS_STATUS OQS_KEX_sidh_iqc_ref_alice_1(OQS_KEX *k, const void *alice_priv,
+                                        const uint8_t *bob_msg,
+                                        UNUSED const size_t bob_msg_len, uint8_t **key,
+                                        size_t *key_len) {
 
 	public_params_t *params = (public_params_t *) k->params;
 
@@ -202,7 +199,7 @@ int OQS_KEX_sidh_iqc_ref_alice_1(OQS_KEX *k, const void *alice_priv,
 	oqs_sidh_iqc_ref_public_key_clear(Bob_public_key);
 	oqs_sidh_iqc_ref_fp2_clear(Alice_shared_key);
 
-	return 1;
+	return OQS_SUCCESS;
 }
 
 void OQS_KEX_sidh_iqc_ref_alice_priv_free(UNUSED OQS_KEX *k, void *alice_priv) {

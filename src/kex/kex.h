@@ -98,9 +98,8 @@ typedef struct OQS_KEX {
    * @param alice_msg_len    Alice's message length
    * @return                 OQS_SUCCESS on success, or OQS_ERROR on failure
    */
-	OQS_STATUS (*alice_0)
-	(OQS_KEX *k, void **alive_priv, uint8_t **alice_msg,
-	 size_t *alice_msg_len);
+	OQS_STATUS(*alice_0)
+	(OQS_KEX *k, void **alive_priv, uint8_t **alice_msg, size_t *alice_msg_len);
 
 	/**
    * Pointer to a function for shared key generation by Bob.
@@ -116,7 +115,7 @@ typedef struct OQS_KEX {
    * @param key_len          Shared key length
    * @return                 OQS_SUCCESS on success, or OQS_ERROR on failure
    */
-	OQS_STATUS (*bob)
+	OQS_STATUS(*bob)
 	(OQS_KEX *k, const uint8_t *alice_msg, const size_t alice_msg_len,
 	 uint8_t **bob_msg, size_t *bob_msg_len, uint8_t **key,
 	 size_t *key_len);
@@ -133,7 +132,7 @@ typedef struct OQS_KEX {
    * @param key_len          Shared key length
    * @return                 OQS_SUCCESS on success, or OQS_ERROR on failure
    */
-	OQS_STATUS (*alice_1)
+	OQS_STATUS(*alice_1)
 	(OQS_KEX *k, const void *alice_priv, const uint8_t *bob_msg,
 	 const size_t bob_msg_len, uint8_t **key, size_t *key_len);
 

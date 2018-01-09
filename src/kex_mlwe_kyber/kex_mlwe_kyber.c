@@ -42,10 +42,9 @@ OQS_KEX *OQS_KEX_mlwe_kyber_new(OQS_RAND *rand) {
 	return k;
 }
 
-int OQS_KEX_mlwe_kyber_alice_0(UNUSED OQS_KEX *k, void **alice_priv,
-                               uint8_t **alice_msg, size_t *alice_msg_len) {
-
-	int ret;
+OQS_STATUS OQS_KEX_mlwe_kyber_alice_0(UNUSED OQS_KEX *k, void **alice_priv,
+                                      uint8_t **alice_msg, size_t *alice_msg_len) {
+	OQS_STATUS ret;
 
 	*alice_priv = NULL;
 	*alice_msg = NULL;
@@ -64,11 +63,11 @@ int OQS_KEX_mlwe_kyber_alice_0(UNUSED OQS_KEX *k, void **alice_priv,
 	keygen(*alice_msg, (unsigned char *) *alice_priv, k->rand);
 	*alice_msg_len = KYBER_PUBLICKEYBYTES;
 
-	ret = 1;
+	ret = OQS_SUCCESS;
 	goto cleanup;
 
 err:
-	ret = 0;
+	ret = OQS_ERROR;
 	free(*alice_msg);
 	*alice_msg = NULL;
 	free(*alice_priv);
@@ -79,12 +78,11 @@ cleanup:
 	return ret;
 }
 
-int OQS_KEX_mlwe_kyber_bob(UNUSED OQS_KEX *k, const uint8_t *alice_msg,
-                           const size_t alice_msg_len, uint8_t **bob_msg,
-                           size_t *bob_msg_len, uint8_t **key,
-                           size_t *key_len) {
-
-	int ret;
+OQS_STATUS OQS_KEX_mlwe_kyber_bob(UNUSED OQS_KEX *k, const uint8_t *alice_msg,
+                                  const size_t alice_msg_len, uint8_t **bob_msg,
+                                  size_t *bob_msg_len, uint8_t **key,
+                                  size_t *key_len) {
+	OQS_STATUS ret;
 
 	*bob_msg = NULL;
 	*key = NULL;
@@ -108,11 +106,11 @@ int OQS_KEX_mlwe_kyber_bob(UNUSED OQS_KEX *k, const uint8_t *alice_msg,
 	*bob_msg_len = KYBER_BYTES;
 	*key_len = 32;
 
-	ret = 1;
+	ret = OQS_SUCCESS;
 	goto cleanup;
 
 err:
-	ret = 0;
+	ret = OQS_ERROR;
 	free(*bob_msg);
 	*bob_msg = NULL;
 	free(*key);
@@ -123,11 +121,10 @@ cleanup:
 	return ret;
 }
 
-int OQS_KEX_mlwe_kyber_alice_1(UNUSED OQS_KEX *k, const void *alice_priv,
-                               const uint8_t *bob_msg, const size_t bob_msg_len,
-                               uint8_t **key, size_t *key_len) {
-
-	int ret;
+OQS_STATUS OQS_KEX_mlwe_kyber_alice_1(UNUSED OQS_KEX *k, const void *alice_priv,
+                                      const uint8_t *bob_msg, const size_t bob_msg_len,
+                                      uint8_t **key, size_t *key_len) {
+	OQS_STATUS ret;
 
 	*key = NULL;
 
@@ -145,11 +142,11 @@ int OQS_KEX_mlwe_kyber_alice_1(UNUSED OQS_KEX *k, const void *alice_priv,
 	shareda(*key, (unsigned char *) alice_priv, bob_msg);
 	*key_len = 32;
 
-	ret = 1;
+	ret = OQS_SUCCESS;
 	goto cleanup;
 
 err:
-	ret = 0;
+	ret = OQS_ERROR;
 	free(*key);
 	*key = NULL;
 
